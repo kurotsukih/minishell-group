@@ -55,10 +55,8 @@ SRCS_EXEC_BUILTIN	=	execution/ft_execute_builtin.c \
 SRCS_EXECUTION		=	ft_exec_1recursion.c utils/ft_exec_recursion_utils.c ft_exec_2command.c $(SRCS_PREPROCESS) $(SRCS_PREPARE_PIPE) $(SRCS_EXEC_PROGRAM) $(SRCS_EXEC_BUILTIN)
 
 SRCS				=	main.c init/ft_signal.c $(SRCS_PARSING) $(SRCS_UTILS) $(SRCS_INIT) $(SRCS_EXECUTION)
-
 OBJS = $(addprefix ./.build/, $(SRCS))
 OBJS := $(OBJS:%.c=%.o)
-
 FLAGS = -Wall -Werror -Wextra -I ./includes -I /usr/local/opt/readline/include
 
 all : minishell
@@ -117,7 +115,7 @@ test_exec_program : debug_exec_program
 	rm a.out
 
 debug_add_spaces :
-	cc -g3 $(HLAGS) tests/test_add_spaces.c $(addprefix ./srcs/, $(SRCS_ADD_SPACES) $(SRCS_UTILS)) -lreadline -Llibft -lft
+	cc -g3 $(FLAGS) tests/test_add_spaces.c $(addprefix ./srcs/, $(SRCS_ADD_SPACES) $(SRCS_UTILS)) -lreadline -Llibft -lft
 
 debug_tokenization :
 	cc -g3 $(FLAGS) tests/test_tokenization.c $(addprefix ./srcs/, $(SRCS_ADD_SPACES) $(SRCS_EXPANSION) $(SRCS_TOKENIZATION) $(SRCS_UTILS)) -lreadline -Llibft -lft
