@@ -13,31 +13,17 @@
 #ifndef MAIN_H
 # define MAIN_H
 
-# include "ft_clean.h"
-# include "struct_data.h"
-# include <readline/history.h>
-# include <readline/readline.h>
-# include <stdio.h>
-# include <stdlib.h>
-
-# include "ft_clean.h"
-# include "ft_error.h"
-# include "struct_data.h"
-# include "struct_list.h"
 # include <stdio.h>
 # include <stdlib.h>
 # include <unistd.h>
-
-# include "ft_clean.h"
+# include <sys/signal.h>
+# include <readline/history.h>
+# include <readline/readline.h>
 # include "libft.h"
-# include "struct_data.h"
-# include <stdio.h>
-
+# include "ft_clean.h"
 # include "ft_error.h"
 # include "struct_data.h"
 # include "struct_list.h"
-# include <stdio.h>
-# include <stdlib.h>
 
 char	*ft_add_spaces(char *str);
 t_list	*ft_tokenization(char *str, t_list *env, t_data *data);
@@ -60,7 +46,6 @@ int		ft_execute_builtin(t_cmd *cmd, t_data *data, t_node *node);
 void	ft_wait_child_processes(int *is_success, int size, int pid);
 int		check(t_cmd *cmd, int count, int result);
 
-void	ft_init_data(int argc, char **argv, char **env, t_data *data);
 int		ft_parsing(char *command, t_list *env, t_data *data);
 void	ft_execution(t_data *data);
 

@@ -25,8 +25,7 @@ SRCS_UTILS			=	utils/ft_clean_1.c \
 						utils/ft_clean_2.c \
 						utils/ft_error_1.c \
 						utils/ft_error_2.c
-SRCS_INIT			=	init/ft_init_data.c \
-						init/ft_init_envvar.c 
+SRCS_INIT			=	init/ft_init_envvar.c 
 
 SRCS_PREPROCESS		=	execution/ft_preprocess.c \
 						execution/preprocess/ft_preprocess_cmd.c \
