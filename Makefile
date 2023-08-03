@@ -57,14 +57,13 @@ SRCS_EXECUTION		=	ft_exec_1recursion.c utils/ft_exec_recursion_utils.c ft_exec_2
 
 SRCS				=	main.c init/ft_signal.c $(SRCS_PARSING) $(SRCS_UTILS) $(SRCS_INIT) $(SRCS_EXECUTION)
 
-SRCS_DIR		= ./srcs
 BUILD_DIR       = ./.build
 INCLUDES_DIR	= ./includes
 LIBFT_DIR		= ./libft
 
 OBJS			= $(addprefix $(BUILD_DIR)/, $(SRCS))
 OBJS			:= $(OBJS:%.c=%.o)
-SRCS			:= $(addprefix $(SRCS_DIR)/, $(SRCS))
+SRCS			:= $(addprefix ./srcs/, $(SRCS))
 
 CFLAGS          = -Wall -Werror -Wextra
 HFLAGS			= -I $(INCLUDES_DIR) -I /usr/local/opt/readline/include
@@ -79,7 +78,7 @@ minishell         		: ${OBJS}
 
 
 
-${BUILD_DIR}/%.o		: $(SRCS_DIR)/%.c ./libft/libft.a
+${BUILD_DIR}/%.o		: ./srcs/%.c ./libft/libft.a
 	cc -g3 $(HFLAGS) ${CFLAGS} -c $< -o $@ 
 
 ./libft/libft.a	:
@@ -126,29 +125,33 @@ test_exec_program			:	debug_exec_program
 	rm a.out
 
 debug_add_spaces			: 
-	cc -g3 $(HFLAGS) $(CFLAGS) tests/test_add_spaces.c $(addprefix $(SRCS_DIR)/, $(SRCS_ADD_SPACES) $(SRCS_UTILS)) -lreadline -Llibft -lft
+	cc -g3 $(HFLAGS) $(CFLAGS) tests/test_add_spaces.c $(addprefix ./srcs/, $(SRCS_ADD_SPACES) $(SRCS_UTILS)) -lreadline -Llibft -lft
 
 debug_tokenization		:
-	cc -g3 $(HFLAGS) $(CFLAGS) tests/test_tokenization.c $(addprefix $(SRCS_DIR)/, $(SRCS_ADD_SPACES) $(SRCS_EXPANSION) $(SRCS_TOKENIZATION) $(SRCS_UTILS)) -lreadline -Llibft -lft
+	cc -g3 $(HFLAGS) $(CFLAGS) tests/test_tokenization.c $(addprefix ./srcs/, $(SRCS_ADD_SPACES) $(SRCS_EXPANSION) $(SRCS_TOKENIZATION) $(SRCS_UTILS)) -lreadline -Llibft -lft
 
 debug_assign_types		:
-	cc -g3 $(HFLAGS) $(CFLAGS) tests/test_assgn_types.c $(addprefix $(SRCS_DIR)/, $(SRCS_ADD_SPACES) $(SRCS_EXPANSION) $(SRCS_TOKENIZATION) $(SRCS_ASSIGN_TYPES) $(SRCS_UTILS)) -lreadline -Llibft -lft
+	cc -g3 $(HFLAGS) $(CFLAGS) tests/test_assgn_types.c $(addprefix ./srcs/, $(SRCS_ADD_SPACES) $(SRCS_EXPANSION) $(SRCS_TOKENIZATION) $(SRCS_ASSIGN_TYPES) $(SRCS_UTILS)) -lreadline -Llibft -lft
 
 debug_make_tree			:
-	cc -g3 $(HFLAGS) $(CFLAGS) tests/test_make_tree.c $(addprefix $(SRCS_DIR)/, $(SRCS_ADD_SPACES) $(SRCS_EXPANSION) $(SRCS_TOKENIZATION) $(SRCS_ASSIGN_TYPES) $(SRCS_MAKE_TREE) $(SRCS_UTILS)) -lreadline -Llibft -lft
+	cc -g3 $(HFLAGS) $(CFLAGS) tests/test_make_tree.c $(addprefix ./srcs/, $(SRCS_ADD_SPACES) $(SRCS_EXPANSION) $(SRCS_TOKENIZATION) $(SRCS_ASSIGN_TYPES) $(SRCS_MAKE_TREE) $(SRCS_UTILS)) -lreadline -Llibft -lft
 
 debug_preprocess		:
-	cc -g3 $(HFLAGS) $(CFLAGS) tests/test_preprocess.c $(addprefix $(SRCS_DIR)/, $(SRCS_PARSING) $(SRCS_UTILS) $(SRCS_INIT) $(SRCS_PREPROCESS)) -lreadline -Llibft -lft
+	cc -g3 $(HFLAGS) $(CFLAGS) tests/test_preprocess.c $(addprefix ./srcs/, $(SRCS_PARSING) $(SRCS_UTILS) $(SRCS_INIT) $(SRCS_PREPROCESS)) -lreadline -Llibft -lft
 
 debug_exec_recursion		:
-	cc -g3 $(HFLAGS) $(CFLAGS) tests/test_exec_recursion.c $(addprefix $(SRCS_DIR)/, $(SRCS_ADD_SPACES) $(SRCS_EXPANSION) $(SRCS_TOKENIZATION) $(SRCS_ASSIGN_TYPES) $(SRCS_MAKE_TREE) $(SRCS_UTILS)) srcs/execution/ft_preprocess_node.c srcs/execution/ft_preprocess_tree.c srcs/ft_execution.c -lreadline -Llibft -lft	
+	cc -g3 $(HFLAGS) $(CFLAGS) tests/test_exec_recursion.c $(addprefix ./srcs/, $(SRCS_ADD_SPACES) $(SRCS_EXPANSION) $(SRCS_TOKENIZATION) $(SRCS_ASSIGN_TYPES) $(SRCS_MAKE_TREE) $(SRCS_UTILS)) srcs/execution/ft_preprocess_node.c srcs/execution/ft_preprocess_tree.c srcs/ft_execution.c -lreadline -Llibft -lft	
 
 debug_execute			:
-	cc -g3 $(HFLAGS) $(CFLAGS) tests/test_execute.c  $(addprefix $(SRCS_DIR)/, ft_exec_2command.c $(SRCS_UTILS) $(SRCS_EXEC_PROGRAM)) -lreadline -Llibft -lft
+	cc -g3 $(HFLAGS) $(CFLAGS) tests/test_execute.c  $(addprefix ./srcs/, ft_exec_2command.c $(SRCS_UTILS) $(SRCS_EXEC_PROGRAM)) -lreadline -Llibft -lft
 
 debug_exec_program			:
-	cc -g3 $(HFLAGS) $(CFLAGS) tests/test_exec_command.c  $(addprefix $(SRCS_DIR)/, ft_exec_2command.c $(SRCS_UTILS) $(SRCS_EXEC_PROGRAM) $(SRCS_PREPARE_PIPE)) -lreadline -Llibft -lft
+	cc -g3 $(HFLAGS) $(CFLAGS) tests/test_exec_command.c  $(addprefix ./srcs/, ft_exec_2command.c $(SRCS_UTILS) $(SRCS_EXEC_PROGRAM) $(SRCS_PREPARE_PIPE)) -lreadline -Llibft -lft
 
 re						: fclean all
+
+git :
+	git add *
+	git commit -m "-"
 
 .PHONY					: all clean fclean re
