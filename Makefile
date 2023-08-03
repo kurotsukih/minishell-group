@@ -153,5 +153,6 @@ re						: fclean all
 git :
 	git add *
 	git commit -m "-"
+	git push
 
 .PHONY					: all clean fclean re
