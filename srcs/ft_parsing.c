@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "includes/ft_parsing.h"
+#include "minishell.h"
 #include "struct_data.h"
 
 /*

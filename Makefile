@@ -59,7 +59,6 @@ SRCS				=	main.c init/ft_signal.c $(SRCS_PARSING) $(SRCS_UTILS) $(SRCS_INIT) $(S
 
 OBJS = $(addprefix ./.build/, $(SRCS))
 OBJS := $(OBJS:%.c=%.o)
-SRCS := $(addprefix ./srcs/, $(SRCS))
 
 FLAGS = -Wall -Werror -Wextra -I ./includes -I /usr/local/opt/readline/include
 

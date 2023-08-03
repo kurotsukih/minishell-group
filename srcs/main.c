@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "includes/main.h"
+#include "minishell.h"
 #include <sys/signal.h>
 #include <unistd.h>
 

@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "includes/ft_exec_recursion.h"
+#include "minishell.h"
 
 void	ft_execution(t_data *data)
 {

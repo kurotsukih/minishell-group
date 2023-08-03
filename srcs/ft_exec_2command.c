@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "includes/ft_exec_command.h"
+#include "minishell.h"
 #include "libft.h"
 #include <readline/readline.h>
 #include <sys/signal.h>
