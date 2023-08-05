@@ -10,15 +10,29 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-/* SIGQUIT = SIGINT, except that it’s controlled by C-\ 
-// and produces a core dump when it terminates the process, 
-// just like a program error signal. You can think of 
-// this as a program error condition “detected” by the user. */
+/*
+readline rl_clear_history, rl_on_new_line rl_replace_line rl_redisplay, add_history,
+malloc free
+printf write access open read close
+fork wait waitpid wait3 wait4 
+signal sigaction sigemptyset sigaddset kill
+exit,
+getcwd chdir stat lstat fstat unlink execve dup dup2 pipe
+opendir readdir closedir
+strerror perror
+isatty ttyname ttyslot ioctl
+getenv
+tcsetattr tcgetattr tgetent tgetflag tgetnum tgetstr tgoto tputs
 
-/* readline read a line from the terminal 
+SIGQUIT = SIGINT, except that it’s controlled by C-\ 
+and produces a core dump when it terminates the process, 
+just like a program error signal. You can think of 
+this as a program error condition “detected” by the user.
+
+readline read a line from the terminal 
 The line is allocated with malloc, the caller must free it.
 Returns the line without \n, "" for "", NULL for "" + EOF
-If an EOF is read with a non-empty line, it is treated as a newline. */
+If an EOF is read with a non-empty line, it is treated as a newline.
 
 /* linked list, where:
  * list->content	- full string (ex. "USER=akostrik")

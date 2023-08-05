@@ -8,7 +8,6 @@ SRCS = main.c \
 	   parsing/expansion/ft_expand_string.c \
 	   parsing/expansion/ft_expand_token.c \
 	   parsing/ft_check_tokens.c \
-	   parsing/check_tokens/ft_check_tokens_utils.c \
 	   parsing/ft_assign_types.c \
 	   parsing/ft_open_heredocs.c \
 	   parsing/ft_make_tree.c \
