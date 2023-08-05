@@ -31,6 +31,32 @@ int	ft_is_builtin(t_list *token)
 	return (0);
 }
 
+
+static void	ft_wait_child_processes(int *is_success, int size, int pid)
+{
+	int	i;
+	int	status;
+
+	i = 0;
+	while (i < size)
+	{
+		if (wait(&status) == pid)
+		{
+			if (WIFEXITED(status))
+				*is_success = WEXITSTATUS(status);
+			if (WIFSIGNALED(status))
+			{
+				*is_success = WTERMSIG(status) + 128;
+				if (*is_success == 130)
+					error_(-1, "\n", NULL);
+				if (*is_success == 131)
+					error_(-1, "Quit (core dumped)\n", NULL);
+			}
+		}
+		i++;
+	}
+}
+
 int	ft_exec_command(t_node *node, t_data *data)
 {
 	int	i_cmd;
@@ -112,29 +138,4 @@ int	ft_execute(t_cmd *cmd, t_data *data, t_node *node)
 	else if (cmd->in_fd != 0)
 		close(cmd->in_fd);
 	return (signal(SIGINT, SIG_IGN), pid);
-}
-
-void	ft_wait_child_processes(int *is_success, int size, int pid)
-{
-	int	i;
-	int	status;
-
-	i = 0;
-	while (i < size)
-	{
-		if (wait(&status) == pid)
-		{
-			if (WIFEXITED(status))
-				*is_success = WEXITSTATUS(status);
-			if (WIFSIGNALED(status))
-			{
-				*is_success = WTERMSIG(status) + 128;
-				if (*is_success == 130)
-					error_(-1, "\n", NULL);
-				if (*is_success == 131)
-					error_(-1, "Quit (core dumped)\n", NULL);
-			}
-		}
-		i++;
-	}
 }

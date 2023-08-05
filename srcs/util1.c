@@ -81,3 +81,16 @@ void	ft_remove_quotes_string(char *str)
 	while (j != i)
 		str[j++] = '\0';
 }
+
+void	error_(int exit_code, char *str, char *param)
+{
+	if (str == NULL)
+		printf("%s\n", strerror(errno));
+	else if (str != NULL && param == NULL)
+		printf("bash: %s\n", str);
+	else if (str != NULL && param != NULL)
+		printf(str, param);
+	if (exit_code != -1)
+		exit(exit_code);
+	(void)param;
+}

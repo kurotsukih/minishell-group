@@ -12,7 +12,7 @@
 
 #include "minishell.h"
 
-int	ft_check_operator(int exit_code, char *str)
+static int	ft_check_operator(int exit_code, char *str)
 {
 	if (ft_strcmp(str, "&&") == 0)
 	{
@@ -23,16 +23,6 @@ int	ft_check_operator(int exit_code, char *str)
 	if (exit_code == 0)
 		return (1);
 	return (0);
-}
-
-void	ft_execution(t_data *data)
-{
-	if (ft_preprocess(data->node) == -1)
-	{
-		ft_clean_tree(data->node);
-		return ;
-	}
-	data->exit_code = ft_exec_recursion(data->node, data, NULL);
 }
 
 int	ft_exec_recursion(t_node *node, t_data *data, t_node *parent)
@@ -60,3 +50,14 @@ int	ft_exec_recursion(t_node *node, t_data *data, t_node *parent)
 		return (ft_exec_command(node, data));
 	return (node->exit_code);
 }
+
+void	ft_execution(t_data *data)
+{
+	if (ft_preprocess(data->node) == -1)
+	{
+		ft_clean_tree(data->node);
+		return ;
+	}
+	data->exit_code = ft_exec_recursion(data->node, data, NULL);
+}
+

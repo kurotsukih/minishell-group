@@ -84,8 +84,6 @@ int		ft_check_tokens(t_list *node);
 int		ft_open_heredocs(t_list *head, t_list *env);
 t_node	*ft_make_tree(t_list *token, t_node *parent);
 
-int		ft_exec_recursion(t_node *node, t_data *data, t_node *parent);
-int		ft_check_operator(int exit_code, char *str);
 int		ft_preprocess(t_node *node);
 int		ft_exec_command(t_node *node, t_data *data);
 
@@ -94,7 +92,6 @@ int		ft_execute(t_cmd *cmd, t_data *data, t_node *node);
 int		ft_is_builtin(t_list *token);
 int		ft_execute_program(t_cmd *cmd, t_list *env, t_node *node);
 int		ft_execute_builtin(t_cmd *cmd, t_data *data, t_node *node);
-void	ft_wait_child_processes(int *is_success, int size, int pid);
 int		check(t_cmd *cmd, int count, int result);
 
 void	ft_execution(t_data *data);
@@ -130,9 +127,6 @@ t_list	*ft_token_error(t_list *token);
 
 void	ft_clean_fds(t_cmd *cmd);
 void	ft_clean_tree(t_node *node);
-void	ft_clean_darray(char **trash);
-void	ft_clean_tree(t_node *node);
-
 void	error_(int exit_code, char *str, char * param);
 
 t_list	*ft_preprocess_parameter(t_list *token, t_cmd *cmd, int i_cmd);

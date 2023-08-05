@@ -14,6 +14,19 @@
 
 char	*ft_find_all_paths(t_list *env);
 
+static void	ft_clean_darray(char **trash)
+{
+	int	i;
+
+	i = 0;
+	while (trash[i])
+	{
+		free(trash[i]);
+		i++;
+	}
+	free(trash);
+}
+
 int	ft_free_find_path(char **paths, char *cmd, int exit_code)
 {
 	ft_clean_darray(paths);

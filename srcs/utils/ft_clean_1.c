@@ -12,6 +12,16 @@
 
 #include "minishell.h"
 
+void	ft_clean_fds(t_cmd *cmd)
+{
+	if (cmd->in_fd != -1 && cmd->in_fd != 0)
+		close(cmd->in_fd);
+	if (cmd->out_fd != -1 && cmd->out_fd != 1)
+		close(cmd->out_fd);
+	if (cmd->out_pipe_fd != -1)
+		close(cmd->out_pipe_fd);
+}
+
 static void	ft_clean_cmds(t_cmd *cmds_p, int size)
 {
 	t_cmd	*cmds;
