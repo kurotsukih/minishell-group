@@ -12,7 +12,7 @@
 
 #include "minishell.h"
 
-void	ft_error_exit(int exit_code, char *str, char *param)
+void	error_(int exit_code, char *str, char *param)
 {
 	if (str == NULL)
 		printf("%s\n", strerror(errno));

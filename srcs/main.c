@@ -58,7 +58,7 @@ void	init(char **env, t_data *data)
 		if (!str)
 		{
 			ft_lstclear(&data->env, &free);
-			ft_error_exit(-1, NULL, NULL);
+			error_(-1, NULL, NULL);
 			return ;
 		}
 		token = ft_lstnew(str, 0);
@@ -66,7 +66,7 @@ void	init(char **env, t_data *data)
 		{
 			free(str);
 			ft_lstclear(&token, &free);
-			ft_error_exit(-1, NULL, NULL);
+			error_(-1, NULL, NULL);
 			return ;
 		}
 		ft_lstadd_back(&data->env, token);
@@ -77,14 +77,14 @@ void	init(char **env, t_data *data)
 
 t_list	*ft_token_error(t_list *token)
 {
-	ft_error_exit(-1, NULL, NULL);
+	error_(-1, NULL, NULL);
 	ft_lstclear(&token, &free);
 	return (NULL);
 }
 
 t_list	*ft_token_merror(char *str, t_list *token)
 {
-	ft_error_exit(-1, str, NULL);
+	error_(-1, str, NULL);
 	ft_lstclear(&token, &free);
 	return (NULL);
 }
