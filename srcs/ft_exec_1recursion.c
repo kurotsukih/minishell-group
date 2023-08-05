@@ -12,6 +12,19 @@
 
 #include "minishell.h"
 
+int	ft_check_operator(int exit_code, char *str)
+{
+	if (ft_strcmp(str, "&&") == 0)
+	{
+		if (exit_code == 0)
+			return (0);
+		return (1);
+	}
+	if (exit_code == 0)
+		return (1);
+	return (0);
+}
+
 void	ft_execution(t_data *data)
 {
 	if (ft_preprocess(data->node) == -1)

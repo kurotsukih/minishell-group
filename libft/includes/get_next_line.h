@@ -13,16 +13,6 @@
 #ifndef GET_NEXT_LINE_H
 # define GET_NEXT_LINE_H
 
-# ifndef BUFFER_SIZE
-#  define BUFFER_SIZE 5
-# endif
 
-# include <stdlib.h>
-# include <unistd.h>
-# include "libft.h"
-
-int	ft_check(char *s);
-int	ft_free_return(char *trash);
-int	ft_strlen2(char *s);
 
 #endif

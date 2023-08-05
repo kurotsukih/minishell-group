@@ -10,8 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
-#include "struct_list.h"
+#include "minishell.h"
 
 void	ft_execute_env(t_list *env)
 {

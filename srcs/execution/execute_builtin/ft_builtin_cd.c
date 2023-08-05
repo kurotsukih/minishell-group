@@ -10,9 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ft_error.h"
-#include "libft.h"
-#include "struct_list.h"
+#include "minishell.h"
 
 char	*ft_find_home(t_list *env);
 

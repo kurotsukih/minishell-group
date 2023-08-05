@@ -10,14 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ft_error.h"
-#include "libft.h"
-#include "struct_list.h"
-#include <errno.h>
-#include <readline/history.h>
-#include <readline/readline.h>
-#include <sys/signal.h>
-#include <unistd.h>
+#include "minishell.h"
 
 typedef struct s_heredoc
 {
@@ -28,9 +21,19 @@ typedef struct s_heredoc
 }	t_heredoc;
 
 int		ft_get_heredoc(char *delimiter, t_list *env, int *fd);
-char	*ft_expand_string(char *str, t_list *env);
 void	ft_remove_quotes_string(char *str);
-void	ft_signal_heredoc(int signal);
+
+void	ft_signal_heredoc(int signal)
+{
+	if (signal == SIGINT)
+	{
+		write(1, "\n", 1);
+		rl_replace_line("", 0);
+		rl_redisplay();
+		close(STDIN_FILENO);
+		g_signal = 1;
+	}
+}
 
 int	ft_open_heredocs(t_list *head, t_list *env)
 {
@@ -77,7 +80,7 @@ int	ft_get_heredoc(char *delimiter, t_list *env, int *my_fd)
 	a.line = readline(">");
 	while (a.line && ft_strcmp(a.line, delimiter) != 0)
 	{
-		a.line = ft_strjoin(ft_expand_string(a.line, env), "\n");
+		a.line = ft_strjoin(ft_expand_string(a.line, env, NULL), "\n"); ///
 		if (!a.line && a.status++ < 2)
 			break ;
 		ft_remove_quotes_string(a.line);

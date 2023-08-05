@@ -10,8 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
-#include "struct_list.h"
+#include "minishell.h"
 
 void	ft_remove_quotes_string(char *str)
 {

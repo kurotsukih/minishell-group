@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "preprocess/includes/ft_preprocess.h"
+#include "minishell.h"
 
 /**
  * @brief      Preprocess the command. Before, I had a node with all tokens

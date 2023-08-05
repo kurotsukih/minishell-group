@@ -10,7 +10,6 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "struct_list.h"
 #include "libft.h"
 
 int ft_lstremove(t_list **lst, t_list *node, void (*del)(void*))

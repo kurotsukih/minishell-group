@@ -10,10 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
-#include "struct_data.h"
-#include "struct_list.h"
-#include <stdlib.h>
+#include "minishell.h"
 
 t_list	*ft_preprocess_redirection(t_list *token, t_cmd *cmd, int i_cmd)
 {

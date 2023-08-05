@@ -10,11 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
-#include "struct_data.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include "ft_clean.h"
+#include "minishell.h"
 
 void	ft_clean_redirections(t_list *head)
 {

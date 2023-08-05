@@ -10,8 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ft_error.h"
-#include "includes/ft_execute_program.h"
+#include "minishell.h"
 
 /**
  * @brief       I have to think of exit and free strategy

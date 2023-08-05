@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "includes/ft_preprocess_cmd.h"
+#include "minishell.h"
 
 void	ft_preprocess_cmd(t_cmd *cmds, t_list *token)
 {

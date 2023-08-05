@@ -10,15 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "struct_list.h"
-#include "libft.h"
-#include <dirent.h>
-#include <readline/readline.h>
-#include <stdbool.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include "ft_error.h"
+#include "minishell.h"
 
 int ft_extend(t_list **head, t_list *token);
 bool	ft_match_pattern(const char *str, const char *pattern);

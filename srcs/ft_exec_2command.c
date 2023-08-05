@@ -11,12 +11,33 @@
 /* ************************************************************************** */
 
 #include "minishell.h"
-#include "libft.h"
-#include <readline/readline.h>
-#include <sys/signal.h>
-#include <sys/wait.h>
 
-void	ft_signal_fork(int num);
+int	ft_is_builtin(t_list *token)
+{
+	if (ft_strcmp((char *)token->content, "cd") == 0)
+		return (1);
+	else if (ft_strcmp((char *)token->content, "pwd") == 0)
+		return (1);
+	else if (ft_strcmp((char *)token->content, "echo") == 0)
+		return (1);
+	else if (ft_strcmp((char *)token->content, "export") == 0)
+		return (1);
+	else if (ft_strcmp((char *)token->content, "unset") == 0)
+		return (1);
+	else if (ft_strcmp((char *)token->content, "env") == 0)
+		return (1);
+	else if (ft_strcmp((char *)token->content, "exit") == 0)
+		return (1);
+	return (0);
+}
+
+void	ft_signal_fork(int num)
+{
+	if (num == SIGINT)
+		exit(130);
+	if (num == SIGQUIT)
+		exit(131);
+}
 
 int	ft_exec_command(t_node *node, t_data *data)
 {

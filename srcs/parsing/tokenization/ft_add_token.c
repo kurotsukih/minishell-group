@@ -10,11 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ft_error.h"
-#include "libft.h"
-#include "struct_data.h"
-#include "struct_list.h"
-#include <stdlib.h>
+#include "minishell.h"
 
 t_list	*ft_expand_token(char *str, t_list *env, t_data *data);
 

@@ -10,9 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
-#include "struct_list.h"
-#include <stdio.h>
+#include "minishell.h"
 
 /*
     Description:    Buildin for unset command

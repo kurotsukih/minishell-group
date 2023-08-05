@@ -10,8 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "struct_list.h"
-#include <stdio.h>
+#include "libft.h"
 
 t_list  *ft_lstretrieve(t_list **lst, t_list *node)
 {

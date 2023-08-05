@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "includes/ft_tokenization.h"
+#include "minishell.h"
 
 /**
  * @brief               separate each key word into token
@@ -25,6 +25,21 @@
  * @param str           input string to tokenize
  * @return t_list*      tokens
  */
+
+t_list	*ft_token_error(t_list *token)
+{
+	ft_error();
+	ft_lstclear(&token, &free);
+	return (NULL);
+}
+
+t_list	*ft_token_merror(char *str, t_list *token)
+{
+	ft_merror(str, NULL);
+	ft_lstclear(&token, &free);
+	return (NULL);
+}
+
 t_list	*ft_tokenization(char *str, t_list *env, t_data *data)
 {
 	t_list	*head;

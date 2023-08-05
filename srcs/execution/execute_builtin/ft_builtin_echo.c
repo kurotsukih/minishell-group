@@ -10,8 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
-#include "struct_list.h"
+#include "minishell.h"
 
 int	ft_strcmp_alt(char *str)
 {

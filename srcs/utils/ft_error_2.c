@@ -10,8 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ft_clean.h"
-#include "ft_error.h"
+#include "minishell.h"
 
 void	ft_error_exit(int exit_code)
 {

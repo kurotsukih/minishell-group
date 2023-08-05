@@ -10,9 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "struct_data.h"
-#include <stdlib.h>
-#include <unistd.h>
+#include "minishell.h"
 
 void	ft_clean_fds(t_cmd *cmd)
 {

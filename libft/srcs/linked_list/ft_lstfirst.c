@@ -10,8 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stdio.h>
-#include "struct_list.h"
+#include "libft.h"
 
 t_list  *ft_lstfirst(t_list *lst)
 {

@@ -10,8 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "includes/ft_prepare_pipe.h"
-#include <unistd.h>
+#include "minishell.h"
 
 int	ft_prepare_pipe(t_node *node, int i_cmd)
 {

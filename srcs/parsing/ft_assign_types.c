@@ -10,9 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
-#include "struct_data.h"
-#include "struct_list.h"
+#include "minishell.h"
 
 void	ft_assign_type(t_list *node, int is_filename);
 

@@ -57,6 +57,18 @@ int	ft_init_env(t_list **data_env, char **env)
 	return (0);
 }
 
+void	ft_signal(int signal)
+{
+	if (signal == SIGINT)
+	{
+		write(1, "\n", 1);
+		rl_on_new_line();
+		rl_replace_line("", 0);
+		rl_redisplay();
+		g_signal = 1;
+	}
+}
+
 void	ft_init_data(int argc, char **argv, char **env, t_data *data)
 {
 	(void)argv;
@@ -67,6 +79,35 @@ void	ft_init_data(int argc, char **argv, char **env, t_data *data)
 	ft_init_env(&data->env, env);
 	data->node = NULL;
 	data->exit_code = 0;
+}
+
+int	ft_parsing(char *command, t_list *env, t_data *data)
+{
+	t_list	*head;
+	char	*cmd_line;
+	int		code;
+
+	data->node = NULL;
+	cmd_line = ft_add_spaces(command);
+	if (!cmd_line)
+		return (data->exit_code = 255, 255);
+	head = ft_tokenization(cmd_line, env, data);
+	free(cmd_line);
+	if (!head)
+		return (data->exit_code = 255, 255);
+	ft_assign_types(head);
+	if (ft_check_tokens(head) == 0)
+		return (data->exit_code = 2, ft_clean_tokens(&head, &free), 2);
+	// code = ft_extend_wildcard(&head);
+	// if (code == 0)
+		// return (data->exit_code = code, ft_clean_tokens(&head, &free), code);
+	code = ft_open_heredocs(head, env);
+	if (code != 0)
+		return (data->exit_code = code, ft_clean_tokens(&head, &free), code);
+	data->node = ft_make_tree(head, NULL);
+	if (!data->node)
+		return (data->exit_code = 255, ft_clean_tokens(&head, &free), 255);
+	return (0);
 }
 
 int	main(int argc, char **argv, char **env)

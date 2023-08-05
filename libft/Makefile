@@ -72,15 +72,14 @@ SRCS	= 	other/ft_atoi.c				\
 
 SRCS_DIR	= ./srcs
 BUILD_DIR	= ./.build
-INCLUDES_DIR	= ./includes
 
-OBJS            = $(addprefix $(BUILD_DIR)/, $(SRCS))
-OBJS		:= $(OBJS:%.c=%.o)
-SRCS		:= $(addprefix $(SRCS_DIR)/, $(SRCS))
+OBJS = $(addprefix $(BUILD_DIR)/, $(SRCS))
+OBJS := $(OBJS:%.c=%.o)
+SRCS := $(addprefix $(SRCS_DIR)/, $(SRCS))
 
 CC		= cc
 CFLAGS		= -Wall -Wextra -Werror
-HFLAGS		= -I $(INCLUDES_DIR)
+HFLAGS		= -I .
 
 all:		$(NAME)
 

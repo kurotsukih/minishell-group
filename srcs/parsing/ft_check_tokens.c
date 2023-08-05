@@ -10,10 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ft_error.h"
-#include "libft.h"
-#include "struct_data.h"
-#include "struct_list.h"
+#include "minishell.h"
 
 char	*ft_check_parenthesis(t_list *node, int *p_count);
 

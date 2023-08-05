@@ -10,9 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ft_error.h"
-#include "libft.h"
-#include <stdlib.h>
+#include "minishell.h"
 
 void	ft_error(void)
 {

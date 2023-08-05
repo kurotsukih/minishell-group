@@ -10,8 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "struct_data.h"
-#include <stdio.h>
+#include "minishell.h"
 
 void	ft_init_cmds(t_cmd *cmds, int num_cmds)
 {

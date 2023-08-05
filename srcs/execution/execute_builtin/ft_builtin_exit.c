@@ -10,12 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ft_clean.h"
-#include "ft_error.h"
-#include "libft.h"
-#include "struct_data.h"
-#include "struct_list.h"
-#include <stdlib.h>
+#include "minishell.h"
 
 int	ft_isnum(char *str)
 {

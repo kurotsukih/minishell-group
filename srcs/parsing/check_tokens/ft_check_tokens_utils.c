@@ -10,8 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "struct_list.h"
-#include <stdio.h>
+#include "minishell.h"
 
 char	*ft_check_parenthesis_left(t_list *node, int *p_count);
 char	*ft_check_parenthesis_right(t_list *node, int *p_count);

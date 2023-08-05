@@ -10,10 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ft_error.h"
-#include "libft.h"
-#include "struct_list.h"
-#include <stdio.h>
+#include "minishell.h"
 
 /**
 

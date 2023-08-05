@@ -12,7 +12,7 @@
 
 #include "libft.h"
 
-static int	ft_find_n_word(char const *s, char c)
+static int	ft_find_n_word3(char const *s, char c)
 {
 	int	i;
 	int	n;
@@ -82,7 +82,7 @@ char	**ft_split(char const *s, char c)
 
 	if (!s)
 		return (NULL);
-	n_word = ft_find_n_word(s, c);
+	n_word = ft_find_n_word3(s, c);
 	returner = (char **) malloc(sizeof(char *) * (n_word + 1));
 	if (!returner)
 		return (NULL);

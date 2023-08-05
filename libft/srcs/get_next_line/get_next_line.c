@@ -10,7 +10,15 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "get_next_line.h"
+# include "libft.h"
+
+# ifndef BUFFER_SIZE
+#  define BUFFER_SIZE 5
+# endif
+
+int	ft_check(char *s);
+int	ft_free_return(char *trash);
+int	ft_strlen2(char *s);
 
 static int	ft_clean_up(char **_buffer, int len)
 {

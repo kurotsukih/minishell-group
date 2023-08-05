@@ -10,9 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
-#include "struct_data.h"
-#include "struct_list.h"
+#include "minishell.h"
 
 t_list	*ft_preprocess_parameter(t_list *token, t_cmd *cmd, int i_cmd)
 {

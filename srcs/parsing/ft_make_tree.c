@@ -10,11 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ft_error.h"
-#include "libft.h"
-#include "struct_data.h"
-#include "struct_list.h"
-#include <stdio.h>
+#include "minishell.h"
 
 t_list	*ft_find_next_parenthesis(t_list *first);
 int		ft_clean_onion(t_list **token);
