@@ -127,7 +127,6 @@ t_list	*ft_add_token(char *str, int i_beg, int i_end, t_data *data);
 int		ft_is_token(char c, int checker);
 t_list	*ft_token_merror(char *str, t_list *token);
 t_list	*ft_token_error(t_list *token);
-void	ft_remove_quotes(t_list *head);
 
 void	ft_clean_fds(t_cmd *cmd);
 void	ft_clean_tree(t_node *node);

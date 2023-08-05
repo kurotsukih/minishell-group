@@ -89,6 +89,20 @@ t_list	*ft_token_merror(char *str, t_list *token)
 	return (NULL);
 }
 
+static void	ft_remove_quotes(t_list *head)
+{
+	t_list	*token;
+	char	*str;
+
+	token = head;
+	while (token)
+	{
+		str = (char *)token->content;
+		ft_remove_quotes_string(str);
+		token = token->next;
+	}
+}
+
 // separate each key word into token
 // cat || ls  -> ['cat', '|', 'ls']
 t_list	*ft_tokenization(char *str, t_list *env, t_data *data)
