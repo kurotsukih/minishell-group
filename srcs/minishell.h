@@ -88,7 +88,6 @@ int		ft_preprocess(t_node *node);
 int		ft_exec_command(t_node *node, t_data *data);
 
 int		ft_prepare_pipe(t_node *node, int i_cmd);
-int		ft_execute(t_cmd *cmd, t_data *data, t_node *node);
 int		ft_is_builtin(t_list *token);
 int		ft_execute_program(t_cmd *cmd, t_list *env, t_node *node);
 int		ft_execute_builtin(t_cmd *cmd, t_data *data, t_node *node);

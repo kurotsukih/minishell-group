@@ -57,6 +57,36 @@ static void	ft_wait_child_processes(int *is_success, int size, int pid)
 	}
 }
 
+//    Add a moment when there can be only one command and it is builtin
+int	ft_execute(t_cmd *cmd, t_data *data, t_node *node)
+{
+	int	pid;
+	int	exit_c;
+
+	pid = fork();
+	exit_c = 0;
+	if (pid < -1)
+		error_(-1, NULL, NULL);
+	if (pid == 0)
+	{
+		signal(SIGINT, &sig_handler_fork);
+		signal(SIGQUIT, &sig_handler_fork);
+		if (dup2(cmd->in_fd, STDIN_FILENO) == -1)
+			error_(-1, NULL, NULL);
+		if (dup2(cmd->out_fd, STDOUT_FILENO) == -1)
+			error_(-1, NULL, NULL);
+		ft_clean_fds(cmd);
+		if (cmd->params && ft_is_builtin(cmd->params) == 1)
+			exit_c = ft_execute_builtin(cmd, data, node);
+		else if (cmd->params)
+			exit_c = ft_execute_program(cmd, data->env, node);
+		return (ft_clean_tree(node), free_redirections(*(&(data->env))), exit(exit_c), 0);
+	}
+	else if (cmd->in_fd != 0)
+		close(cmd->in_fd);
+	return (signal(SIGINT, SIG_IGN), pid);
+}
+
 int	ft_exec_command(t_node *node, t_data *data)
 {
 	int	i_cmd;
@@ -108,34 +138,3 @@ int	check(t_cmd *cmd, int count, int result)
 	return (0);
 }
 
-/*
-    Add a moment when there can be only one command and it is builtin
-*/
-int	ft_execute(t_cmd *cmd, t_data *data, t_node *node)
-{
-	int	pid;
-	int	exit_c;
-
-	pid = fork();
-	exit_c = 0;
-	if (pid < -1)
-		error_(-1, NULL, NULL);
-	if (pid == 0)
-	{
-		signal(SIGINT, &sig_handler_fork);
-		signal(SIGQUIT, &sig_handler_fork);
-		if (dup2(cmd->in_fd, STDIN_FILENO) == -1)
-			error_(-1, NULL, NULL);
-		if (dup2(cmd->out_fd, STDOUT_FILENO) == -1)
-			error_(-1, NULL, NULL);
-		ft_clean_fds(cmd);
-		if (cmd->params && ft_is_builtin(cmd->params) == 1)
-			exit_c = ft_execute_builtin(cmd, data, node);
-		else if (cmd->params)
-			exit_c = ft_execute_program(cmd, data->env, node);
-		return (ft_clean_tree(node), free_redirections(*(&(data->env))), exit(exit_c), 0);
-	}
-	else if (cmd->in_fd != 0)
-		close(cmd->in_fd);
-	return (signal(SIGINT, SIG_IGN), pid);
-}
