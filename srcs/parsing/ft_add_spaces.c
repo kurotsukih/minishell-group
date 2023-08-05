@@ -13,8 +13,7 @@
 /** Add space between meta characters
  *          Before:  (cat||ls)|pwd
  *          After:   ( cat || ls ) | pwd
- * ft_size() the overall size of the string with spaces
- * ft_is_metacharacter()    - checks if the character is meta
+ * is metachar    - checks if the character is meta
  * ft_put()                 - concantenates the meta characters with spaces
  * ft_remove_extra...()     - removes preeceding, succeeding, and duplicating spaces  */
 
@@ -102,7 +101,7 @@ void	ft_remove_extra_spaces(char *str, int size)
 	ft_memset2(str + j, '\0', size - j);
 }
 
-char	*ft_is_metacharacter(char c1, char c2)
+char	*metachar(char c1, char c2)
 {
 	static char	mode;
 
@@ -118,28 +117,24 @@ char	*ft_is_metacharacter(char c1, char c2)
 		mode = '\0';
 	if (mode != '\0')
 		return (NULL);
-	// if (c1 == '|' && c2 == '|')
-	// 	return ("||");
 	if (c1 == '|')
 		return ("|");
-	// if (c1 == '&' && c2 == '&')
-	// 	return ("&&");
 	if (c1 == '(')
 		return ("(");
 	if (c1 == ')')
 		return (")");
 	if (c1 == '<' && c2 == '<')
 		return ("<<");
-	if (c1 == '<')
-		return ("<");
 	if (c1 == '>' && c2 == '>')
 		return (">>");
+	if (c1 == '<')
+		return ("<");
 	if (c1 == '>')
 		return (">");
 	return (NULL);
 }
 
-int	ft_size(char *str)
+int	new_size(char *str)
 {
 	int	i;
 	int	size;
@@ -148,7 +143,7 @@ int	ft_size(char *str)
 	size = 0;
 	while (str[i])
 	{
-		if (ft_is_metacharacter(str[i], str[i + 1]) != 0)
+		if (metachar(str[i], str[i + 1]) != 0)
 			size++;
 		i++;
 	}
@@ -164,7 +159,7 @@ char	*ft_add_spaces(char *str)
 	int		j;
 	int		size;
 
-	size = ft_size(str) + 1;
+	size = new_size(str) + 1;
 	string = (char *)malloc(size + 1);
 	if (!string)
 		return (error_(-1, NULL, NULL), free(str), NULL);
@@ -173,7 +168,7 @@ char	*ft_add_spaces(char *str)
 	j = 0;
 	while (str[i])
 	{
-		meta = ft_is_metacharacter(str[i], str[i + 1]);
+		meta = metachar(str[i], str[i + 1]);
 		if (ft_isspace(str[i]) == 1)
 			string[j++] = ' ';
 		else if (meta)

@@ -82,6 +82,20 @@ void	ft_remove_quotes_string(char *str)
 		str[j++] = '\0';
 }
 
+void	ft_remove_quotes_list(t_list *head)
+{
+	t_list	*token;
+	char	*str;
+
+	token = head;
+	while (token)
+	{
+		str = (char *)token->content;
+		ft_remove_quotes_string(str);
+		token = token->next;
+	}
+}
+
 void	error_(int exit_code, char *str, char *param)
 {
 	if (str == NULL)

@@ -77,20 +77,6 @@ void	init(char **env, t_data *data)
 	data->exit_code = 0;
 }
 
-static void	ft_remove_quotes(t_list *head)
-{
-	t_list	*token;
-	char	*str;
-
-	token = head;
-	while (token)
-	{
-		str = (char *)token->content;
-		ft_remove_quotes_string(str);
-		token = token->next;
-	}
-}
-
 t_list	*ft_add_token(char *str, int i_beg, int i_end, t_data *data)
 {
 	char	*new_str;
@@ -118,7 +104,7 @@ t_list	*ft_add_token(char *str, int i_beg, int i_end, t_data *data)
 	return (node);
 }
 
-int	ft_is_token(char c, int checker)
+int	is_token(char c, int checker)
 {
 	static char	mode;
 
@@ -164,7 +150,7 @@ t_list	*ft_tokenization(char *str, t_list *env, t_data *data)
 	while (str[i_beg])
 	{
 		i_end = i_beg;
-		while (str[i_end] && ft_is_token(str[i_end], 0))
+		while (str[i_end] && is_token(str[i_end], 0))
 			i_end++;
 		token = ft_add_token(str, i_beg, i_end, data);
 		if (!token)
@@ -176,13 +162,13 @@ t_list	*ft_tokenization(char *str, t_list *env, t_data *data)
 		ft_lstadd_back(&head, token);
 		i_beg = i_end + 1;
 	}
-	if (ft_is_token(0, 1) == 0)
+	if (is_token(0, 1) == 0)
 	{
 		error_(-1, "BASH: unclosed quotes\n", NULL);
 		ft_lstclear(&head, &free); /// или head
 		return (NULL);
 	}
-	ft_remove_quotes(head);
+	ft_remove_quotes_list(head);
 	return (head);
 }
 
