@@ -54,3 +54,30 @@ void	memset_(void *s, size_t n)
 	while (i < n)
 		((unsigned char *)s)[i++] = '\0';
 }
+
+void	ft_remove_quotes_string(char *str)
+{
+	char	mode;
+	int		i;
+	int		j;
+
+	i = 0;
+	j = 0;
+	mode = '\0';
+	while (str[i])
+	{
+		if (mode == '\0' && str[i] == '\'')
+			mode = 's';
+		else if (mode == 's' && str[i] == '\'')
+			mode = '\0';
+		else if (mode == '\0' && str[i] == '\"')
+			mode = 'd';
+		else if (mode == 'd' && str[i] == '\"')
+			mode = '\0';
+		else
+			str[j++] = str[i];
+		i++;
+	}
+	while (j != i)
+		str[j++] = '\0';
+}

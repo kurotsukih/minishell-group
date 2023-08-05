@@ -10,7 +10,6 @@ SRCS = main.c \
 	   parsing/ft_assign_types.c \
 	   parsing/ft_open_heredocs.c \
 	   parsing/ft_make_tree.c \
-	   parsing/make_tree/ft_make_tree_utils.c \
 	   utils/ft_clean_1.c \
 	   utils/ft_clean_2.c \
 	   utils/ft_error_1.c \

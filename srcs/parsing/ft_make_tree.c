@@ -12,8 +12,54 @@
 
 #include "minishell.h"
 
-t_list	*ft_find_next_parenthesis(t_list *first);
-int		ft_clean_onion(t_list **token);
+t_list	*ft_find_next_parenthesis(t_list *first)
+{
+	t_list	*next_p;
+	int		count_p;
+
+	count_p = 1;
+	next_p = first->next;
+	while (next_p)
+	{
+		if (next_p->type == RIGHT_P && count_p == 1)
+			break ;
+		if (next_p->type == RIGHT_P)
+			count_p--;
+		if (next_p->type == LEFT_P)
+			count_p++;
+		next_p = next_p->next;
+	}
+	return (next_p);
+}
+
+//    ret: 1 means cleaned, 0 means no
+static int	ft_clean_onion(t_list **token)
+{
+	t_list	*first;
+	t_list	*i_token;
+	int		res;
+
+	first = *token;
+	res = 0;
+	while (first->type == LEFT_P)
+	{
+		i_token = ft_find_next_parenthesis(first);
+		if (!i_token->next)
+		{
+			res = 1;
+			i_token->prev->next = NULL;
+			free(i_token);
+			*token = (*token)->next;
+			free(first);
+			first = *token;
+			first->prev = NULL;
+		}
+		else
+			break ;
+	}
+	return (res);
+}
+
 
 /*
     Before adding the:

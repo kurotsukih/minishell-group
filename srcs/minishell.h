@@ -158,5 +158,6 @@ void	sig_handler_fork(int signal);
 void	sig_handler_heredoc(int signal);
 void	free_redirections(t_list *head);
 void	memset_(void *s, size_t n);
+void	ft_remove_quotes_string(char *str);
 
 #endif
