@@ -103,6 +103,62 @@ static void	ft_remove_quotes(t_list *head)
 	}
 }
 
+t_list	*ft_add_token(char *str, int i_beg, int i_end, t_data *data)
+{
+	char	*new_str;
+	t_list	*node;
+	int		i;
+
+	if (i_beg == i_end)
+		i_end++;
+	new_str = (char *)malloc(sizeof(char) * (i_end - i_beg + 1));
+	if (!new_str)
+		return (NULL);
+	i = 0;
+	while (i < i_end - i_beg)
+	{
+		new_str[i] = str[i + i_beg];
+		i++;
+	}
+	new_str[i] = '\0';
+	if (ft_strchr(new_str, '$'))
+		node = ft_expand_token(new_str, data->env, data);
+	else
+		node = ft_lstnew(new_str, 0);
+	if (!node)
+		return (NULL);
+	return (node);
+}
+
+int	ft_is_token(char c, int checker)
+{
+	static char	mode;
+
+	if (checker == 1)
+	{
+		if (mode == 0)
+			return (1);
+		return (mode = 0);
+	}
+	else if (mode == 'd' || (c == '\"' && mode == 0))
+	{
+		if (mode == 0)
+			mode = 'd';
+		else if (c == '\"')
+			mode = 0;
+	}
+	else if (mode == 's' || (c == '\'' && mode == 0))
+	{
+		if (mode == 0)
+			mode = 's';
+		else if (c == '\'')
+			mode = 0;
+	}
+	else if (ft_isspace(c) == 1)
+		return (0);
+	return (1);
+}
+
 // separate each key word into token
 // cat || ls  -> ['cat', '|', 'ls']
 t_list	*ft_tokenization(char *str, t_list *env, t_data *data)
