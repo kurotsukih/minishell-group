@@ -133,13 +133,11 @@ void	ft_clean_tree(t_node *node);
 void	ft_clean_darray(char **trash);
 void	ft_clean_tree(t_node *node);
 
-void	ft_error(void);
-void	ft_perror(char *str);
 void	ft_merror(char *str, char *param);
 void	ft_perror_clean_exit(t_data *my_data, char *str);
 void	ft_merror_clean_exit(t_data *my_data, char *str, char *param);
 void	ft_clean_exit(t_data *my_data);
-void	ft_error_exit(int exit_code);
+void	ft_error_exit(int exit_code, char *str);
 void	ft_perror_exit(char *str, int exit_code);
 void	ft_merror_exit(char *str, char *param, int exit_code);
 

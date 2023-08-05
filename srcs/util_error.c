@@ -12,29 +12,18 @@
 
 #include "minishell.h"
 
-void	ft_error(char *str)
+void	ft_error_exit(int exit_code, char *str)
 {
 	if (str == NULL)
 		printf("%s\n", strerror(errno)); /// проверить освобождается ли строка
-}
-
-void	ft_perror(char *str)
-{
-	char	*join;
-
-	join = ft_strjoin("bash: ", str);
-	perror(join);
-	free(join);
+	else
+		printf("bash: %s\n", str); /// проверить освобождается ли строка
+	if (exit_code != -1)
+		exit(exit_code);
 }
 
 void	ft_merror(char *str, char *param)
 {
 	ft_printf2(str, param);
-}
-
-void	ft_error_exit(int exit_code)
-{
-	ft_error(NULL);
-	exit(exit_code);
 }
 

@@ -25,7 +25,7 @@ int	ft_find_path2(char *cmd, char **place)
 {
 	if (access(cmd, X_OK) == 0)
 		return ((*place = cmd), 0);
-	ft_perror(cmd);
+	ft_error_exit(-1, cmd);
 	if (errno == 2)
 		return (127);
 	else
@@ -160,7 +160,7 @@ int	ft_find_path(char *cmd, t_list *env, char **place)
 			return (ft_clean_darray(paths), (*place = str), 0);
 		free(str);
 		if (errno != 2)
-			return (ft_perror(cmd), ft_clean_darray(paths), 126);
+			return (ft_error_exit(-1, cmd), ft_clean_darray(paths), 126);
 	}
 	return (ft_free_find_path(paths, cmd, 127));
 }
