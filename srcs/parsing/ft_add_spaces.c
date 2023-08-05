@@ -10,7 +10,16 @@
 /*                                                                            */
 /* ************************************************************************** */
 
+/** Add space between meta characters
+ *          Before:  (cat||ls)|pwd
+ *          After:   ( cat || ls ) | pwd
+ * ft_size() the overall size of the string with spaces
+ * ft_is_metacharacter()    - checks if the character is meta
+ * ft_put()                 - concantenates the meta characters with spaces
+ * ft_remove_extra...()     - removes preeceding, succeeding, and duplicating spaces  */
+
 #include "minishell.h"
+
 void	ft_put(char *string, int *j, int *i, char *meta)
 {
 	int	size;
@@ -93,53 +102,28 @@ void	ft_remove_extra_spaces(char *str, int size)
 	ft_memset2(str + j, '\0', size - j);
 }
 
-/**
- * @brief Add space between meta characters
- * 
- * @example:
- *          Before:  (cat||ls)|pwd
- *          After:   ( cat || ls ) | pwd
- * 
- * helper functions: ./utils/ft_add_spaces_utils.c
- *  - ft_size()					
-						- Calculates the overall size of the string with 
- * 									spaces
- *  - ft_is_metacharacter()    - checks if the character is meta
- *  - ft_put()                 - concantenates the meta characters with spaces
- *  - ft_remove_extra...()     - removes preeceding, succeeding, and duplicating
- *                       			spaces  
- * 
- * @param str   string to proceed
- * @return      string with spaces
- */
-
-void	ft_set_mode_add_space(char *mode, char c1, char c2)
-{
-	if (*mode == 0 && c1 == '\'')
-		*mode = '\'';
-	else if (*mode == '\'' && c1 == '\'')
-		*mode = '\0';
-	else if (*mode == 0 && c1 == '\"')
-		*mode = '\"';
-	else if (*mode == '\"' && c1 == '\"')
-		*mode = '\0';
-	else if (c2 == '\0')
-		*mode = '\0';
-}
-
 char	*ft_is_metacharacter(char c1, char c2)
 {
 	static char	mode;
 
-	ft_set_mode_add_space(&mode, c1, c2);
+	if (mode == 0 && c1 == '\'')
+		mode = '\'';
+	else if (mode == '\'' && c1 == '\'')
+		mode = '\0';
+	else if (mode == 0 && c1 == '\"')
+		mode = '\"';
+	else if (mode == '\"' && c1 == '\"')
+		mode = '\0';
+	else if (c2 == '\0')
+		mode = '\0';
 	if (mode != '\0')
 		return (NULL);
-	if (c1 == '|' && c2 == '|')
-		return ("||");
+	// if (c1 == '|' && c2 == '|')
+	// 	return ("||");
 	if (c1 == '|')
 		return ("|");
-	if (c1 == '&' && c2 == '&')
-		return ("&&");
+	// if (c1 == '&' && c2 == '&')
+	// 	return ("&&");
 	if (c1 == '(')
 		return ("(");
 	if (c1 == ')')

@@ -14,8 +14,39 @@
 
 char	*ft_find_all_paths(t_list *env);
 
-int	ft_find_path2(char *cmd, char **place);
-int	ft_free_find_path(char **paths, char *cmd, int exit_code);
+int	ft_free_find_path(char **paths, char *cmd, int exit_code)
+{
+	ft_clean_darray(paths);
+	ft_merror("bash: %s: command not found\n", cmd);
+	return (exit_code);
+}
+
+int	ft_find_path2(char *cmd, char **place)
+{
+	if (access(cmd, X_OK) == 0)
+		return ((*place = cmd), 0);
+	ft_perror(cmd);
+	if (errno == 2)
+		return (127);
+	else
+		return (126);
+}
+
+char	*ft_find_all_paths(t_list *env)
+{
+	char	*str;
+
+	while (env)
+	{
+		str = (char *)env->content;
+		if (ft_strncmp("PATH", str, 4) == 0 && str[4] == '=')
+			break ;
+		env = env->next;
+	}
+	if (!env)
+		return (NULL);
+	return (str + 5);
+}
 
 static int	ft_find_n_word2(char const *s, char c)
 {
@@ -105,22 +136,6 @@ char	**ft_split_alt2(char const *s, char c)
 	return (returner);
 }
 
-char	*ft_find_all_paths(t_list *env)
-{
-	char	*str;
-
-	while (env)
-	{
-		str = (char *)env->content;
-		if (ft_strncmp("PATH", str, 4) == 0 && str[4] == '=')
-			break ;
-		env = env->next;
-	}
-	if (!env)
-		return (NULL);
-	return (str + 5);
-}
-
 int	ft_find_path(char *cmd, t_list *env, char **place)
 {
 	char	*str;
@@ -148,22 +163,4 @@ int	ft_find_path(char *cmd, t_list *env, char **place)
 			return (ft_perror(cmd), ft_clean_darray(paths), 126);
 	}
 	return (ft_free_find_path(paths, cmd, 127));
-}
-
-int	ft_free_find_path(char **paths, char *cmd, int exit_code)
-{
-	ft_clean_darray(paths);
-	ft_merror("bash: %s: command not found\n", cmd);
-	return (exit_code);
-}
-
-int	ft_find_path2(char *cmd, char **place)
-{
-	if (access(cmd, X_OK) == 0)
-		return ((*place = cmd), 0);
-	ft_perror(cmd);
-	if (errno == 2)
-		return (127);
-	else
-		return (126);
 }

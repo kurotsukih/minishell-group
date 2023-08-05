@@ -32,4 +32,17 @@ void	sig_handler_fork(int signal)
 		exit(131);
 }
 
+void	free_redirections(t_list *head)
+{
+	t_list	*token;
+
+	token = head;
+	while (token)
+	{
+		if (token->type == HEREDOC && token->next && token->next->next)
+			close(*((int *)token->content));
+		token = token->next;
+	}
+	ft_lstclear(&head, &free);
+}
 

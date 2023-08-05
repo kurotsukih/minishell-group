@@ -12,20 +12,6 @@
 
 #include "minishell.h"
 
-void	free_redirections(t_list *head)
-{
-	t_list	*token;
-
-	token = head;
-	while (token)
-	{
-		if (token->type == HEREDOC && token->next && token->next->next)
-			close(*((int *)token->content));
-		token = token->next;
-	}
-	ft_lstclear(&head, &free);
-}
-
 void	ft_clean_cmds(t_cmd *cmds_p, int size)
 {
 	t_cmd	*cmds;

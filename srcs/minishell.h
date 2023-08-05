@@ -47,14 +47,6 @@ extern int g_signal;
 # define FILENAME 10
 # define PARAMETER 11
 
-// typedef struct s_list //// it is in libft
-// {
-// 	void			*content;
-// 	int				type;
-// 	struct s_list	*next;
-// 	struct s_list	*prev;
-// } t_list;
-
 typedef struct s_cmd
 {
 	t_list			*params;
@@ -93,10 +85,10 @@ int		ft_check_tokens(t_list *node);
 int		ft_open_heredocs(t_list *head, t_list *env);
 t_node	*ft_make_tree(t_list *token, t_node *parent);
 
-int	ft_exec_recursion(t_node *node, t_data *data, t_node *parent);
-int	ft_check_operator(int exit_code, char *str);
-int	ft_preprocess(t_node *node);
-int	ft_exec_command(t_node *node, t_data *data);
+int		ft_exec_recursion(t_node *node, t_data *data, t_node *parent);
+int		ft_check_operator(int exit_code, char *str);
+int		ft_preprocess(t_node *node);
+int		ft_exec_command(t_node *node, t_data *data);
 
 int		ft_prepare_pipe(t_node *node, int i_cmd);
 int		ft_execute(t_cmd *cmd, t_data *data, t_node *node);
@@ -141,7 +133,6 @@ void	ft_clean_fds(t_cmd *cmd);
 void	ft_clean_tree(t_node *node);
 void	ft_clean_cmds(t_cmd *cmds_p, int size);
 void	ft_clean_darray(char **trash);
-void	ft_clean_redirections(t_list *head);
 
 void	ft_error(void);
 void	ft_perror(char *str);
@@ -166,5 +157,6 @@ void	ft_preprocess_cmd(t_cmd *cmds, t_list *token);
 void	sig_handler_main(int signal);
 void	sig_handler_fork(int signal);
 void	sig_handler_heredoc(int signal);
+void	free_redirections(t_list *head);
 
 #endif
