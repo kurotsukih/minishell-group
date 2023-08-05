@@ -28,7 +28,7 @@ int	ft_execute_program(t_cmd *cmd, t_list *env, t_node *node)
 	(void)node;
 	path = NULL;
 	if (!ft_strcmp((char *)cmd->params->content, "."))
-		return (ft_merror("bash: .: filename argument required\n", NULL), -1);
+		return (ft_error_exit(-1, "bash: .: filename argument required\n", NULL), -1);
 	code = ft_find_path(cmd->params->content, env, &path);
 	if (!path)
 		return (code);
@@ -40,8 +40,8 @@ int	ft_execute_program(t_cmd *cmd, t_list *env, t_node *node)
 	free(path);
 	path = (char *)cmd->params->content;
 	if (ft_strchr(path, '/'))
-		ft_merror("bash: %s: no such file or directory\n", path);
+		ft_error_exit(-1, "bash: %s: no such file or directory\n", path);
 	else
-		ft_merror("bash: %s: command not found\n", path);
+		ft_error_exit(-1, "bash: %s: command not found\n", path);
 	return (code);
 }

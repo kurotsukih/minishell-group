@@ -84,7 +84,7 @@ t_list	*ft_token_error(t_list *token)
 
 t_list	*ft_token_merror(char *str, t_list *token)
 {
-	ft_merror(str, NULL);
+	ft_error_exit(-1, str, NULL);
 	ft_lstclear(&token, &free);
 	return (NULL);
 }

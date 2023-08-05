@@ -17,7 +17,7 @@ char	*ft_find_all_paths(t_list *env);
 int	ft_free_find_path(char **paths, char *cmd, int exit_code)
 {
 	ft_clean_darray(paths);
-	ft_merror("bash: %s: command not found\n", cmd);
+	ft_error_exit(-1, "bash: %s: command not found\n", cmd);
 	return (exit_code);
 }
 
@@ -146,10 +146,10 @@ int	ft_find_path(char *cmd, t_list *env, char **place)
 		return (ft_find_path2(cmd, place));
 	str = ft_find_all_paths(env);
 	if (!str)
-		return (ft_merror("bash: %s: command not found\n", cmd), 127);
+		return (ft_error_exit(-1, "bash: %s: command not found\n", cmd), 127);
 	paths = ft_split_alt2(str, ':');
 	if (!paths)
-		return (ft_merror("bash: %s: command not found\n", cmd), 255);
+		return (ft_error_exit(-1, "bash: %s: command not found\n", cmd), 255);
 	i = -1;
 	while (paths[++i])
 	{

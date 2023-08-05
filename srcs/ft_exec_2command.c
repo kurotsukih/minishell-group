@@ -130,9 +130,9 @@ void	ft_wait_child_processes(int *is_success, int size, int pid)
 			{
 				*is_success = WTERMSIG(status) + 128;
 				if (*is_success == 130)
-					ft_merror("\n", NULL);
+					ft_error_exit(-1, "\n", NULL);
 				if (*is_success == 131)
-					ft_merror("Quit (core dumped)\n", NULL);
+					ft_error_exit(-1, "Quit (core dumped)\n", NULL);
 			}
 		}
 		i++;

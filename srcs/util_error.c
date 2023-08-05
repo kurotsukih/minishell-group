@@ -15,16 +15,13 @@
 void	ft_error_exit(int exit_code, char *str, char *param)
 {
 	if (str == NULL)
-		printf("%s\n", strerror(errno)); /// проверить освобождается ли строка
-	else
-		printf("bash: %s\n", str); /// проверить освобождается ли строка
+		printf("%s\n", strerror(errno));
+	else if (str != NULL && param == NULL)
+		printf("bash: %s\n", str);
+	else if (str != NULL && param != NULL)
+		printf(str, param);
 	if (exit_code != -1)
 		exit(exit_code);
 	(void)param;
-}
-
-void	ft_merror(char *str, char *param)
-{
-	ft_printf2(str, param);
 }
 
