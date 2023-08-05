@@ -85,7 +85,7 @@ t_list	*ft_add_token(char *str, int i_beg, int i_end, t_data *data)
 
 	if (i_beg == i_end)
 		i_end++;
-	new_str = (char *)malloc(sizeof(char) * (i_end - i_beg + 1));
+	new_str = (char *)malloc((i_end - i_beg + 1));
 	if (!new_str)
 		return (NULL);
 	i = 0;

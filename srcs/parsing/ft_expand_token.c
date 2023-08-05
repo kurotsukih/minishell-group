@@ -105,7 +105,7 @@ static char	*ft_add_word(char const *s, char c, int *pos)
 	while (s[*pos] == c)
 		*pos = *pos + 1;
 	word_len = ft_strlen_alt(s, *pos);
-	word = (char *)malloc(sizeof(char) * (word_len + 1));
+	word = (char *)malloc(word_len + 1);
 	if (!word)
 		return (NULL);
 	i = 0;

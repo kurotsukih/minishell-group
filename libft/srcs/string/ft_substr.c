@@ -22,11 +22,11 @@ char	*ft_substr(char const *s, unsigned int start, size_t len)
 		return (NULL);
 	s_len = ft_strlen(s);
 	if (start > s_len)
-		returner = (char *) malloc(sizeof(char) * (1));
+		returner = (char *) malloc(1);
 	else if (s_len - start > len)
-		returner = (char *) malloc(sizeof(char) * (len + 1));
+		returner = (char *) malloc(len + 1);
 	else
-		returner = (char *) malloc(sizeof(char) * (s_len - start + 1));
+		returner = (char *) malloc(s_len - start + 1);
 	if (!returner)
 		return (NULL);
 	i = 0;
