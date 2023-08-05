@@ -10,6 +10,11 @@
 /*                                                                            */
 /* ************************************************************************** */
 
+/* extern следующие за ним типы и имена переменных объявляются где-то в другом месте. 
+Позволяет компилятору знать о типах ипеременных без действительного создания их. 
+Когда два модуля объединяются, все ссылки на внешние переменные пересматриваются.
+*/
+
 #ifndef MAIN_H
 # define MAIN_H
 
@@ -28,7 +33,7 @@
 # include <dirent.h>
 # include "libft.h"
 
-extern int			g_signal;
+extern int g_signal;
 
 # define PIPE 1
 # define OR 2
@@ -164,7 +169,7 @@ void	ft_preprocess_cmd(t_cmd *cmds, t_list *token);
 
 //// utils
 void	sig_handler_main(int signal);
+void	sig_handler_fork(int signal);
 void	sig_handler_heredoc(int signal);
-void	sig_handler_fork(int num);
 
 #endif

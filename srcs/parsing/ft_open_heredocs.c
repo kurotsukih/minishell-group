@@ -20,35 +20,7 @@ typedef struct s_heredoc
 	int		status;	
 }	t_heredoc;
 
-int		ft_get_heredoc(char *delimiter, t_list *env, int *fd);
 void	ft_remove_quotes_string(char *str);
-
-int	ft_open_heredocs(t_list *head, t_list *env)
-{
-	t_list	*token;
-	void	*temp;
-	int		*fd;
-	int		status;
-
-	token = head;
-	while (token)
-	{
-		if (token->type == 8)
-		{
-			temp = token->next->content;
-			fd = (int *)malloc(sizeof(int));
-			if (!fd)
-				return (-1);
-			status = ft_get_heredoc((char *)temp, env, fd);
-			if (status != 0)
-				return (free(fd), status);
-			token->next->content = fd;
-			free(temp);
-		}
-		token = token->next;
-	}
-	return (0);
-}
 
 void	ft_close_heredoc(int fd, int fd_cpy)
 {
@@ -85,3 +57,31 @@ int	ft_get_heredoc(char *delimiter, t_list *env, int *my_fd)
 		return (signal(SIGINT, &sig_handler_main), close(a.fd[0]), 255);
 	return (signal(SIGINT, &sig_handler_main), *my_fd = a.fd[0], 0);
 }
+
+int	ft_open_heredocs(t_list *head, t_list *env)
+{
+	t_list	*token;
+	void	*temp;
+	int		*fd;
+	int		status;
+
+	token = head;
+	while (token)
+	{
+		if (token->type == 8)
+		{
+			temp = token->next->content;
+			fd = (int *)malloc(sizeof(int));
+			if (!fd)
+				return (-1);
+			status = ft_get_heredoc((char *)temp, env, fd);
+			if (status != 0)
+				return (free(fd), status);
+			token->next->content = fd;
+			free(temp);
+		}
+		token = token->next;
+	}
+	return (0);
+}
+

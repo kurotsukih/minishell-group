@@ -24,11 +24,11 @@ void	sig_handler_heredoc(int signal)
 	}
 }
 
-void	sig_handler_fork(int num)
+void	sig_handler_fork(int signal)
 {
-	if (num == SIGINT)
+	if (signal == SIGINT)
 		exit(130);
-	if (num == SIGQUIT)
+	if (signal == SIGQUIT)
 		exit(131);
 }
 
