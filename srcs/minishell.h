@@ -121,6 +121,7 @@ char	*ft_find_value(char *key, int i_pos, t_list *env, t_data *data);
 char	*ft_expand_string(char *str, t_list *env, t_data *data);
 t_list	*ft_free_expand_token(char **words, t_list **head);
 char	**ft_split_alt(char const *s, char c);
+t_list	*ft_expand_token(char *str, t_list *env, t_data *data);
 
 t_list	*ft_add_token(char *str, int i_beg, int i_end, t_data *data);
 int		ft_is_token(char c, int checker);
@@ -130,13 +131,12 @@ void	ft_remove_quotes(t_list *head);
 
 void	ft_clean_fds(t_cmd *cmd);
 void	ft_clean_tree(t_node *node);
-void	ft_clean_cmds(t_cmd *cmds_p, int size);
 void	ft_clean_darray(char **trash);
+void	ft_clean_tree(t_node *node);
 
 void	ft_error(void);
 void	ft_perror(char *str);
 void	ft_merror(char *str, char *param);
-void	ft_error_clean_exit(t_node *node, t_list *env, int exit_code);
 void	ft_perror_clean_exit(t_data *my_data, char *str);
 void	ft_merror_clean_exit(t_data *my_data, char *str, char *param);
 void	ft_clean_exit(t_data *my_data);

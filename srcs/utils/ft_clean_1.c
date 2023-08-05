@@ -12,7 +12,7 @@
 
 #include "minishell.h"
 
-void	ft_clean_cmds(t_cmd *cmds_p, int size)
+static void	ft_clean_cmds(t_cmd *cmds_p, int size)
 {
 	t_cmd	*cmds;
 	int		i;

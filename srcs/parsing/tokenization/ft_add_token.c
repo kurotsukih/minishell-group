@@ -12,7 +12,6 @@
 
 #include "minishell.h"
 
-t_list	*ft_expand_token(char *str, t_list *env, t_data *data);
 
 t_list	*ft_add_token(char *str, int i_beg, int i_end, t_data *data)
 {

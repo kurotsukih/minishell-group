@@ -20,8 +20,6 @@ typedef struct s_heredoc
 	int		status;	
 }	t_heredoc;
 
-void	ft_remove_quotes_string(char *str);
-
 void	ft_close_heredoc(int fd, int fd_cpy)
 {
 	close(fd);

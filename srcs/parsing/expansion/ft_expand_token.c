@@ -13,20 +13,16 @@
 #include "minishell.h"
 
 /**
- * @brief 			Expands (env var expansion) the string and create tokens. 
+Expands (env var expansion) the string and create tokens. 
+All key words were already tokenized, but if token contain 
+env var and env var contains a space, then our token have 
+to be divided
  * 					
- * 					All key words were already tokenized, but if token contain 
- * 					env var and env var contains a space, then our token have 
- * 					to be divided
- * 					
- * @example			Suppose $a="s -la". Then l$a -> ls -la with ls is a command
- * @example			Suppose $a=" ". Then ls$a-la$a"Makefile" -> ls -la Makefile 
- * 
- * @param str		-	string to expand 
- * @param env		-	env variables
- * 
- * @return t_list*	=	NULL - some malloc problems
- * 					=	list - with all variables
+Suppose $a="s -la". Then l$a -> ls -la with ls is a command
+Suppose $a=" ". Then ls$a-la$a"Makefile" -> ls -la Makefile 
+
+@return t_list*	=	NULL - some malloc problems
+list - with all variables
  */
 
 t_list	*ft_free_expand_token(char **words, t_list **head)
