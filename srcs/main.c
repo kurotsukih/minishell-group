@@ -80,13 +80,13 @@ int	ft_parsing(char *command, t_list *env, t_data *data)
 		return (data->exit_code = 255, 255);
 	ft_assign_types(head);
 	if (ft_check_tokens(head) == 0)
-		return (data->exit_code = 2, ft_clean_redirections(*(&head)), 2);
+		return (data->exit_code = 2, free_redirections(*(&head)), 2);
 	code = ft_open_heredocs(head, env);
 	if (code != 0)
-		return (data->exit_code = code, ft_clean_redirections(*(&head)), code);
+		return (data->exit_code = code, free_redirections(*(&head)), code);
 	data->node = ft_make_tree(head, NULL);
 	if (!data->node)
-		return (data->exit_code = 255, ft_clean_redirections(*(&head)), 255);
+		return (data->exit_code = 255, free_redirections(*(&head)), 255);
 	return (0);
 }
 
@@ -116,6 +116,6 @@ int	main(int argc, char **argv, char **env)
 			ft_execution(&data);
 		ft_clean_tree(data.node);
 	}
-	ft_clean_redirections(*(&(data.env)));
+	free_redirections(*(&(data.env)));
 	return (data.exit_code);
 }

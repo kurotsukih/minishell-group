@@ -41,16 +41,16 @@ int	ft_execute_exit(t_data *data, t_node *node, t_list *token)
 	if (!token)
 	{
 		code = data->exit_code;
-		return (ft_clean_tree(node), ft_clean_redirections(*(&(data->env))), exit(code), 0);
+		return (ft_clean_tree(node), free_redirections(*(&(data->env))), exit(code), 0);
 	}
 	str = (char *)token->content;
 	if (ft_isnum(str) != 1)
 	{
 		ft_merror("bash: exit: %s: numeric argument required", str);
-		return (ft_clean_tree(node), ft_clean_redirections(*(&(data->env))), exit(2), 0);
+		return (ft_clean_tree(node), free_redirections(*(&(data->env))), exit(2), 0);
 	}
 	if (ft_lstsize(token) > 1)
 		return (ft_merror("bash: exit: too many arguments\n", NULL), 1);
 	code = ft_abs(ft_atoi(str) % 256);
-	return (ft_clean_tree(node), ft_clean_redirections(*(&(data->env))), exit(code), 0);
+	return (ft_clean_tree(node), free_redirections(*(&(data->env))), exit(code), 0);
 }

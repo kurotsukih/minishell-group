@@ -12,7 +12,7 @@
 
 #include "minishell.h"
 
-void	ft_clean_redirections(t_list *head)
+void	free_redirections(t_list *head)
 {
 	t_list	*token;
 
@@ -25,11 +25,6 @@ void	ft_clean_redirections(t_list *head)
 	}
 	ft_lstclear(&head, &free);
 }
-
-// void	ft_clean_tokens(t_list **token) // убрала аргумент void (*del)(void *)
-// {
-// 	ft_clean_redirections(*token);
-// }
 
 void	ft_clean_cmds(t_cmd *cmds_p, int size)
 {
@@ -44,7 +39,7 @@ void	ft_clean_cmds(t_cmd *cmds_p, int size)
 			ft_lstclear(&cmds[i].params, &free);
 		cmds[i].params = NULL;
 		if (cmds[i].redir)
-			ft_clean_redirections(cmds[i].redir);
+			free_redirections(cmds[i].redir);
 		cmds[i].redir = NULL;
 		ft_clean_fds(&cmds[i]);
 		i++;
