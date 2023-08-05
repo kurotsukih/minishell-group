@@ -140,8 +140,8 @@ void	ft_remove_quotes(t_list *head);
 void	ft_clean_fds(t_cmd *cmd);
 void	ft_clean_tree(t_node *node);
 void	ft_clean_cmds(t_cmd *cmds_p, int size);
-void	ft_clean_tokens(t_list **token);
 void	ft_clean_darray(char **trash);
+void	ft_clean_redirections(t_list *head);
 
 void	ft_error(void);
 void	ft_perror(char *str);

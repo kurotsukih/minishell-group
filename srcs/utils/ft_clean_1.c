@@ -26,14 +26,9 @@ void	ft_clean_redirections(t_list *head)
 	ft_lstclear(&head, &free);
 }
 
-void	ft_clean_tokens(t_list **token) // убрала аргумент void (*del)(void *)
-{
-	ft_clean_redirections(*token);
-}
-
-// void	free_(t_list *env)
+// void	ft_clean_tokens(t_list **token) // убрала аргумент void (*del)(void *)
 // {
-// 	ft_clean_tokens(&env);
+// 	ft_clean_redirections(*token);
 // }
 
 void	ft_clean_cmds(t_cmd *cmds_p, int size)
