@@ -23,18 +23,6 @@ typedef struct s_heredoc
 int		ft_get_heredoc(char *delimiter, t_list *env, int *fd);
 void	ft_remove_quotes_string(char *str);
 
-void	ft_signal_heredoc(int signal)
-{
-	if (signal == SIGINT)
-	{
-		write(1, "\n", 1);
-		rl_replace_line("", 0);
-		rl_redisplay();
-		close(STDIN_FILENO);
-		g_signal = 1;
-	}
-}
-
 int	ft_open_heredocs(t_list *head, t_list *env)
 {
 	t_list	*token;
@@ -76,7 +64,7 @@ int	ft_get_heredoc(char *delimiter, t_list *env, int *my_fd)
 	a = (t_heredoc){NULL, {0, 0}, dup(STDIN_FILENO), 0};
 	if (pipe(a.fd) == -1)
 		return (ft_error(), errno);
-	signal(SIGINT, &ft_signal_heredoc);
+	signal(SIGINT, &sig_handler_heredoc);
 	a.line = readline(">");
 	while (a.line && ft_strcmp(a.line, delimiter) != 0)
 	{
@@ -92,8 +80,8 @@ int	ft_get_heredoc(char *delimiter, t_list *env, int *my_fd)
 		free(a.line);
 	ft_close_heredoc(a.fd[1], a.fd_cpy);
 	if (g_signal == 1)
-		return (g_signal--, close(a.fd[0]), signal(SIGINT, &ft_signal), 130);
+		return (g_signal--, close(a.fd[0]), signal(SIGINT, &sig_handler_main), 130);
 	if (a.status != 0)
-		return (signal(SIGINT, &ft_signal), close(a.fd[0]), 255);
-	return (signal(SIGINT, &ft_signal), *my_fd = a.fd[0], 0);
+		return (signal(SIGINT, &sig_handler_main), close(a.fd[0]), 255);
+	return (signal(SIGINT, &sig_handler_main), *my_fd = a.fd[0], 0);
 }

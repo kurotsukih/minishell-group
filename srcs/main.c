@@ -10,6 +10,11 @@
 /*                                                                            */
 /* ************************************************************************** */
 
+/* SIGQUIT = SIGINT, except that it’s controlled by C-\ 
+// and produces a core dump when it terminates the process, 
+// just like a program error signal. You can think of 
+// this as a program error condition “detected” by the user. */
+
 #include "minishell.h"
 
 int	g_signal = 0;
@@ -48,22 +53,10 @@ int	ft_init_env(t_list **data_env, char **env)
 	return (0);
 }
 
-void	ft_signal(int signal)
-{
-	if (signal == SIGINT)
-	{
-		write(1, "\n", 1);
-		rl_on_new_line();
-		rl_replace_line("", 0);
-		rl_redisplay();
-		g_signal = 1;
-	}
-}
-
 void	ft_init_data(char **env, t_data *data)
 {
 	signal(SIGQUIT, SIG_IGN);
-	signal(SIGINT, &ft_signal);
+	signal(SIGINT, &sig_handler_main);
 	data->env = NULL;
 	ft_init_env(&data->env, env);
 	data->node = NULL;

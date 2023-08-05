@@ -31,14 +31,6 @@ int	ft_is_builtin(t_list *token)
 	return (0);
 }
 
-void	ft_signal_fork(int num)
-{
-	if (num == SIGINT)
-		exit(130);
-	if (num == SIGQUIT)
-		exit(131);
-}
-
 int	ft_exec_command(t_node *node, t_data *data)
 {
 	int	i_cmd;
@@ -60,7 +52,7 @@ int	ft_exec_command(t_node *node, t_data *data)
 		i_cmd++;
 	}
 	ft_wait_child_processes(&result, num, pid);
-	signal(SIGINT, &ft_signal);
+	signal(SIGINT, &sig_handler_fork); // mb sig_handler_main
 	return (result);
 }
 
@@ -104,8 +96,8 @@ int	ft_execute(t_cmd *cmd, t_data *data, t_node *node)
 		ft_error_exit(-1);
 	if (pid == 0)
 	{
-		signal(SIGINT, &ft_signal_fork);
-		signal(SIGQUIT, &ft_signal_fork);
+		signal(SIGINT, &sig_handler_fork);
+		signal(SIGQUIT, &sig_handler_fork);
 		if (dup2(cmd->in_fd, STDIN_FILENO) == -1)
 			ft_error_exit(-1);
 		if (dup2(cmd->out_fd, STDOUT_FILENO) == -1)

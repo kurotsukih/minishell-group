@@ -162,4 +162,9 @@ int		ft_count_cmds(t_list *token);
 void	ft_init_cmds(t_cmd *cmds, int num_cmds);
 void	ft_preprocess_cmd(t_cmd *cmds, t_list *token);
 
+//// utils
+void	sig_handler_main(int signal);
+void	sig_handler_heredoc(int signal);
+void	sig_handler_fork(int num);
+
 #endif
