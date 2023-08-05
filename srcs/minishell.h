@@ -121,12 +121,6 @@ t_list	*ft_expand_token(char *str, t_list *env, t_data *data);
 
 t_list	*ft_add_token(char *str, int i_beg, int i_end, t_data *data);
 int		ft_is_token(char c, int checker);
-t_list	*ft_token_merror(char *str, t_list *token);
-t_list	*ft_token_error(t_list *token);
-
-void	ft_clean_fds(t_cmd *cmd);
-void	ft_clean_tree(t_node *node);
-void	error_(int exit_code, char *str, char * param);
 
 t_list	*ft_preprocess_parameter(t_list *token, t_cmd *cmd, int i_cmd);
 t_list	*ft_preprocess_redirection(t_list *token, t_cmd *cmd, int i_cmd);
@@ -143,5 +137,8 @@ void	sig_handler_heredoc(int signal);
 void	free_redirections(t_list *head);
 void	memset_(void *s, size_t n);
 void	ft_remove_quotes_string(char *str);
+void	error_(int exit_code, char *str, char * param);
+void	ft_clean_fds(t_cmd *cmd);
+void	ft_clean_tree(t_node *node);
 
 #endif

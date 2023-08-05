@@ -36,7 +36,9 @@ If an EOF is read with a non-empty line, it is treated as a newline.
 
 linked list, where:
 list->content	- full string (ex. "USER=akostrik")
-list->type      - default or not */
+list->type      - default or not 
+
+CTRL-\ QUIT signal, causes a program to terminate and dump core */
 
 #include "minishell.h"
 
@@ -73,20 +75,6 @@ void	init(char **env, t_data *data)
 		i++;
 	}
 	data->exit_code = 0;
-}
-
-t_list	*ft_token_error(t_list *token)
-{
-	error_(-1, NULL, NULL);
-	ft_lstclear(&token, &free);
-	return (NULL);
-}
-
-t_list	*ft_token_merror(char *str, t_list *token)
-{
-	error_(-1, str, NULL);
-	ft_lstclear(&token, &free);
-	return (NULL);
 }
 
 static void	ft_remove_quotes(t_list *head)
@@ -161,6 +149,7 @@ int	ft_is_token(char c, int checker)
 
 // separate each key word into token
 // cat || ls  -> ['cat', '|', 'ls']
+
 t_list	*ft_tokenization(char *str, t_list *env, t_data *data)
 {
 	t_list	*head;
@@ -179,12 +168,20 @@ t_list	*ft_tokenization(char *str, t_list *env, t_data *data)
 			i_end++;
 		token = ft_add_token(str, i_beg, i_end, data);
 		if (!token)
-			return (ft_token_error(head));
+		{
+			error_(-1, NULL, NULL);
+			ft_lstclear(&head, &free); /// или head
+			return (NULL);
+		}
 		ft_lstadd_back(&head, token);
 		i_beg = i_end + 1;
 	}
 	if (ft_is_token(0, 1) == 0)
-		return (ft_token_merror("BASH: unclosed quotes\n", head));
+	{
+		error_(-1, "BASH: unclosed quotes\n", NULL);
+		ft_lstclear(&head, &free); /// или head
+		return (NULL);
+	}
 	ft_remove_quotes(head);
 	return (head);
 }
@@ -204,14 +201,14 @@ int	parse(char *command, t_list *env, t_data *data)
 		return (data->exit_code = 255, 255);
 	ft_assign_types(head);
 	if (ft_check_tokens(head) == 0)
-		return (data->exit_code = 2, free_redirections(*(&head)), 2);
+		return (data->exit_code = 2, free_redirections(head), 2);
 	code = ft_open_heredocs(head, env);
 	if (code != 0)
-		return (data->exit_code = code, free_redirections(*(&head)), code);
+		return (data->exit_code = code, free_redirections(head), code);
 	data->node = NULL;
 	data->node = ft_make_tree(head, NULL);
 	if (data->node == NULL)
-		return (data->exit_code = 255, free_redirections(*(&head)), 255);
+		return (data->exit_code = 255, free_redirections(head), 255);
 	return (0);
 }
 
@@ -241,6 +238,6 @@ int	main(int argc, char **argv, char **env)
 			ft_execution(&data);
 		ft_clean_tree(data.node);
 	}
-	free_redirections(*(&(data.env)));
+	free_redirections(data.env);
 	return (data.exit_code);
 }
