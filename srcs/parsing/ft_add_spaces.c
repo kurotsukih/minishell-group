@@ -165,7 +165,8 @@ char	*ft_add_spaces(char *str)
 	int		size;
 
 	size = ft_size(str) + 1;
-	string = (char *)ft_calloc(sizeof(char), size + 1);
+	string = (char *)malloc(size + 1);
+	memset_(string, size + 1);
 	if (!string)
 		return (ft_error(), free(str), NULL);
 	i = 0;

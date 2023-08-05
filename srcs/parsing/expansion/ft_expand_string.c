@@ -129,7 +129,8 @@ char	*ft_strjoin_big(char *str, char *value, char *end)
 	int		size;
 
 	size = ft_size_expanded(str, value, end);
-	returner = (char *)ft_calloc(sizeof(char), size + 1);
+	returner = (char *)malloc(size + 1);
+	memset_(returner, size + 1);
 	if (!returner)
 		return (NULL);
 	if (str)
