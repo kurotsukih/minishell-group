@@ -107,7 +107,7 @@ int	ft_execute(t_cmd *cmd, t_data *data, t_node *node)
 			exit_c = ft_execute_builtin(cmd, data, node);
 		else if (cmd->params)
 			exit_c = ft_execute_program(cmd, data->env, node);
-		return (ft_clean_tree(node), ft_clean_env(data->env), exit(exit_c), 0);
+		return (ft_clean_tree(node), free_(data->env), exit(exit_c), 0);
 	}
 	else if (cmd->in_fd != 0)
 		close(cmd->in_fd);

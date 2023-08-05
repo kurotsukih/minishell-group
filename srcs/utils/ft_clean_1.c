@@ -26,10 +26,14 @@ void	ft_clean_redirections(t_list *head)
 	ft_lstclear(&head, &free);
 }
 
-void	ft_clean_tokens(t_list **token, void (*del)(void *))
+void	ft_clean_tokens(t_list **token) // убрала аргумент void (*del)(void *)
 {
-	(void)del;
 	ft_clean_redirections(*token);
+}
+
+void	free_(t_list *env)
+{
+	ft_clean_tokens(&env);
 }
 
 void	ft_clean_cmds(t_cmd *cmds_p, int size)
@@ -73,7 +77,3 @@ void	ft_clean_tree(t_node *node)
 	free(node);
 }
 
-void	ft_clean_env(t_list *env)
-{
-	ft_clean_tokens(&env, *free);
-}

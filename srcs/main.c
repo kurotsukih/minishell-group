@@ -30,7 +30,7 @@ If an EOF is read with a non-empty line, it is treated as a newline. */
 
 int g_signal = 0;
 
-void	ft_init_data(char **env, t_data *data)
+void	init(char **env, t_data *data)
 {
 	t_list	*token;
 	char	*str;
@@ -80,16 +80,13 @@ int	ft_parsing(char *command, t_list *env, t_data *data)
 		return (data->exit_code = 255, 255);
 	ft_assign_types(head);
 	if (ft_check_tokens(head) == 0)
-		return (data->exit_code = 2, ft_clean_tokens(&head, &free), 2);
-	// code = ft_extend_wildcard(&head);
-	// if (code == 0)
-		// return (data->exit_code = code, ft_clean_tokens(&head, &free), code);
+		return (data->exit_code = 2, ft_clean_tokens(&head), 2);
 	code = ft_open_heredocs(head, env);
 	if (code != 0)
-		return (data->exit_code = code, ft_clean_tokens(&head, &free), code);
+		return (data->exit_code = code, ft_clean_tokens(&head), code);
 	data->node = ft_make_tree(head, NULL);
 	if (!data->node)
-		return (data->exit_code = 255, ft_clean_tokens(&head, &free), 255);
+		return (data->exit_code = 255, ft_clean_tokens(&head), 255);
 	return (0);
 }
 
@@ -101,7 +98,7 @@ int	main(int argc, char **argv, char **env)
 	(void)argc;
 	(void)argv;
 	command = NULL;
-	ft_init_data(env, &data);
+	init(env, &data);
 	while (1)
 	{
 		command = readline("$");
@@ -119,6 +116,6 @@ int	main(int argc, char **argv, char **env)
 			ft_execution(&data);
 		ft_clean_tree(data.node);
 	}
-	ft_clean_env(data.env);
+	free_(data.env);
 	return (data.exit_code);
 }

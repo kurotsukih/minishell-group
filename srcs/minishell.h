@@ -86,14 +86,10 @@ typedef struct s_data
 	int				exit_code;
 }					t_data;
 
-void				ft_signal(int signal);
-
-
 char	*ft_add_spaces(char *str);
 t_list	*ft_tokenization(char *str, t_list *env, t_data *data);
 void	ft_assign_types(t_list *node);
 int		ft_check_tokens(t_list *node);
-// int		ft_extend_wildcard(t_list **head);
 int		ft_open_heredocs(t_list *head, t_list *env);
 t_node	*ft_make_tree(t_list *token, t_node *parent);
 
@@ -112,7 +108,7 @@ int		check(t_cmd *cmd, int count, int result);
 
 void	ft_execution(t_data *data);
 
-void	ft_clean_env(t_list *env);
+void	free_(t_list *env);
 int		ft_find_path(char *cmd, t_list *env, char **place);
 char	**ft_construct_command(t_list *params);
 int		ft_open_in(t_list *token, int fd);
@@ -145,7 +141,7 @@ void	ft_remove_quotes(t_list *head);
 void	ft_clean_fds(t_cmd *cmd);
 void	ft_clean_tree(t_node *node);
 void	ft_clean_cmds(t_cmd *cmds_p, int size);
-void	ft_clean_tokens(t_list **token, void (*del)(void *));
+void	ft_clean_tokens(t_list **token);
 void	ft_clean_darray(char **trash);
 
 void	ft_error(void);
