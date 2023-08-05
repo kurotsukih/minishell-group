@@ -2,8 +2,8 @@ SRCS = main.c \
 	   util1.c \
 	   util2_clean.c \
 	   parsing/ft_add_spaces.c \
-	   parsing/expansion/ft_expand_string.c \
-	   parsing/expansion/ft_expand_token.c \
+	   parsing/ft_expand_string.c \
+	   parsing/ft_expand_token.c \
 	   parsing/ft_check_tokens.c \
 	   parsing/ft_assign_types.c \
 	   parsing/ft_open_heredocs.c \
