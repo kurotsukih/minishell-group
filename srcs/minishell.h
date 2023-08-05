@@ -79,7 +79,6 @@ typedef struct s_data
 }					t_data;
 
 char	*ft_add_spaces(char *str);
-t_list	*ft_tokenization(char *str, t_list *env, t_data *data);
 void	ft_assign_types(t_list *node);
 int		ft_check_tokens(t_list *node);
 int		ft_open_heredocs(t_list *head, t_list *env);
@@ -158,5 +157,6 @@ void	sig_handler_main(int signal);
 void	sig_handler_fork(int signal);
 void	sig_handler_heredoc(int signal);
 void	free_redirections(t_list *head);
+void	memset_(void *s, size_t n);
 
 #endif

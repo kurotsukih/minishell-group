@@ -1,7 +1,6 @@
 SRCS = main.c \
 	   utils1.c \
 	   parsing/ft_add_spaces.c \
-	   parsing/ft_tokenization.c \
 	   parsing/tokenization/ft_add_token.c \
 	   parsing/tokenization/ft_is_token.c \
 	   parsing/tokenization/ft_remove_quotes.c \
