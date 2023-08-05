@@ -12,7 +12,7 @@
 
 #include "minishell.h"
 
-void	ft_error_exit(int exit_code, char *str)
+void	ft_error_exit(int exit_code, char *str, char *param)
 {
 	if (str == NULL)
 		printf("%s\n", strerror(errno)); /// проверить освобождается ли строка
@@ -20,6 +20,7 @@ void	ft_error_exit(int exit_code, char *str)
 		printf("bash: %s\n", str); /// проверить освобождается ли строка
 	if (exit_code != -1)
 		exit(exit_code);
+	(void)param;
 }
 
 void	ft_merror(char *str, char *param)

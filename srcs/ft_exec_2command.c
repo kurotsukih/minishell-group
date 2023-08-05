@@ -93,15 +93,15 @@ int	ft_execute(t_cmd *cmd, t_data *data, t_node *node)
 	pid = fork();
 	exit_c = 0;
 	if (pid < -1)
-		ft_error_exit(-1, NULL);
+		ft_error_exit(-1, NULL, NULL);
 	if (pid == 0)
 	{
 		signal(SIGINT, &sig_handler_fork);
 		signal(SIGQUIT, &sig_handler_fork);
 		if (dup2(cmd->in_fd, STDIN_FILENO) == -1)
-			ft_error_exit(-1, NULL);
+			ft_error_exit(-1, NULL, NULL);
 		if (dup2(cmd->out_fd, STDOUT_FILENO) == -1)
-			ft_error_exit(-1, NULL);
+			ft_error_exit(-1, NULL, NULL);
 		ft_clean_fds(cmd);
 		if (cmd->params && ft_is_builtin(cmd->params) == 1)
 			exit_c = ft_execute_builtin(cmd, data, node);

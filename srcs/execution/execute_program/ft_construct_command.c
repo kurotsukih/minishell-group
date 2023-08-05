@@ -30,7 +30,7 @@ char	**ft_construct_command(t_list *params)
 	size = ft_lstsize(params);
 	returner = (char **)malloc(sizeof(char *) * (size + 1));
 	if (!returner)
-		return (ft_error_exit(-1, NULL), NULL);
+		return (ft_error_exit(-1, NULL, NULL), NULL);
 	i = 0;
 	while (i < size)
 	{

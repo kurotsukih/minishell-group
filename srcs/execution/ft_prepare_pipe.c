@@ -22,7 +22,7 @@ int	ft_prepare_pipe(t_node *node, int i_cmd)
 	if (i_cmd < node->count_cmd - 1)
 	{
 		if (pipe(fd) == -1)
-			return (ft_error_exit(-1, NULL), 1);
+			return (ft_error_exit(-1, NULL, NULL), 1);
 		node->cmds[i_cmd].out_fd = fd[1];
 		node->cmds[i_cmd].out_pipe_fd = fd[0];
 		node->cmds[i_cmd + 1].in_fd = fd[0];
@@ -30,7 +30,7 @@ int	ft_prepare_pipe(t_node *node, int i_cmd)
 	err = ft_open_all_files(node->cmds[i_cmd].redir, node->cmds + i_cmd);
 	if (err)
 	{
-		ft_error_exit(-1, err);
+		ft_error_exit(-1, err, NULL);
 		if (node->cmds[i_cmd].in_fd != -1 && node->cmds[i_cmd].in_fd != 0)
 			close(node->cmds[i_cmd].in_fd);
 		if (node->cmds[i_cmd].out_fd != -1 && node->cmds[i_cmd].out_fd != 1)

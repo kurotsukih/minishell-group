@@ -45,7 +45,7 @@ int	ft_execute_cd(t_list *params, t_list *env)
 	else if (count > 1)
 		return (ft_merror("bash: cd: Too many arguments\n", NULL), -1);
 	else if (chdir((char *)params->content) == -1)
-		return (ft_error_exit(-1, (char *)params->content), -1);
+		return (ft_error_exit(-1, (char *)params->content, NULL), -1);
 	return (0);
 }
 
