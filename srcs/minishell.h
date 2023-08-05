@@ -108,7 +108,6 @@ int		check(t_cmd *cmd, int count, int result);
 
 void	ft_execution(t_data *data);
 
-void	free_(t_list *env);
 int		ft_find_path(char *cmd, t_list *env, char **place);
 char	**ft_construct_command(t_list *params);
 int		ft_open_in(t_list *token, int fd);

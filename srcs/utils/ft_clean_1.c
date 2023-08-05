@@ -31,10 +31,10 @@ void	ft_clean_tokens(t_list **token) // убрала аргумент void (*del
 	ft_clean_redirections(*token);
 }
 
-void	free_(t_list *env)
-{
-	ft_clean_tokens(&env);
-}
+// void	free_(t_list *env)
+// {
+// 	ft_clean_tokens(&env);
+// }
 
 void	ft_clean_cmds(t_cmd *cmds_p, int size)
 {

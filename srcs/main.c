@@ -116,6 +116,6 @@ int	main(int argc, char **argv, char **env)
 			ft_execution(&data);
 		ft_clean_tree(data.node);
 	}
-	free_(data.env);
+	ft_clean_tokens(&(data.env));
 	return (data.exit_code);
 }
