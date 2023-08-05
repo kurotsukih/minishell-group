@@ -15,18 +15,9 @@
 int	g_signal = 0;
 
 /**
- * @brief 		Initilize the environment variables.
- * 
  * @example		They are going to be saved inside of linked list, where:
- * 
  * 					list->content	- full string (ex. "USER=akalimol")
  *        			list->type      - default or not
- * 
- * @param data_env 	Address of env data. &data->env
- * @param env 		environment variables passed from program
- * 
- * @return int 		0	- if everything ok
- * 					-1	- if malloc failed
  */
 int	ft_init_env(t_list **data_env, char **env)
 {
@@ -69,10 +60,8 @@ void	ft_signal(int signal)
 	}
 }
 
-void	ft_init_data(int argc, char **argv, char **env, t_data *data)
+void	ft_init_data(char **env, t_data *data)
 {
-	(void)argv;
-	(void)argc;
 	signal(SIGQUIT, SIG_IGN);
 	signal(SIGINT, &ft_signal);
 	data->env = NULL;
@@ -115,8 +104,10 @@ int	main(int argc, char **argv, char **env)
 	t_data	data;
 	char	*command;
 
+	(void)argc;
+	(void)argv;
 	command = NULL;
-	ft_init_data(argc, argv, env, &data);
+	ft_init_data(env, &data);
 	while (1)
 	{
 		command = readline("$");

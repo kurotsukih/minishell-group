@@ -129,13 +129,7 @@ char	*ft_find_value(char *key, int i_pos, t_list *env, t_data *data);
 
 char	*ft_expand_string(char *str, t_list *env, t_data *data);
 t_list	*ft_free_expand_token(char **words, t_list **head);
-// int		ft_find_n_word(char const *s, char c);
 char	**ft_split_alt(char const *s, char c);
-
-// char	*ft_is_metacharacter(char c1, char c2);
-// void	ft_put(char *string, int *j, int *i, char *meta);
-// void	ft_remove_extra_spaces(char *str, int size);
-// int		ft_size(char *str);
 
 t_list	*ft_add_token(char *str, int i_beg, int i_end, t_data *data);
 int		ft_is_token(char c, int checker);
