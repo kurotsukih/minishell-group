@@ -12,22 +12,18 @@
 
 #include "minishell.h"
 
-char	*ft_find_home(t_list *env);
 
-/*
-    Description:    cd command
-    Test:           in progress 
+static char	*ft_find_home(t_list *env)
+{
+	while (env)
+	{
+		if (ft_strncmp((char *)env->content, "HOME=", 5) == 0)
+			return ((char *)env->content + 5);
+		env = env->next;
+	}
+	return (NULL);
+}
 
-    Input:  data - is data
-            i_cmd - is cmd index
-    output: void
-
-    input cases:
-        1. Doesn't consider bad inputs
-
-    1. add env to paraleters
-    2. 
-*/
 int	ft_execute_cd(t_list *params, t_list *env)
 {
 	int		count;
@@ -49,13 +45,47 @@ int	ft_execute_cd(t_list *params, t_list *env)
 	return (0);
 }
 
-char	*ft_find_home(t_list *env)
+int	ft_strcmp_alt(char *str)
+{
+	int	i;
+
+	if (!str || str[0] != '-')
+		return (1);
+	i = 1;
+	while (str[i] && str[i] == 'n')
+		i++;
+	if (str[i] == '\0')
+		return (0);
+	return (1);
+}
+
+void	ft_execute_echo(t_list *token)
+{
+	int	is_n;
+
+	is_n = 0;
+	while (token && ft_strcmp_alt((char *)token->content) == 0)
+	{
+		is_n = 1;
+		token = token->next;
+	}
+	while (token)
+	{
+		ft_printf("%s", (char *)token->content);
+		if (token->next)
+			ft_printf(" ");
+		token = token->next;
+	}
+	if (is_n == 0)
+		ft_printf("\n");
+}
+
+void	ft_execute_env(t_list *env)
 {
 	while (env)
 	{
-		if (ft_strncmp((char *)env->content, "HOME=", 5) == 0)
-			return ((char *)env->content + 5);
+		if (ft_strchr((char *)env->content, '='))
+			ft_printf("%s\n", (char *)env->content);
 		env = env->next;
 	}
-	return (NULL);
 }

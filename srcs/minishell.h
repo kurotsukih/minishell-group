@@ -96,7 +96,6 @@ int		check(t_cmd *cmd, int count, int result);
 void	ft_execution(t_data *data);
 
 int		ft_find_path(char *cmd, t_list *env, char **place);
-char	**ft_construct_command(t_list *params);
 int		ft_open_in(t_list *token, int fd);
 int		ft_open_out(t_list *token, int fd);
 char	*ft_open_all_files(t_list *token, t_cmd *cmd);
@@ -134,7 +133,6 @@ void	sig_handler_main(int signal);
 void	sig_handler_fork(int signal);
 void	sig_handler_heredoc(int signal);
 void	free_redirections(t_list *head);
-void	memset_(void *s, size_t n);
 void	ft_remove_quotes_string(char *str);
 void	ft_remove_quotes_list(t_list *head);
 void	error_(int exit_code, char *str, char * param);

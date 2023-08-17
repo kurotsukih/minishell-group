@@ -31,7 +31,6 @@ int	ft_is_builtin(t_list *token)
 	return (0);
 }
 
-
 static void	ft_wait_child_processes(int *is_success, int size, int pid)
 {
 	int	i;
@@ -57,7 +56,7 @@ static void	ft_wait_child_processes(int *is_success, int size, int pid)
 	}
 }
 
-//    Add a moment when there can be only one command and it is builtin
+// Add a moment when there can be only one command and it is builtin
 int	ft_execute(t_cmd *cmd, t_data *data, t_node *node)
 {
 	int	pid;

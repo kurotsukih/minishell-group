@@ -13,9 +13,8 @@
 /** Add space between meta characters
  *          Before:  (cat||ls)|pwd
  *          After:   ( cat || ls ) | pwd
- * is metachar    - checks if the character is meta
- * ft_put()                 - concantenates the meta characters with spaces
- * ft_remove_extra...()     - removes preeceding, succeeding, and duplicating spaces  */
+ * ft_put()           concantenates the meta characters with spaces
+ * ft_remove_extra... removes preeceding, succeeding, and duplicating spaces  */
 
 #include "minishell.h"
 
@@ -38,7 +37,7 @@ void	ft_put(char *string, int *j, int *i, char *meta)
 		*i = *i + 1;
 }
 
-size_t	ft_strlcpy_alt(char *restrict dst, const char *restrict src,
+static size_t	ft_strlcpy_alt(char *restrict dst, const char *restrict src,
 		size_t dstsize)
 {
 	size_t	src_len;
@@ -60,16 +59,6 @@ size_t	ft_strlcpy_alt(char *restrict dst, const char *restrict src,
 		}
 	}
 	return (src_len);
-}
-
-void	*ft_memset2(void *b, int c, size_t len)
-{
-	size_t	i;
-
-	i = 0;
-	while (i < len)
-		((unsigned char *)b)[i++] = c;
-	return (b);
 }
 
 void	ft_remove_extra_spaces(char *str, int size)
@@ -98,12 +87,12 @@ void	ft_remove_extra_spaces(char *str, int size)
 		i++;
 	}
 	str[j] = '\0';
-	ft_memset2(str + j, '\0', size - j);
+	ft_memset(str + j, '\0', size - j); ////
 }
 
 char	*metachar(char c1, char c2)
 {
-	static char	mode;
+	static char	mode = '\0'; ////
 
 	if (mode == 0 && c1 == '\'')
 		mode = '\'';
@@ -140,7 +129,6 @@ int	new_size(char *str)
 	int	size;
 
 	i = 0;
-	size = 0;
 	while (str[i])
 	{
 		if (metachar(str[i], str[i + 1]) != 0)
@@ -163,7 +151,7 @@ char	*ft_add_spaces(char *str)
 	string = (char *)malloc(size + 1);
 	if (!string)
 		return (error_(-1, NULL, NULL), free(str), NULL);
-	memset_(string, size + 1);
+	ft_memset(string, '\0', size + 1); /// было memset_
 	i = 0;
 	j = 0;
 	while (str[i])

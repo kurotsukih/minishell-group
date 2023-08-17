@@ -12,13 +12,29 @@
 
 #include "minishell.h"
 
-/**
- * @brief       I have to think of exit and free strategy
- * 
- * @param cmd 
- * @param node 
- * @param env 
- */
+// Do I have reallocate the memmory for this command? or can keep it like this?
+char	**ft_construct_command(t_list *params)
+{
+	char	**returner;
+	int		size;
+	int		i;
+
+	size = ft_lstsize(params);
+	returner = (char **)malloc(sizeof(char *) * (size + 1));
+	if (!returner)
+		return (error_(-1, NULL, NULL), NULL);
+	i = 0;
+	while (i < size)
+	{
+		returner[i] = (char *)params->content;
+		params = params->next;
+		i++;
+	}
+	returner[i] = NULL;
+	return (returner);
+}
+
+//  I have to think of exit and free strategy
 int	ft_execute_program(t_cmd *cmd, t_list *env, t_node *node)
 {
 	char	*path;

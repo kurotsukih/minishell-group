@@ -12,7 +12,21 @@
 
 #include "minishell.h"
 
-char	*ft_find_all_paths(t_list *env);
+char	*ft_find_all_paths(t_list *env)
+{
+	char	*str;
+
+	while (env)
+	{
+		str = (char *)env->content;
+		if (ft_strncmp("PATH", str, 4) == 0 && str[4] == '=')
+			break ;
+		env = env->next;
+	}
+	if (!env)
+		return (NULL);
+	return (str + 5);
+}
 
 static void	ft_clean_darray(char **trash)
 {
@@ -43,22 +57,6 @@ int	ft_find_path2(char *cmd, char **place)
 		return (127);
 	else
 		return (126);
-}
-
-char	*ft_find_all_paths(t_list *env)
-{
-	char	*str;
-
-	while (env)
-	{
-		str = (char *)env->content;
-		if (ft_strncmp("PATH", str, 4) == 0 && str[4] == '=')
-			break ;
-		env = env->next;
-	}
-	if (!env)
-		return (NULL);
-	return (str + 5);
 }
 
 static int	ft_find_n_word2(char const *s, char c)

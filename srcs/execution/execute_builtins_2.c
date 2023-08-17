@@ -54,3 +54,37 @@ int	ft_execute_exit(t_data *data, t_node *node, t_list *token)
 	code = ft_abs(ft_atoi(str) % 256);
 	return (ft_clean_tree(node), free_redirections(*(&(data->env))), exit(code), 0);
 }
+
+void	ft_execute_pwd(void)
+{
+	char	*response;
+
+	response = getcwd(NULL, 0);
+	ft_printf("%s\n", response);
+	free(response);
+}
+
+void	ft_execute_unset(t_list **env, t_list *head)
+{
+	t_list	*token;
+	char	*str;
+	int		len;
+	char	*cmd;
+
+	if (!head)
+		return ;
+	cmd = (char *)head->content;
+	len = ft_strlen(cmd);
+	token = *env;
+	while (token)
+	{
+		str = (char *)token->content;
+		if (ft_strncmp(str, cmd, len) == 0 && str[len] == '=')
+			break ;
+		token = token->next;
+	}
+	if (!token)
+		return ;
+	ft_lstremove(env, token, NULL);
+}
+

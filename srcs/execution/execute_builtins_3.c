@@ -12,27 +12,6 @@
 
 #include "minishell.h"
 
-void	ft_print_export(t_list *env);
-void	ft_remove_if_exist(t_list **env, char *new_value);
-
-void	ft_print_export_token(char *str)
-{
-	char	*equal_sign;
-	char	*value;
-
-	ft_printf("export ");
-	equal_sign = ft_strchr(str, '=');
-	if (equal_sign != NULL)
-	{
-		*equal_sign = '\0';
-		value = equal_sign + 1;
-		ft_printf("%s=\"%s\"\n", str, value);
-		*equal_sign = '=';
-	}
-	else
-		ft_printf("%s\n", str);
-}
-
 void	ft_swap(t_list *a, t_list *b)
 {
 	void	*temp;
@@ -69,6 +48,24 @@ void	ft_bubble_sort_list(t_list *head)
 	}
 }
 
+void	ft_print_export_token(char *str)
+{
+	char	*equal_sign;
+	char	*value;
+
+	ft_printf("export ");
+	equal_sign = ft_strchr(str, '=');
+	if (equal_sign != NULL)
+	{
+		*equal_sign = '\0';
+		value = equal_sign + 1;
+		ft_printf("%s=\"%s\"\n", str, value);
+		*equal_sign = '=';
+	}
+	else
+		ft_printf("%s\n", str);
+}
+
 void	ft_print_export(t_list *env)
 {
 	ft_bubble_sort_list(env);
@@ -77,24 +74,6 @@ void	ft_print_export(t_list *env)
 		ft_print_export_token((char *)env->content);
 		env = env->next;
 	}
-}
-
-int	ft_execute_export(t_list *params, t_list **env)
-{
-	t_list	*token;
-	char	*new_value;
-
-	if (!params)
-		return (ft_print_export(*env), 0);
-	new_value = ft_strdup((char *)params->content);
-	if (!new_value)
-		return (-1);
-	token = ft_lstnew(new_value, 1);
-	if (!token)
-		return (-1);
-	ft_remove_if_exist(env, new_value);
-	ft_lstadd_front(env, token);
-	return (0);
 }
 
 void	ft_remove_if_exist(t_list **env, char *new_value)
@@ -119,3 +98,22 @@ void	ft_remove_if_exist(t_list **env, char *new_value)
 		token = temp;
 	}
 }
+
+int	ft_execute_export(t_list *params, t_list **env)
+{
+	t_list	*token;
+	char	*new_value;
+
+	if (!params)
+		return (ft_print_export(*env), 0);
+	new_value = ft_strdup((char *)params->content);
+	if (!new_value)
+		return (-1);
+	token = ft_lstnew(new_value, 1);
+	if (!token)
+		return (-1);
+	ft_remove_if_exist(env, new_value);
+	ft_lstadd_front(env, token);
+	return (0);
+}
+

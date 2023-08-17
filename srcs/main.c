@@ -11,15 +11,14 @@
 /* ************************************************************************** */
 
 /*
-ctrl \ на моём компе не работает
-нужны ли xit code ?
+после "cat файл", "cat файл | cat -e" : free(): double free detected in tcache 2
 
 readline rl_clear_history, rl_on_new_line rl_replace_line rl_redisplay, add_history,
 malloc free
 printf write access open read close
 fork wait waitpid wait3 wait4 
-signal sigaction sigemptyset sigaddset kill
-exit,
+signa l sigaction sigemptyset sigaddset kill
+exit
 getcwd chdir stat lstat fstat unlink execve dup dup2 pipe
 opendir readdir closedir
 strerror perror
@@ -27,21 +26,17 @@ isatty ttyname ttyslot ioctl
 getenv
 tcsetattr tcgetattr tgetent tgetflag tgetnum tgetstr tgoto tputs
 
-SIGQUIT = SIGINT, except that it’s controlled by C-\ 
-and produces a core dump when it terminates the process, 
-just like a program error signal. You can think of 
-this as a program error condition “detected” by the user.
+SIGINT = the user types C-c
+SIGQUIT = SIGINT, except that it’s controlled by C-\ + produces a core dump when it terminates the process, 
+CTRL-\ causes a program to terminate and dump core
 
-readline read a line from the terminal 
 The line is allocated with malloc, the caller must free it.
 Returns the line without \n, "" for "", NULL for "" + EOF
 If an EOF is read with a non-empty line, it is treated as a newline.
 
-linked list, where:
+linked list:
 list->content	- full string (ex. "USER=akostrik")
-list->type      - default or not 
-
-CTRL-\ QUIT signal, causes a program to terminate and dump core */
+list->type      - default or not */
 
 #include "minishell.h"
 
@@ -138,7 +133,6 @@ int	is_token(char c, int checker)
 
 // separate each key word into token
 // cat || ls  -> ['cat', '|', 'ls']
-
 t_list	*ft_tokenization(char *str, t_list *env, t_data *data)
 {
 	t_list	*head;

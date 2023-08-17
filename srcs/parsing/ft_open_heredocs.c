@@ -66,7 +66,7 @@ int	ft_open_heredocs(t_list *head, t_list *env)
 	token = head;
 	while (token)
 	{
-		if (token->type == 8)
+		if (token->type == HEREDOC)
 		{
 			temp = token->next->content;
 			fd = (int *)malloc(sizeof(int));

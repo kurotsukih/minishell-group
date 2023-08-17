@@ -46,6 +46,16 @@ void	free_redirections(t_list *head)
 	ft_lstclear(&head, &free);
 }
 
+void	*ft_memset(void *b, int c, size_t len)
+{
+	size_t	i;
+
+	i = 0;
+	while (i < len)
+		((unsigned char *)b)[i++] = c;
+	return (b);
+}
+
 void	memset_(void *s, size_t n)
 {
 	size_t	i;
@@ -96,15 +106,14 @@ void	ft_remove_quotes_list(t_list *head)
 	}
 }
 
-void	error_(int exit_code, char *str, char *param)
+void	error_(int exit_code, char *msg, char *msg_param)
 {
-	if (str == NULL)
+	if (msg == NULL)
 		printf("%s\n", strerror(errno));
-	else if (str != NULL && param == NULL)
-		printf("bash: %s\n", str);
-	else if (str != NULL && param != NULL)
-		printf(str, param);
+	else if (msg != NULL && msg_param == NULL)
+		printf("bash: %s\n", msg);
+	else if (msg != NULL && msg_param != NULL)
+		printf(msg, msg_param);
 	if (exit_code != -1)
 		exit(exit_code);
-	(void)param;
 }
