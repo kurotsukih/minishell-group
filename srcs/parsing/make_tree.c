@@ -32,7 +32,7 @@ t_list	*ft_find_next_parenthesis(t_list *first)
 	return (next_p);
 }
 
-//    ret: 1 means cleaned, 0 means no
+//    ret: 1 = cleaned, 0 = no
 static int	ft_clean_onion(t_list **token)
 {
 	t_list	*first;
@@ -60,12 +60,7 @@ static int	ft_clean_onion(t_list **token)
 	return (res);
 }
 
-
-/*
-    Before adding the:
-        node->elems = token;
-    i have to remove all onion layers
-*/
+// Before adding the: node->elems = token; i have to remove all onion layers
 t_node	*ft_treenode_new(t_list *token, t_node *parent, int type)
 {
 	t_node	*node;
@@ -146,13 +141,9 @@ t_list	*ft_retrieve_right_tokens(t_list **token)
 	return (right);
 }
 
-/*
-    Here, I have to add a point,
-	where I am saying if the left or right side is the whole
-
-    Also, the whole is not working!
-*/
-t_node	*ft_make_tree(t_list *token, t_node *parent)
+// where I am saying if the left or right side is the whole
+// Also, the whole is not working!
+t_node	*make_tree(t_list *token, t_node *parent)
 {
 	t_node	*node;
 	t_list	*left;
@@ -171,10 +162,10 @@ t_node	*ft_make_tree(t_list *token, t_node *parent)
 		node->is_micro = 0;
 	else
 		node->is_micro = parent->is_micro + is_micro;
-	node->left = ft_make_tree(left, node);
+	node->left = make_tree(left, node);
 	if (!node->left)
 		return (ft_clean_tree(node), NULL);
-	node->right = ft_make_tree(right, node);
+	node->right = make_tree(right, node);
 	if (!node->right)
 		return (ft_clean_tree(node), NULL);
 	return (node);

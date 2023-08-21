@@ -106,7 +106,7 @@ void	ft_remove_quotes_list(t_list *head)
 	}
 }
 
-void	error_(int exit_code, char *msg, char *msg_param)
+void	exit_(int exit_code, char *msg, char *msg_param, t_list **lst_to_clear, void (*func_to_clear_lst)(void*))
 {
 	if (msg == NULL)
 		printf("%s\n", strerror(errno));
@@ -114,6 +114,8 @@ void	error_(int exit_code, char *msg, char *msg_param)
 		printf("bash: %s\n", msg);
 	else if (msg != NULL && msg_param != NULL)
 		printf(msg, msg_param);
+	if (lst_to_clear != NULL)
+	ft_lstclear(lst_to_clear, func_to_clear_lst);
 	if (exit_code != -1)
 		exit(exit_code);
 }

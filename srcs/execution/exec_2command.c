@@ -47,9 +47,9 @@ static void	ft_wait_child_processes(int *is_success, int size, int pid)
 			{
 				*is_success = WTERMSIG(status) + 128;
 				if (*is_success == 130)
-					error_(-1, "\n", NULL);
+					exit_(-1, "\n", NULL, NULL, NULL);
 				if (*is_success == 131)
-					error_(-1, "Quit (core dumped)\n", NULL);
+					exit_(-1, "Quit (core dumped)\n", NULL, NULL, NULL);
 			}
 		}
 		i++;
@@ -65,15 +65,15 @@ int	ft_execute(t_cmd *cmd, t_data *data, t_node *node)
 	pid = fork();
 	exit_c = 0;
 	if (pid < -1)
-		error_(-1, NULL, NULL);
+		exit_(-1, NULL, NULL, NULL, NULL);
 	if (pid == 0)
 	{
 		signal(SIGINT, &sig_handler_fork);
 		signal(SIGQUIT, &sig_handler_fork);
 		if (dup2(cmd->in_fd, STDIN_FILENO) == -1)
-			error_(-1, NULL, NULL);
+			exit_(-1, NULL, NULL, NULL, NULL);
 		if (dup2(cmd->out_fd, STDOUT_FILENO) == -1)
-			error_(-1, NULL, NULL);
+			exit_(-1, NULL, NULL, NULL, NULL);
 		ft_clean_fds(cmd);
 		if (cmd->params && ft_is_builtin(cmd->params) == 1)
 			exit_c = ft_execute_builtin(cmd, data, node);
@@ -84,31 +84,6 @@ int	ft_execute(t_cmd *cmd, t_data *data, t_node *node)
 	else if (cmd->in_fd != 0)
 		close(cmd->in_fd);
 	return (signal(SIGINT, SIG_IGN), pid);
-}
-
-int	ft_exec_command(t_node *node, t_data *data)
-{
-	int	i_cmd;
-	int	num;
-	int	pid;
-	int	result;
-
-	num = 0;
-	result = -1;
-	i_cmd = 0;
-	pid = 0;
-	while (i_cmd < node->count_cmd)
-	{
-		result = ft_prepare_pipe(node, i_cmd);
-		if (check(&(node->cmds[i_cmd]), node->count_cmd, result) && num++ >= 0)
-			pid = ft_execute(&node->cmds[i_cmd], data, node);
-		else if (result == 0 && node->count_cmd == 1)
-			result = ft_execute_builtin(&node->cmds[i_cmd], data, node);
-		i_cmd++;
-	}
-	ft_wait_child_processes(&result, num, pid);
-	signal(SIGINT, &sig_handler_fork); // mb sig_handler_main
-	return (result);
 }
 
 int	check(t_cmd *cmd, int count, int result)
@@ -137,3 +112,27 @@ int	check(t_cmd *cmd, int count, int result)
 	return (0);
 }
 
+int	ft_exec_command(t_node *node, t_data *data)
+{
+	int	i_cmd;
+	int	num;
+	int	pid;
+	int	result;
+
+	num = 0;
+	result = -1;
+	i_cmd = 0;
+	pid = 0;
+	while (i_cmd < node->count_cmd)
+	{
+		result = ft_prepare_pipe(node, i_cmd);
+		if (check(&(node->cmds[i_cmd]), node->count_cmd, result) && num++ >= 0)
+			pid = ft_execute(&node->cmds[i_cmd], data, node);
+		else if (result == 0 && node->count_cmd == 1)
+			result = ft_execute_builtin(&node->cmds[i_cmd], data, node);
+		i_cmd++;
+	}
+	ft_wait_child_processes(&result, num, pid);
+	signal(SIGINT, &sig_handler_fork); // mb sig_handler_mai n
+	return (result);
+}

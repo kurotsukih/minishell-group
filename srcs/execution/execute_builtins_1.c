@@ -34,14 +34,14 @@ int	ft_execute_cd(t_list *params, t_list *env)
 	{
 		str = ft_find_home(env);
 		if (!str)
-			return (error_(-1, "bash: cd: HOME not set\n", NULL), -1);
+			return (exit_(-1, "bash: cd: HOME not set\n", NULL, NULL, NULL), -1);
 		if (chdir(str) == -1)
-			return (error_(-1, "bash: cd: HOME not set properly%s\n", str), -1);
+			return (exit_(-1, "bash: cd: HOME not set properly%s\n", str, NULL, NULL), -1);
 	}
 	else if (count > 1)
-		return (error_(-1, "bash: cd: Too many arguments\n", NULL), -1);
+		return (exit_(-1, "bash: cd: Too many arguments\n", NULL, NULL, NULL), -1);
 	else if (chdir((char *)params->content) == -1)
-		return (error_(-1, (char *)params->content, NULL), -1);
+		return (exit_(-1, (char *)params->content, NULL, NULL, NULL), -1);
 	return (0);
 }
 

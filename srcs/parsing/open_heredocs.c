@@ -33,7 +33,7 @@ int	ft_get_heredoc(char *delimiter, t_list *env, int *my_fd)
 
 	a = (t_heredoc){NULL, {0, 0}, dup(STDIN_FILENO), 0};
 	if (pipe(a.fd) == -1)
-		return (error_(-1, NULL, NULL), errno);
+		return (exit_(-1, NULL, NULL, NULL, NULL), errno);
 	signal(SIGINT, &sig_handler_heredoc);
 	a.line = readline(">");
 	while (a.line && ft_strcmp(a.line, delimiter) != 0)
@@ -56,7 +56,7 @@ int	ft_get_heredoc(char *delimiter, t_list *env, int *my_fd)
 	return (signal(SIGINT, &sig_handler_main), *my_fd = a.fd[0], 0);
 }
 
-int	ft_open_heredocs(t_list *head, t_list *env)
+int	open_heredocs(t_list *head, t_list *env)
 {
 	t_list	*token;
 	void	*temp;

@@ -69,20 +69,20 @@ typedef struct s_node
 	struct s_node	*right;
 	int				is_micro;
 
-}					t_node;
+} t_node;
 
 typedef struct s_data
 {
 	t_list			*env;
 	t_node			*node;
 	int				exit_code;
-}					t_data;
+} t_data;
 
-char	*ft_add_spaces(char *str);
-void	ft_assign_types(t_list *node);
-int		ft_check_tokens(t_list *node);
-int		ft_open_heredocs(t_list *head, t_list *env);
-t_node	*ft_make_tree(t_list *token, t_node *parent);
+char	*add_spaces(char *str);
+void	assign_types(t_list *node);
+int		check_tokens(t_list *node);
+int		open_heredocs(t_list *head, t_list *env);
+t_node	*make_tree(t_list *token, t_node *parent);
 
 int		ft_preprocess(t_node *node);
 int		ft_exec_command(t_node *node, t_data *data);
@@ -91,7 +91,6 @@ int		ft_prepare_pipe(t_node *node, int i_cmd);
 int		ft_is_builtin(t_list *token);
 int		ft_execute_program(t_cmd *cmd, t_list *env, t_node *node);
 int		ft_execute_builtin(t_cmd *cmd, t_data *data, t_node *node);
-int		check(t_cmd *cmd, int count, int result);
 
 void	ft_execution(t_data *data);
 
@@ -120,12 +119,6 @@ t_list	*ft_expand_token(char *str, t_list *env, t_data *data);
 
 t_list	*ft_add_token(char *str, int i_beg, int i_end, t_data *data);
 
-t_list	*ft_preprocess_parameter(t_list *token, t_cmd *cmd, int i_cmd);
-t_list	*ft_preprocess_redirection(t_list *token, t_cmd *cmd, int i_cmd);
-
-int		ft_preprocess_node(t_node *node);
-int		ft_count_cmds(t_list *token);
-void	ft_init_cmds(t_cmd *cmds, int num_cmds);
 void	ft_preprocess_cmd(t_cmd *cmds, t_list *token);
 
 //// utils
@@ -135,7 +128,7 @@ void	sig_handler_heredoc(int signal);
 void	free_redirections(t_list *head);
 void	ft_remove_quotes_string(char *str);
 void	ft_remove_quotes_list(t_list *head);
-void	error_(int exit_code, char *str, char * param);
+void	exit_(int exit_code, char *msg, char *msg_param, t_list **lst_to_clear, void (*func_to_clear_lst)(void*));
 void	ft_clean_fds(t_cmd *cmd);
 void	ft_clean_tree(t_node *node);
 

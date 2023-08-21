@@ -26,8 +26,8 @@ isatty ttyname ttyslot ioctl
 getenv
 tcsetattr tcgetattr tgetent tgetflag tgetnum tgetstr tgoto tputs
 
-SIGINT = the user types C-c
-SIGQUIT = SIGINT, except that it’s controlled by C-\ + produces a core dump when it terminates the process, 
+SIGIN T = the user types C-c
+SIGQUI T = SIGIN T, except that it’s controlled by C-\ + produces a core dump when it terminates the process, 
 CTRL-\ causes a program to terminate and dump core
 
 The line is allocated with malloc, the caller must free it.
@@ -57,16 +57,14 @@ void	init(char **env, t_data *data)
 		str = ft_strdup(env[i]);
 		if (!str)
 		{
-			ft_lstclear(&data->env, &free);
-			error_(-1, NULL, NULL);
+			exit_(-1, NULL, NULL, &(data->env), &free);
 			return ;
 		}
 		token = ft_lstnew(str, 0);
 		if (!token)
 		{
 			free(str);
-			ft_lstclear(&token, &free);
-			error_(-1, NULL, NULL);
+			exit_(-1, NULL, NULL, &token, &free);
 			return ;
 		}
 		ft_lstadd_back(&data->env, token);
@@ -133,7 +131,7 @@ int	is_token(char c, int checker)
 
 // separate each key word into token
 // cat || ls  -> ['cat', '|', 'ls']
-t_list	*ft_tokenization(char *str, t_list *env, t_data *data)
+t_list	*tokenization(char *str, t_list *env, t_data *data)
 {
 	t_list	*head;
 	int		i_beg;
@@ -152,8 +150,7 @@ t_list	*ft_tokenization(char *str, t_list *env, t_data *data)
 		token = ft_add_token(str, i_beg, i_end, data);
 		if (!token)
 		{
-			error_(-1, NULL, NULL);
-			ft_lstclear(&head, &free); /// или head
+			exit_(-1, NULL, NULL, &head, &free);
 			return (NULL);
 		}
 		ft_lstadd_back(&head, token);
@@ -161,8 +158,7 @@ t_list	*ft_tokenization(char *str, t_list *env, t_data *data)
 	}
 	if (is_token(0, 1) == 0)
 	{
-		error_(-1, "BASH: unclosed quotes\n", NULL);
-		ft_lstclear(&head, &free); /// или head
+		exit_(-1, "BASH: unclosed quotes\n", NULL, &head, &free);
 		return (NULL);
 	}
 	ft_remove_quotes_list(head);
@@ -175,21 +171,21 @@ int	parse(char *command, t_list *env, t_data *data)
 	char	*cmd_line;
 	int		code;
 
-	cmd_line = ft_add_spaces(command);
+	cmd_line = add_spaces(command);
 	if (!cmd_line)
 		return (data->exit_code = 255, 255);
-	head = ft_tokenization(cmd_line, env, data);
+	head = tokenization(cmd_line, env, data);
 	free(cmd_line);
 	if (!head)
 		return (data->exit_code = 255, 255);
-	ft_assign_types(head);
-	if (ft_check_tokens(head) == 0)
+	assign_types(head);
+	if (check_tokens(head) == 0)
 		return (data->exit_code = 2, free_redirections(head), 2);
-	code = ft_open_heredocs(head, env);
+	code = open_heredocs(head, env);
 	if (code != 0)
 		return (data->exit_code = code, free_redirections(head), code);
 	data->node = NULL;
-	data->node = ft_make_tree(head, NULL);
+	data->node = make_tree(head, NULL);
 	if (data->node == NULL)
 		return (data->exit_code = 255, free_redirections(head), 255);
 	return (0);

@@ -1,27 +1,24 @@
 SRCS = main.c \
 	   util1.c \
 	   util2_clean.c \
-	   parsing/ft_add_spaces.c \
-	   parsing/ft_expand_string.c \
-	   parsing/ft_expand_token.c \
-	   parsing/ft_check_tokens.c \
-	   parsing/ft_assign_types.c \
-	   parsing/ft_open_heredocs.c \
-	   parsing/ft_make_tree.c \
-	   execution/ft_preprocess.c \
-	   execution/preprocess/ft_preprocess_cmd.c \
-	   execution/preprocess/ft_preprocess_parameter.c \
-	   execution/preprocess/ft_preprocess_redirection.c \
-	   execution/preprocess/ft_preprocess_utils.c \
-	   execution/ft_prepare_pipe.c \
-	   execution/ft_execute_program.c \
-	   execution/execute_program/ft_find_path.c \
+	   parsing/add_spaces.c \
+	   parsing/expand_string.c \
+	   parsing/expand_token.c \
+	   parsing/check_tokens.c \
+	   parsing/assign_types.c \
+	   parsing/open_heredocs.c \
+	   parsing/make_tree.c \
 	   execution/execute_builtin.c \
 	   execution/execute_builtins_1.c \
 	   execution/execute_builtins_2.c \
 	   execution/execute_builtins_3.c \
-	   ft_exec_1recursion.c \
-	   ft_exec_2command.c \
+	   execution/preprocess.c \
+	   execution/preprocess_cmd.c \
+	   execution/prepare_pipe.c \
+	   execution/execute_program.c \
+	   execution/find_path.c \
+	   execution/exec_1recursion.c \
+	   execution/exec_2command.c
 
 OBJS = $(addprefix ./.build/, $(SRCS))
 OBJS := $(OBJS:%.c=%.o)

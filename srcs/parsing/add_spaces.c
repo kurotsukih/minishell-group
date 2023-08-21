@@ -10,35 +10,32 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-/** Add space between meta characters
- *          Before:  (cat||ls)|pwd
- *          After:   ( cat || ls ) | pwd
- * ft_put()           concantenates the meta characters with spaces
- * ft_remove_extra... removes preeceding, succeeding, and duplicating spaces  */
+// Add space between meta characters
+// (cat||ls)|pwd  to  ( cat || ls ) | pwd
 
 #include "minishell.h"
 
-void	ft_put(char *string, int *j, int *i, char *meta)
+// concantenates the meta characters with spaces
+ void	ft_put(char *str, int *j, int *i, char *metachar)
 {
 	int	size;
 
 	size = 0;
-	string[*j] = ' ';
+	str[*j] = ' ';
 	*j = *j + 1;
-	while (meta && meta[size])
+	while (metachar && metachar[size])
 	{
-		string[*j] = meta[size];
+		str[*j] = metachar[size];
 		*j = *j + 1;
 		size++;
 	}
-	string[*j] = ' ';
+	str[*j] = ' ';
 	*j = *j + 1;
 	if (size == 2)
 		*i = *i + 1;
 }
 
-static size_t	ft_strlcpy_alt(char *restrict dst, const char *restrict src,
-		size_t dstsize)
+size_t	ft_strlcpy_alt(char *restrict dst, const char *restrict src, size_t dstsize)
 {
 	size_t	src_len;
 	size_t	i;
@@ -61,6 +58,7 @@ static size_t	ft_strlcpy_alt(char *restrict dst, const char *restrict src,
 	return (src_len);
 }
 
+// removes preeceding, succeeding, and duplicating spaces
 void	ft_remove_extra_spaces(char *str, int size)
 {
 	int	i;
@@ -90,7 +88,7 @@ void	ft_remove_extra_spaces(char *str, int size)
 	ft_memset(str + j, '\0', size - j); ////
 }
 
-char	*metachar(char c1, char c2)
+char	*metachar_(char c1, char c2)
 {
 	static char	mode = '\0'; ////
 
@@ -131,7 +129,7 @@ int	new_size(char *str)
 	i = 0;
 	while (str[i])
 	{
-		if (metachar(str[i], str[i + 1]) != 0)
+		if (metachar_(str[i], str[i + 1]) != 0)
 			size++;
 		i++;
 	}
@@ -139,32 +137,32 @@ int	new_size(char *str)
 }
 
 // The problem with a quotes. All metas inside of them, should be skipped.
-char	*ft_add_spaces(char *str)
+char	*add_spaces(char *str)
 {
-	char	*string;
-	char	*meta;
+	char	*new_str;
+	char	*metachar;
 	int		i;
 	int		j;
 	int		size;
 
 	size = new_size(str) + 1;
-	string = (char *)malloc(size + 1);
-	if (!string)
-		return (error_(-1, NULL, NULL), free(str), NULL);
-	ft_memset(string, '\0', size + 1); /// было memset_
+	new_str = (char *)malloc(size + 1);
+	if (!new_str)
+		return (exit_(-1, NULL, NULL, NULL, NULL), free(str), NULL);
+	ft_memset(new_str, '\0', size + 1); /// было memset_
 	i = 0;
 	j = 0;
 	while (str[i])
 	{
-		meta = metachar(str[i], str[i + 1]);
+		metachar = metachar_(str[i], str[i + 1]);
 		if (ft_isspace(str[i]) == 1)
-			string[j++] = ' ';
-		else if (meta)
-			ft_put(string, &j, &i, meta);
+			new_str[j++] = ' ';
+		else if (metachar)
+			ft_put(new_str, &j, &i, metachar);
 		else
-			string[j++] = str[i];
+			new_str[j++] = str[i];
 		i++;
 	}
-	ft_remove_extra_spaces(string, size + 1);
-	return (free(str), string);
+	ft_remove_extra_spaces(new_str, size + 1);
+	return (free(str), new_str);
 }

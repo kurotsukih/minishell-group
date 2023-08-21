@@ -77,7 +77,7 @@ char	*ft_check_redirection(t_list *node)
 	return (NULL);
 }
 
-int	ft_check_tokens(t_list *node)
+int	check_tokens(t_list *node)
 {
 	char	*error;
 	int		p_count;
@@ -93,13 +93,10 @@ int	ft_check_tokens(t_list *node)
 		else if (6 <= node->type && node->type <= 9)
 			error = ft_check_redirection(node);
 		if (error)
-		{
-			error_(-1, "bash: syntax error near unexpected token `%s'\n", error);
-			return (0);
-		}
+			return (exit_(-1, "bash: syntax error near unexpected token `%s'\n", error, NULL, NULL), 0);
 		node = node->next;
 	}
 	if (p_count != 0)
-		return (error_(-1, "bash: unclosed parenthesis\n", NULL), 0);
+		return (exit_(-1, "bash: unclosed parenthesis\n", NULL, NULL, NULL), 0);
 	return (1);
 }

@@ -22,7 +22,7 @@ void	ft_assign_type(t_list *node, int is_filename);
     I have to update it:
     1. Norminette
 */
-void	ft_assign_types(t_list *node)
+void	assign_types(t_list *node)
 {
 	int	is_filename;
 
