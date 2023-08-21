@@ -42,7 +42,7 @@ list->typ e      - default or not */
 
 int g_signal = 0;
 
-void	init(char **env, t_data *d)
+int	init(char **env, t_data *d)
 {
 	t_list	*t;
 	char	*str;
@@ -56,20 +56,15 @@ void	init(char **env, t_data *d)
 	{
 		str = ft_strdup(env[i]);
 		if (!str)
-		{
-			exit_(-1, NULL, NULL, &(d->env), &free, NULL);
-			return ;
-		}
+			return (exit_(-1, NULL, NULL, &(d->env), &free, NULL), -1);
 		t = ft_lstnew(str, 0);
 		if (!t)
-		{
-			exit_(-1, NULL, NULL, &t, &free, &str);
-			return ;
-		}
+			return (exit_(-1, NULL, NULL, &t, &free, &str), -1);
 		ft_lstadd_back(&d->env, t);
 		i++;
 	}
 	d->exit_code = 0;
+	return (0);
 }
 
 int	main(int argc, char **argv, char **env)
