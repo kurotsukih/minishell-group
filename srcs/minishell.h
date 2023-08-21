@@ -63,13 +63,11 @@ typedef struct s_node
 	t_cmd			*cmds;
 	int				count_cmd;
 	int				type;
-	int				exit_code;
-	int				level;
 	struct s_node	*parent;
 	struct s_node	*left;
 	struct s_node	*right;
 	int				is_micro;
-
+	int				exit_code;
 } t_node;
 
 typedef struct s_data

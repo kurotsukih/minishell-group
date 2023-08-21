@@ -72,7 +72,7 @@ void	init(char **env, t_data *data)
 	data->exit_code = 0;
 }
 
-t_list	*add_token(char *str, int i_beg, int i_end, t_data *data)
+t_list	*add_token(char *cdm_with_spaces, int i_beg, int i_end, t_data *d)
 {
 	char	*new_str;
 	t_list	*n;
@@ -86,12 +86,12 @@ t_list	*add_token(char *str, int i_beg, int i_end, t_data *data)
 	i = 0;
 	while (i < i_end - i_beg)
 	{
-		new_str[i] = str[i + i_beg];
+		new_str[i] = cdm_with_spaces[i + i_beg];
 		i++;
 	}
 	new_str[i] = '\0';
 	if (ft_strchr(new_str, '$'))
-		n = ft_expand_token(new_str, data->env, data);
+		n = ft_expand_token(new_str, d->env, d);
 	else
 		n = ft_lstnew(new_str, 0);
 	if (!n)
@@ -141,7 +141,6 @@ t_list	*tokenization(char *cmd, t_data *data)
 	if (!cmd_with_spaces)
 		return (NULL);
 	i_beg = 0;
-	i_end = 0;
 	head = NULL;
 	while (cmd_with_spaces[i_beg])
 	{
