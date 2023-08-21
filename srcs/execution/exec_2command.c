@@ -47,9 +47,9 @@ static void	ft_wait_child_processes(int *is_success, int size, int pid)
 			{
 				*is_success = WTERMSIG(status) + 128;
 				if (*is_success == 130)
-					exit_(-1, "\n", NULL, NULL, NULL);
+					exit_(-1, "\n", NULL, NULL, NULL, NULL);
 				if (*is_success == 131)
-					exit_(-1, "Quit (core dumped)\n", NULL, NULL, NULL);
+					exit_(-1, "Quit (core dumped)\n", NULL, NULL, NULL, NULL);
 			}
 		}
 		i++;
@@ -65,15 +65,15 @@ int	ft_execute(t_cmd *cmd, t_data *data, t_node *node)
 	pid = fork();
 	exit_c = 0;
 	if (pid < -1)
-		exit_(-1, NULL, NULL, NULL, NULL);
+		exit_(-1, NULL, NULL, NULL, NULL, NULL);
 	if (pid == 0)
 	{
 		signal(SIGINT, &sig_handler_fork);
 		signal(SIGQUIT, &sig_handler_fork);
 		if (dup2(cmd->in_fd, STDIN_FILENO) == -1)
-			exit_(-1, NULL, NULL, NULL, NULL);
+			exit_(-1, NULL, NULL, NULL, NULL, NULL);
 		if (dup2(cmd->out_fd, STDOUT_FILENO) == -1)
-			exit_(-1, NULL, NULL, NULL, NULL);
+			exit_(-1, NULL, NULL, NULL, NULL, NULL);
 		ft_clean_fds(cmd);
 		if (cmd->params && ft_is_builtin(cmd->params) == 1)
 			exit_c = ft_execute_builtin(cmd, data, node);

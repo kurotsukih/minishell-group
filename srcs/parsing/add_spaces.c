@@ -148,7 +148,7 @@ char	*add_spaces(char *str)
 	size = new_size(str) + 1;
 	new_str = (char *)malloc(size + 1);
 	if (!new_str)
-		return (exit_(-1, NULL, NULL, NULL, NULL), free(str), NULL);
+		return (exit_(-1, NULL, NULL, NULL, NULL, &str), NULL);
 	ft_memset(new_str, '\0', size + 1); /// было memset_
 	i = 0;
 	j = 0;

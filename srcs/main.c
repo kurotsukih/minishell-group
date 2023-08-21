@@ -57,14 +57,13 @@ void	init(char **env, t_data *data)
 		str = ft_strdup(env[i]);
 		if (!str)
 		{
-			exit_(-1, NULL, NULL, &(data->env), &free);
+			exit_(-1, NULL, NULL, &(data->env), &free, NULL);
 			return ;
 		}
 		token = ft_lstnew(str, 0);
 		if (!token)
 		{
-			free(str);
-			exit_(-1, NULL, NULL, &token, &free);
+			exit_(-1, NULL, NULL, &token, &free, &str);
 			return ;
 		}
 		ft_lstadd_back(&data->env, token);
@@ -150,7 +149,7 @@ t_list	*tokenization(char *str, t_list *env, t_data *data)
 		token = ft_add_token(str, i_beg, i_end, data);
 		if (!token)
 		{
-			exit_(-1, NULL, NULL, &head, &free);
+			exit_(-1, NULL, NULL, &head, &free, NULL);
 			return (NULL);
 		}
 		ft_lstadd_back(&head, token);
@@ -158,7 +157,7 @@ t_list	*tokenization(char *str, t_list *env, t_data *data)
 	}
 	if (is_token(0, 1) == 0)
 	{
-		exit_(-1, "BASH: unclosed quotes\n", NULL, &head, &free);
+		exit_(-1, "BASH: unclosed quotes\n", NULL, &head, &free, NULL);
 		return (NULL);
 	}
 	ft_remove_quotes_list(head);

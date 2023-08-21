@@ -128,7 +128,7 @@ void	sig_handler_heredoc(int signal);
 void	free_redirections(t_list *head);
 void	ft_remove_quotes_string(char *str);
 void	ft_remove_quotes_list(t_list *head);
-void	exit_(int exit_code, char *msg, char *msg_param, t_list **lst_to_clear, void (*func_to_clear_lst)(void*));
+void	exit_(int exit_code, char *msg, char *msg_param, t_list **lst_to_clear, void (*func_to_clear_lst)(void*), char **str_to_sree);
 void	ft_clean_fds(t_cmd *cmd);
 void	ft_clean_tree(t_node *node);
 

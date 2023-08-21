@@ -65,7 +65,7 @@ int	ft_preprocess_node(t_node *node)
 	node->count_cmd = ft_count_cmds(node->elems);
 	node->cmds = (t_cmd *)malloc(sizeof(t_cmd) * node->count_cmd);
 	if (!node->cmds)
-		return (exit_(-1, NULL, NULL, NULL, NULL), -1);
+		return (exit_(-1, NULL, NULL, NULL, NULL, NULL), -1);
 	ft_init_cmds(node->cmds, node->count_cmd);
 	ft_preprocess_cmd(node->cmds, node->elems);
 	node->elems = NULL;

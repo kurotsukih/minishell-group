@@ -106,7 +106,7 @@ void	ft_remove_quotes_list(t_list *head)
 	}
 }
 
-void	exit_(int exit_code, char *msg, char *msg_param, t_list **lst_to_clear, void (*func_to_clear_lst)(void*))
+void	exit_(int exit_code, char *msg, char *msg_param, t_list **lst_to_clear, void (*func_to_clear_lst)(void*), char **str_to_free)
 {
 	if (msg == NULL)
 		printf("%s\n", strerror(errno));
@@ -116,6 +116,8 @@ void	exit_(int exit_code, char *msg, char *msg_param, t_list **lst_to_clear, voi
 		printf(msg, msg_param);
 	if (lst_to_clear != NULL)
 	ft_lstclear(lst_to_clear, func_to_clear_lst);
+	if (str_to_free != NULL)
+		free(*str_to_free);
 	if (exit_code != -1)
 		exit(exit_code);
 }
