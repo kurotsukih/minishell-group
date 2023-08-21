@@ -22,44 +22,44 @@ void	ft_clean_fds(t_cmd *cmd)
 		close(cmd->out_pipe_fd);
 }
 
-static void	ft_clean_cmds(t_cmd *cmds_p, int size)
+static void	ft_clean_cmds(t_cmd *cmds, int size)
 {
-	t_cmd	*cmds;
+	t_cmd	*cmd;
 	int		i;
 
-	cmds = cmds_p;
+	cmd = cmds;
 	i = 0;
 	while (i < size)
 	{
-		if (cmds[i].params)
-			ft_lstclear(&cmds[i].params, &free);
-		cmds[i].params = NULL;
-		if (cmds[i].redir)
-			free_redirections(cmds[i].redir);
-		cmds[i].redir = NULL;
-		ft_clean_fds(&cmds[i]);
+		if (cmd[i].params)
+			ft_lstclear(&cmd[i].params, &free);
+		cmd[i].params = NULL;
+		if (cmd[i].redir)
+			free_redirections(cmd[i].redir);
+		cmd[i].redir = NULL;
+		ft_clean_fds(&cmd[i]);
 		i++;
 	}
-	free(cmds);
+	free(cmd);
 }
 
-void	ft_clean_tree(t_node *node)
+void	ft_clean_tree(t_node *n)
 {
-	if (!node)
+	if (!n)
 		return ;
-	while (node->parent)
-		node = node->parent;
-	if (node->left)
-		ft_clean_tree(node->left);
-	if (node->right)
-		ft_clean_tree(node->right);
-	ft_lstclear(&node->elems, &free);
-	node->elems = NULL;
-	if (node->cmds)
+	while (n->parent)
+		n = n->parent;
+	if (n->left)
+		ft_clean_tree(n->left);
+	if (n->right)
+		ft_clean_tree(n->right);
+	ft_lstclear(&n->elems, &free);
+	n->elems = NULL;
+	if (n->cmds)
 	{
-		ft_clean_cmds(node->cmds, node->count_cmd);
-		node->cmds = NULL;
+		ft_clean_cmds(n->cmds, n->count_cmd);
+		n->cmds = NULL;
 	}
-	free(node);
+	free(n);
 }
 

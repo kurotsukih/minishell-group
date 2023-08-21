@@ -12,89 +12,88 @@
 
 #include "minishell.h"
 
-char	*ft_check_parenthesis_left(t_list *node, int *p_count)
+char	*ft_check_parenthesis_left(t_list *n, int *p_count)
 {
 	(*p_count)++;
-	if (!node->next)
+	if (!n->next)
 		return ("newline");
-	if (node->next->type == 5)
-		return ((char *)node->next->content);
-	if (node->prev && node->prev->type == 11)
-		return ((char *)node->next->content);
-	if (node->prev && (node->prev->type == 10 || node->prev->type == 1))
-		return ((char *)node->content);
-	if (1 <= node->next->type && node->next->type <= 3)
-		return ((char *)node->next->content);
+	if (n->next->type == RIGHT_P)
+		return ((char *)n->next->content);
+	if (n->prev && n->prev->type == PARAM)
+		return ((char *)n->next->content);
+	if (n->prev && (n->prev->type == FILENAME || n->prev->type == PIPE))
+		return ((char *)n->content);
+	if (n->next->type == PIPE || n->next->type == OR || n->next->type == AND)
+		return ((char *)n->next->content);
 	return (NULL);
 }
 
-char	*ft_check_parenthesis_right(t_list *node, int *p_count)
+char	*ft_check_parenthesis_right(t_list *n, int *p_count)
 {
 	(*p_count)--;
 	if (*p_count == -1)
-		return ((char *)node->content);
-	if (!node->prev)
-		return ((char *)node->content);
-	if (node->next && node->next->type == 4)
-		return ((char *)node->next->content);
-	if (node->next && node->next->type != 2 && node->next->type != 3
-		&& node->next->type != 5)
-		return ((char *)node->next->content);
-	if (node->next && node->next->type == 1)
-		return ((char *)node->next->content);
+		return ((char *)n->content);
+	if (!n->prev)
+		return ((char *)n->content);
+	if (n->next && n->next->type == LEFT_P)
+		return ((char *)n->next->content);
+	if (n->next && n->next->type !=OR && n->next->type != AND && n->next->type != RIGHT_P)
+		return ((char *)n->next->content);
+	if (n->next && n->next->type == PIPE)
+		return ((char *)n->next->content);
 	return (NULL);
 }
 
-char	*ft_check_parenthesis(t_list *node, int *p_count)
+char	*ft_check_parenthesis(t_list *n, int *p_count)
 {
-	if (node->type == 4)
-		return (ft_check_parenthesis_left(node, p_count));
+	if (n->type == LEFT_P)
+		return (ft_check_parenthesis_left(n, p_count));
 	else
-		return (ft_check_parenthesis_right(node, p_count));
+		return (ft_check_parenthesis_right(n, p_count));
 	return (NULL);
 }
-char	*ft_check_operator2(t_list *node)
+char	*ft_check_operator2(t_list *n)
 {
-	if (node->prev == NULL)
-		return ((char *)node->content);
-	if (node->next == NULL)
+	if (n->prev == NULL)
+		return ((char *)n->content);
+	if (n->next == NULL)
 		return ("newline");
-	if (1 <= node->next->type && node->next->type <= 3)
-		return ((char *)node->next->content);
-	if (node->next->type == 5)
-		return ((char *)node->next->content);
-	if (node->type == 1 && node->next->type == 4)
-		return (node->next->content);
+	if (n->next->type == PIPE || n->next->type == OR || n->next->type == AND)
+		return ((char *)n->next->content);
+	if (n->next->type == RIGHT_P)
+		return ((char *)n->next->content);
+	if (n->type == PIPE && n->next->type == LEFT_P)
+		return (n->next->content);
 	return (NULL);
 }
 
-char	*ft_check_redirection(t_list *node)
+char	*ft_check_redirection(t_list *n)
 {
-	if (!node->next)
+	if (!n->next)
 		return ("newline");
-	if (node->next->type != 10)
-		return ((char *)node->next->content);
+	if (n->next->type != FILENAME)
+		return ((char *)n->next->content);
 	return (NULL);
 }
 
-int	check_tokens(t_list *node)
+int	check_tokens(t_list *n)
 {
 	char	*error;
 	int		p_count;
 
 	p_count = 0;
 	error = NULL;
-	while (node)
+	while (n)
 	{
-		if (1 <= node->type && node->type <= 3)
-			error = ft_check_operator2(node);
-		else if (node->type == 4 || node->type == 5)
-			error = ft_check_parenthesis(node, &p_count);
-		else if (6 <= node->type && node->type <= 9)
-			error = ft_check_redirection(node);
+		if (n->type == PIPE || n->type == OR || n->type == AND )
+			error = ft_check_operator2(n);
+		else if (n->type == LEFT_P || n->type == RIGHT_P)
+			error = ft_check_parenthesis(n, &p_count);
+		else if (n->type == REDIR_IN || n->type == REDIR_OUT ||  n->type == HEREDOC || n->type == REDIR_OUT2)
+			error = ft_check_redirection(n);
 		if (error)
 			return (exit_(-1, "bash: syntax err unexpected token `%s'\n", error, NULL, NULL, NULL), 0);
-		node = node->next;
+		n = n->next;
 	}
 	if (p_count != 0)
 		return (exit_(-1, "bash: unclosed parenthesis\n", NULL, NULL, NULL, NULL), 0);

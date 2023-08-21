@@ -60,31 +60,31 @@ static int	ft_clean_onion(t_list **token)
 	return (res);
 }
 
-// Before adding the: node->elems = token; i have to remove all onion layers
-t_node	*ft_treenode_new(t_list *token, t_node *parent, int type)
+// Before adding the: n->elems = token; i have to remove all onion layers
+t_node	*ft_treenode_new(t_list *t, t_node *parent, int type)
 {
-	t_node	*node;
+	t_node	*n;
 	int		is_micro;
 
-	node = (t_node *)malloc(sizeof(t_node));
-	if (!node)
+	n = (t_node *)malloc(sizeof(t_node));
+	if (!n)
 		return (NULL);
-	is_micro = ft_clean_onion(&token);
+	is_micro = ft_clean_onion(&t);
 	if (!parent)
-		node->is_micro = 0;
+		n->is_micro = 0;
 	else if (is_micro == 1)
-		node->is_micro = parent->is_micro + 1;
+		n->is_micro = parent->is_micro + 1;
 	else
-		node->is_micro = parent->is_micro;
-	node->elems = token;
-	node->parent = parent;
-	node->left = NULL;
-	node->right = NULL;
-	node->type = type;
-	node->cmds = NULL;
-	node->count_cmd = 0;
-	node->exit_code = 0;
-	return (node);
+		n->is_micro = parent->is_micro;
+	n->elems = t;
+	n->parent = parent;
+	n->left = NULL;
+	n->right = NULL;
+	n->type = type;
+	n->cmds = NULL;
+	n->count_cmd = 0;
+	n->exit_code = 0;
+	return (n);
 }
 
 void	ft_cut_token(t_list *token)
@@ -100,31 +100,31 @@ void	ft_cut_token(t_list *token)
 	}
 }
 
-t_list	*ft_retrieve_left_tokens(t_list **token)
+t_list	*ft_retrieve_left_tokens(t_list **t)
 {
 	t_list	*left;
 	int		p_count;
 
 	p_count = 0;
-	left = *token;
-	while (*token && (*token)->type != 2 && (*token)->type != 3)
+	left = *t;
+	while (*t && (*t)->type != OR && (*t)->type != AND)
 	{
-		if ((*token)->type == 4)
+		if ((*t)->type == LEFT_P)
 		{
 			p_count = 1;
-			*token = (*token)->next;
-			while ((*token)->type != 5 || p_count != 1)
+			*t = (*t)->next;
+			while ((*t)->type != RIGHT_P || p_count != 1)
 			{
-				if ((*token)->type == LEFT_P)
+				if ((*t)->type == LEFT_P)
 					p_count++;
-				if ((*token)->type == RIGHT_P)
+				if ((*t)->type == RIGHT_P)
 					p_count--;
-				*token = (*token)->next;
+				*t = (*t)->next;
 			}
 		}
-		*token = (*token)->next;
+		*t = (*t)->next;
 	}
-	ft_cut_token(*token);
+	ft_cut_token(*t);
 	return (left);
 }
 
@@ -145,7 +145,7 @@ t_list	*ft_retrieve_right_tokens(t_list **token)
 // Also, the whole is not working!
 t_node	*make_tree(t_list *token, t_node *parent)
 {
-	t_node	*node;
+	t_node	*n;
 	t_list	*left;
 	t_list	*right;
 	int		is_micro;
@@ -155,18 +155,18 @@ t_node	*make_tree(t_list *token, t_node *parent)
 	if (!token)
 		return (ft_treenode_new(left, parent, 0));
 	right = ft_retrieve_right_tokens(&token);
-	node = ft_treenode_new(token, parent, 1);
-	if (!node)
+	n = ft_treenode_new(token, parent, 1);
+	if (!n)
 		return (NULL);
 	if (!parent)
-		node->is_micro = 0;
+		n->is_micro = 0;
 	else
-		node->is_micro = parent->is_micro + is_micro;
-	node->left = make_tree(left, node);
-	if (!node->left)
-		return (ft_clean_tree(node), NULL);
-	node->right = make_tree(right, node);
-	if (!node->right)
-		return (ft_clean_tree(node), NULL);
-	return (node);
+		n->is_micro = parent->is_micro + is_micro;
+	n->left = make_tree(left, n);
+	if (!n->left)
+		return (ft_clean_tree(n), NULL);
+	n->right = make_tree(right, n);
+	if (!n->right)
+		return (ft_clean_tree(n), NULL);
+	return (n);
 }

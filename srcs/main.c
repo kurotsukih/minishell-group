@@ -36,7 +36,7 @@ If an EOF is read with a non-empty line, it is treated as a newline.
 
 linked list:
 list->content	- full string (ex. "USER=akostrik")
-list->type      - default or not */
+list->typ e      - default or not */
 
 #include "minishell.h"
 
@@ -72,10 +72,10 @@ void	init(char **env, t_data *data)
 	data->exit_code = 0;
 }
 
-t_list	*ft_add_token(char *str, int i_beg, int i_end, t_data *data)
+t_list	*add_token(char *str, int i_beg, int i_end, t_data *data)
 {
 	char	*new_str;
-	t_list	*node;
+	t_list	*n;
 	int		i;
 
 	if (i_beg == i_end)
@@ -91,12 +91,12 @@ t_list	*ft_add_token(char *str, int i_beg, int i_end, t_data *data)
 	}
 	new_str[i] = '\0';
 	if (ft_strchr(new_str, '$'))
-		node = ft_expand_token(new_str, data->env, data);
+		n = ft_expand_token(new_str, data->env, data);
 	else
-		node = ft_lstnew(new_str, 0);
-	if (!node)
+		n = ft_lstnew(new_str, 0);
+	if (!n)
 		return (NULL);
-	return (node);
+	return (n);
 }
 
 int	is_token(char c, int checker)
@@ -128,53 +128,45 @@ int	is_token(char c, int checker)
 	return (1);
 }
 
-// separate each key word into token
-// cat || ls  -> ['cat', '|', 'ls']
-t_list	*tokenization(char *str, t_list *env, t_data *data)
+// each key word into token : cat || ls  -> ['cat', '|', 'ls']
+t_list	*tokenization(char *cmd, t_data *data)
 {
 	t_list	*head;
 	int		i_beg;
 	int		i_end;
 	t_list	*token;
+	char	*cmd_with_spaces;
 
-	(void)env;
+	cmd_with_spaces = add_spaces(cmd);
+	if (!cmd_with_spaces)
+		return (NULL);
 	i_beg = 0;
 	i_end = 0;
 	head = NULL;
-	while (str[i_beg])
+	while (cmd_with_spaces[i_beg])
 	{
 		i_end = i_beg;
-		while (str[i_end] && is_token(str[i_end], 0))
+		while (cmd_with_spaces[i_end] && is_token(cmd_with_spaces[i_end], 0))
 			i_end++;
-		token = ft_add_token(str, i_beg, i_end, data);
+		token = add_token(cmd_with_spaces, i_beg, i_end, data);
 		if (!token)
-		{
-			exit_(-1, NULL, NULL, &head, &free, NULL);
-			return (NULL);
-		}
+			return (exit_(-1, NULL, NULL, &head, &free, NULL), NULL);
 		ft_lstadd_back(&head, token);
 		i_beg = i_end + 1;
 	}
 	if (is_token(0, 1) == 0)
-	{
-		exit_(-1, "BASH: unclosed quotes\n", NULL, &head, &free, NULL);
-		return (NULL);
-	}
+		return (exit_(-1, "BASH: unclosed quotes\n", NULL, &head, &free, NULL), NULL);
 	ft_remove_quotes_list(head);
+	free(cmd_with_spaces);
 	return (head);
 }
 
-int	parse(char *command, t_list *env, t_data *data)
+int	parse(char *cmd, t_list *env, t_data *data)
 {
 	t_list	*head;
-	char	*cmd_line;
 	int		code;
 
-	cmd_line = add_spaces(command);
-	if (!cmd_line)
-		return (data->exit_code = 255, 255);
-	head = tokenization(cmd_line, env, data);
-	free(cmd_line);
+	head = tokenization(cmd, data);
 	if (!head)
 		return (data->exit_code = 255, 255);
 	assign_types(head);
@@ -183,9 +175,9 @@ int	parse(char *command, t_list *env, t_data *data)
 	code = open_heredocs(head, env);
 	if (code != 0)
 		return (data->exit_code = code, free_redirections(head), code);
-	data->node = NULL;
-	data->node = make_tree(head, NULL);
-	if (data->node == NULL)
+	data->n = NULL;
+	data->n = make_tree(head, NULL);
+	if (data->n == NULL)
 		return (data->exit_code = 255, free_redirections(head), 255);
 	return (0);
 }
@@ -193,16 +185,16 @@ int	parse(char *command, t_list *env, t_data *data)
 int	main(int argc, char **argv, char **env)
 {
 	t_data	data;
-	char	*command;
+	char	*cmd;
 
 	(void)argc;
 	(void)argv;
-	command = NULL;
+	cmd = NULL;
 	init(env, &data);
 	while (1)
 	{
-		command = readline("$");
-		if (command == NULL) // EOF
+		cmd = readline("$");
+		if (cmd == NULL) // EOF
 			break ;
 		if (g_signal == 1)
 		{
@@ -210,12 +202,11 @@ int	main(int argc, char **argv, char **env)
 			data.exit_code = 130;
 			continue;
 		}
-		add_history(command);
-		data.exit_code = parse(command, data.env, &data);
+		add_history(cmd);
+		data.exit_code = parse(cmd, data.env, &data);
 		if (data.exit_code == 0)
 			ft_execution(&data);
-		ft_clean_tree(data.node);
+		ft_clean_tree(data.n);
 	}
-	free_redirections(data.env);
-	return (data.exit_code);
+	return (free_redirections(data.env), data.exit_code);
 }

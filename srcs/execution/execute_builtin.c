@@ -12,7 +12,7 @@
 
 #include "minishell.h"
 
-int	ft_execute_builtin(t_cmd *cmd, t_data *data, t_node *node)
+int	ft_execute_builtin(t_cmd *cmd, t_data *data, t_node *n)
 {
 	int	result;
 
@@ -30,6 +30,6 @@ int	ft_execute_builtin(t_cmd *cmd, t_data *data, t_node *node)
 	else if (ft_strcmp((char *)cmd->params->content, "env") == 0)
 		ft_execute_env(data->env);
 	else if (ft_strcmp((char *)cmd->params->content, "exit") == 0)
-		result = ft_execute_exit(data, node, cmd->params->next);
+		result = ft_execute_exit(data, n, cmd->params->next);
 	return (result);
 }

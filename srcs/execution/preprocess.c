@@ -60,29 +60,29 @@ int	ft_count_cmds(t_list *token)
 	return (count);
 }
 
-int	ft_preprocess_node(t_node *node)
+int	ft_preprocess_node(t_node *n)
 {
-	node->count_cmd = ft_count_cmds(node->elems);
-	node->cmds = (t_cmd *)malloc(sizeof(t_cmd) * node->count_cmd);
-	if (!node->cmds)
+	n->count_cmd = ft_count_cmds(n->elems);
+	n->cmds = (t_cmd *)malloc(sizeof(t_cmd) * n->count_cmd);
+	if (!n->cmds)
 		return (exit_(-1, NULL, NULL, NULL, NULL, NULL), -1);
-	ft_init_cmds(node->cmds, node->count_cmd);
-	ft_preprocess_cmd(node->cmds, node->elems);
-	node->elems = NULL;
+	ft_init_cmds(n->cmds, n->count_cmd);
+	ft_preprocess_cmd(n->cmds, n->elems);
+	n->elems = NULL;
 	return (0);
 }
 
-int	ft_preprocess(t_node *node)
+int	ft_preprocess(t_node *n)
 {
-	if (node->left)
+	if (n->left)
 	{
-		if (ft_preprocess(node->left) == -1)
+		if (ft_preprocess(n->left) == -1)
 			return (-1);
-		if (ft_preprocess(node->right) == -1)
+		if (ft_preprocess(n->right) == -1)
 			return (-1);
 	}
 	else 
-		if (ft_preprocess_node(node) == -1)
+		if (ft_preprocess_node(n) == -1)
 			return (-1);
 	return (0);
 }

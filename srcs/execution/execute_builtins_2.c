@@ -33,7 +33,7 @@ int	ft_abs(int num)
 	return (num);
 }
 
-int	ft_execute_exit(t_data *data, t_node *node, t_list *token)
+int	ft_execute_exit(t_data *data, t_node *n, t_list *token)
 {
 	char	*str;
 	int		code;
@@ -41,18 +41,18 @@ int	ft_execute_exit(t_data *data, t_node *node, t_list *token)
 	if (!token)
 	{
 		code = data->exit_code;
-		return (ft_clean_tree(node), free_redirections(*(&(data->env))), exit(code), 0);
+		return (ft_clean_tree(n), free_redirections(*(&(data->env))), exit(code), 0);
 	}
 	str = (char *)token->content;
 	if (ft_isnum(str) != 1)
 	{
 		exit_(-1, "bash: exit: %s: numeric argument required", str, NULL, NULL, NULL);
-		return (ft_clean_tree(node), free_redirections(*(&(data->env))), exit(2), 0);
+		return (ft_clean_tree(n), free_redirections(*(&(data->env))), exit(2), 0);
 	}
 	if (ft_lstsize(token) > 1)
 		return (exit_(-1, "bash: exit: too many arguments\n", NULL, NULL, NULL, NULL), 1);
 	code = ft_abs(ft_atoi(str) % 256);
-	return (ft_clean_tree(node), free_redirections(*(&(data->env))), exit(code), 0);
+	return (ft_clean_tree(n), free_redirections(*(&(data->env))), exit(code), 0);
 }
 
 void	ft_execute_pwd(void)

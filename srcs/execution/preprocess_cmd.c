@@ -35,25 +35,25 @@ t_list	*ft_preprocess_redirection(t_list *token, t_cmd *cmd, int i_cmd)
 	return (temp);
 }
 
-void	ft_preprocess_cmd(t_cmd *cmds, t_list *token)
+void	ft_preprocess_cmd(t_cmd *cmds, t_list *t)
 {
 	t_list	*temp;
 	int		i_cmd;
 
 	i_cmd = 0;
-	while (token)
+	while (t)
 	{
-		if (token->type == PARAMETER)
-			token = ft_preprocess_parameter(token, cmds, i_cmd);
-		else if (6 <= token->type && token->type <= 9)
-			token = ft_preprocess_redirection(token, cmds, i_cmd);
+		if (t->type == PARAM)
+			t = ft_preprocess_parameter(t, cmds, i_cmd);
+		else if (t->type == REDIR_IN || t->type == REDIR_IN || t->type == HEREDOC || t->type == REDIR_OUT2)
+			t = ft_preprocess_redirection(t, cmds, i_cmd);
 		else
 		{
 			i_cmd++;
-			temp = token->next;
-			ft_lstdelone(token, &free);
-			token = temp;
-			token->prev = NULL;
+			temp = t->next;
+			ft_lstdelone(t, &free);
+			t = temp;
+			t->prev = NULL;
 		}
 	}
 }

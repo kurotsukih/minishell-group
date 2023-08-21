@@ -1,7 +1,7 @@
 SRCS = main.c \
 	   util1.c \
 	   util2_clean.c \
-	   parsing/add_spaces.c \
+	   utils3_add_spaces.c \
 	   parsing/expand_string.c \
 	   parsing/expand_token.c \
 	   parsing/check_tokens.c \

@@ -35,17 +35,18 @@
 
 extern int g_signal;
 
+# define INDEF 0
 # define PIPE 1
 # define OR 2
 # define AND 3
 # define LEFT_P 4
 # define RIGHT_P 5
-# define REDIRECT_IN 6
-# define REDIRECT_OUT 7
+# define REDIR_IN 6
+# define REDIR_OUT 7
 # define HEREDOC 8
-# define REDIRECT_OUT2 9
+# define REDIR_OUT2 9
 # define FILENAME 10
-# define PARAMETER 11
+# define PARAM 11
 
 typedef struct s_cmd
 {
@@ -54,7 +55,7 @@ typedef struct s_cmd
 	int				in_fd;
 	int				out_fd;
 	int				out_pipe_fd;
-}					t_cmd;
+} t_cmd;
 
 typedef struct s_node
 {
@@ -74,23 +75,23 @@ typedef struct s_node
 typedef struct s_data
 {
 	t_list			*env;
-	t_node			*node;
+	t_node			*n;
 	int				exit_code;
 } t_data;
 
 char	*add_spaces(char *str);
-void	assign_types(t_list *node);
-int		check_tokens(t_list *node);
+void	assign_types(t_list *n);
+int		check_tokens(t_list *n);
 int		open_heredocs(t_list *head, t_list *env);
 t_node	*make_tree(t_list *token, t_node *parent);
 
-int		ft_preprocess(t_node *node);
-int		ft_exec_command(t_node *node, t_data *data);
+int		ft_preprocess(t_node *n);
+int		ft_exec_command(t_node *n, t_data *data);
 
-int		ft_prepare_pipe(t_node *node, int i_cmd);
+int		ft_prepare_pipe(t_node *n, int i_cmd);
 int		ft_is_builtin(t_list *token);
-int		ft_execute_program(t_cmd *cmd, t_list *env, t_node *node);
-int		ft_execute_builtin(t_cmd *cmd, t_data *data, t_node *node);
+int		ft_execute_program(t_cmd *cmd, t_list *env, t_node *n);
+int		ft_execute_builtin(t_cmd *cmd, t_data *data, t_node *n);
 
 void	ft_execution(t_data *data);
 
@@ -100,7 +101,7 @@ int		ft_open_out(t_list *token, int fd);
 char	*ft_open_all_files(t_list *token, t_cmd *cmd);
 void	ft_execute_pwd(void);
 void	ft_execute_unset(t_list **env, t_list *token);
-int		ft_execute_exit(t_data *data, t_node *node, t_list *token);
+int		ft_execute_exit(t_data *data, t_node *n, t_list *token);
 void	ft_execute_env(t_list *env);
 void	ft_execute_echo(t_list *token);
 int		ft_execute_export(t_list *params, t_list **env);
@@ -117,7 +118,7 @@ t_list	*ft_free_expand_token(char **words, t_list **head);
 char	**ft_split_alt(char const *s, char c);
 t_list	*ft_expand_token(char *str, t_list *env, t_data *data);
 
-t_list	*ft_add_token(char *str, int i_beg, int i_end, t_data *data);
+t_list	*add_token(char *str, int i_beg, int i_end, t_data *data);
 
 void	ft_preprocess_cmd(t_cmd *cmds, t_list *token);
 
@@ -130,6 +131,6 @@ void	ft_remove_quotes_string(char *str);
 void	ft_remove_quotes_list(t_list *head);
 void	exit_(int exit_code, char *msg, char *msg_param, t_list **lst_to_clear, void (*func_to_clear_lst)(void*), char **str_to_sree);
 void	ft_clean_fds(t_cmd *cmd);
-void	ft_clean_tree(t_node *node);
+void	ft_clean_tree(t_node *n);
 
 #endif

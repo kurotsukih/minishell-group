@@ -12,53 +12,45 @@
 
 #include "minishell.h"
 
-void	ft_assign_type(t_list *node, int is_filename);
+void	ft_assign_type(t_list *n, int is_filename)
+{
+	if (!ft_strcmp(n->content, "|") && n->type == INDEF)
+		n->type = PIPE;
+	else if (!ft_strcmp(n->content, "||") && n->type == INDEF)
+		n->type = OR;
+	else if (!ft_strcmp(n->content, "&&") && n->type == INDEF)
+		n->type = AND;
+	else if (!ft_strcmp(n->content, "(") && n->type == INDEF)
+		n->type = LEFT_P;
+	else if (!ft_strcmp(n->content, ")") && n->type == INDEF)
+		n->type = RIGHT_P;
+	else if (!ft_strcmp(n->content, "<") && n->type == INDEF)
+		n->type = REDIR_IN;
+	else if (!ft_strcmp(n->content, "<<") && n->type == INDEF)
+		n->type = HEREDOC;
+	else if (!ft_strcmp(n->content, ">") && n->type == INDEF)
+		n->type = REDIR_OUT;
+	else if (!ft_strcmp(n->content, ">>") && n->type == INDEF)
+		n->type = REDIR_OUT2;
+	else if (is_filename == 1 && n->type == INDEF)
+		n->type = FILENAME; // не используется
+	else
+		n->type = PARAM;
+}
 
-/*
-    Go through each value and assign the values
-
-    if I see <. then no matter what the next token is infile
-
-    I have to update it:
-    1. Norminette
-*/
-void	assign_types(t_list *node)
+//    Go through each value and assign the values
+//    if I see <. then no matter what the next token is infile
+void	assign_types(t_list *n)
 {
 	int	is_filename;
 
 	is_filename = 0;
-	while (node)
+	while (n)
 	{
-		ft_assign_type(node, is_filename);
+		ft_assign_type(n, is_filename);
 		is_filename = 0;
-		if (6 <= node->type && node->type <= 9)
+		if (n->type == REDIR_IN || n->type == REDIR_IN || n->type == HEREDOC || n->type == REDIR_OUT2)
 			is_filename = 1;
-		node = node->next;
+		n = n->next;
 	}
-}
-
-void	ft_assign_type(t_list *node, int is_filename)
-{
-	if (!ft_strcmp(node->content, "|") && node->type == 0)
-		node->type = PIPE;
-	else if (!ft_strcmp(node->content, "||") && node->type == 0)
-		node->type = OR;
-	else if (!ft_strcmp(node->content, "&&") && node->type == 0)
-		node->type = AND;
-	else if (!ft_strcmp(node->content, "(") && node->type == 0)
-		node->type = LEFT_P;
-	else if (!ft_strcmp(node->content, ")") && node->type == 0)
-		node->type = RIGHT_P;
-	else if (!ft_strcmp(node->content, "<") && node->type == 0)
-		node->type = REDIRECT_IN;
-	else if (!ft_strcmp(node->content, "<<") && node->type == 0)
-		node->type = HEREDOC;
-	else if (!ft_strcmp(node->content, ">") && node->type == 0)
-		node->type = REDIRECT_OUT;
-	else if (!ft_strcmp(node->content, ">>") && node->type == 0)
-		node->type = REDIRECT_OUT2;
-	else if (is_filename == 1 && node->type == 0)
-		node->type = FILENAME;
-	else
-		node->type = PARAMETER;
 }

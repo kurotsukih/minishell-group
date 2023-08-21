@@ -35,13 +35,13 @@ char	**ft_construct_command(t_list *params)
 }
 
 //  I have to think of exit and free strategy
-int	ft_execute_program(t_cmd *cmd, t_list *env, t_node *node)
+int	ft_execute_program(t_cmd *cmd, t_list *env, t_node *n)
 {
 	char	*path;
 	char	**params;
 	int		code;
 
-	(void)node;
+	(void)n;
 	path = NULL;
 	if (!ft_strcmp((char *)cmd->params->content, "."))
 		return (exit_(-1, "bash: .: filename arg required\n", NULL, NULL, NULL, NULL), -1);

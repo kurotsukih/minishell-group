@@ -20,14 +20,14 @@ typedef struct s_heredoc
 	int		status;	
 }	t_heredoc;
 
-void	ft_close_heredoc(int fd, int fd_cpy)
+void	close_heredoc(int fd, int fd_cpy)
 {
 	close(fd);
-	dup2(fd_cpy, STDIN_FILENO);
+	dup2(fd_cpy, STDIN_FILENO); // зачем
 	close(fd_cpy);
 }
 
-int	ft_get_heredoc(char *delimiter, t_list *env, int *my_fd)
+int	get_heredoc(char *delimiter, t_list *env, int *my_fd)
 {
 	t_heredoc	a;
 
@@ -48,7 +48,7 @@ int	ft_get_heredoc(char *delimiter, t_list *env, int *my_fd)
 	}
 	if (a.status != 1)
 		free(a.line);
-	ft_close_heredoc(a.fd[1], a.fd_cpy);
+	close_heredoc(a.fd[1], a.fd_cpy);
 	if (g_signal == 1)
 		return (g_signal--, close(a.fd[0]), signal(SIGINT, &sig_handler_main), 130);
 	if (a.status != 0)
@@ -72,7 +72,7 @@ int	open_heredocs(t_list *head, t_list *env)
 			fd = (int *)malloc(sizeof(int));
 			if (!fd)
 				return (-1);
-			status = ft_get_heredoc((char *)temp, env, fd);
+			status = get_heredoc((char *)temp, env, fd);
 			if (status != 0)
 				return (free(fd), status);
 			token->next->content = fd;

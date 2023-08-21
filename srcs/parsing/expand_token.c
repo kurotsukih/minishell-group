@@ -31,10 +31,7 @@ t_list	*ft_free_expand_token(char **words, t_list **head)
 
 	i = 0;
 	while (words[i])
-	{
-		free(words[i]);
-		i++;
-	}
+		free(words[i++]);
 	free(words);
 	ft_lstclear(head, NULL);
 	return (NULL);
