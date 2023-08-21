@@ -44,13 +44,13 @@ void	ft_init_cmds(t_cmd *cmds, int num_cmds)
 	}
 }
 
-int	ft_count_cmds(t_list *token)
+int	ft_count_cmds(t_list *t)
 {
 	t_list	*i_token;
 	int		count;
 
 	count = 1;
-	i_token = token;
+	i_token = t;
 	while (i_token)
 	{
 		if (i_token->type == PIPE)

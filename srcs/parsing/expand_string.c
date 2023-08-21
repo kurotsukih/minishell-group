@@ -12,7 +12,7 @@
 
 #include "minishell.h"
 
-char	*ft_strchr_alt(const char *s, int c)
+char	*strchr_alt(const char *s, int c)
 {
 	int		i;
 	char	mode;
@@ -41,7 +41,7 @@ char	*ft_strchr_alt(const char *s, int c)
 	return (NULL);
 }
 
-static int	ft_strlen_alt(const char *str)
+static int	strlen_alt(const char *str)
 {
 	char	mode;
 	int		size;
@@ -68,34 +68,7 @@ static int	ft_strlen_alt(const char *str)
 	return (size);
 }
 
-int	ft_strlcat_alt(char *dst, const char *src, int dstsize)
-{
-	int	src_len;
-	int	dst_len;
-	int	i;
-
-	if (!src && !dst)
-		return (0);
-	if (!dst && dstsize == 0)
-		return (ft_strlen_alt(src));
-	i = 0;
-	src_len = ft_strlen_alt(src);
-	dst_len = ft_strlen(dst);
-	if (dst_len > dstsize)
-		return (src_len + dstsize);
-	while (dst_len + i + 1 < dstsize && i < src_len)
-	{
-		dst[dst_len + i] = src[i];
-		i++;
-	}
-	if (dstsize != 0)
-		dst[dst_len + i] = '\0';
-	return (src_len + dst_len);
-}
-
-int	ft_strlcat_alt(char *dst, const char *src, int dstsize);
-
-int	ft_size_expanded(char *str, char *value, char *end)
+int	size_expanded(char *str, char *value, char *end)
 {
 	char	mode;
 	int		size;
@@ -123,18 +96,43 @@ int	ft_size_expanded(char *str, char *value, char *end)
 	return (size);
 }
 
-char	*ft_strjoin_big(char *str, char *value, char *end)
+int	strlcat_alt(char *dst, const char *src, int dstsize)
+{
+	int	src_len;
+	int	dst_len;
+	int	i;
+
+	if (!src && !dst)
+		return (0);
+	if (!dst && dstsize == 0)
+		return (strlen_alt(src));
+	i = 0;
+	src_len = strlen_alt(src);
+	dst_len = ft_strlen(dst);
+	if (dst_len > dstsize)
+		return (src_len + dstsize);
+	while (dst_len + i + 1 < dstsize && i < src_len)
+	{
+		dst[dst_len + i] = src[i];
+		i++;
+	}
+	if (dstsize != 0)
+		dst[dst_len + i] = '\0';
+	return (src_len + dst_len);
+}
+
+char	*strjoin_big(char *str, char *value, char *end)
 {
 	char	*returner;
 	int		size;
 
-	size = ft_size_expanded(str, value, end);
+	size = size_expanded(str, value, end);
 	returner = (char *)malloc(size + 1);
 	ft_memset(returner, '\0', size + 1); /// было memset_
 	if (!returner)
 		return (NULL);
 	if (str)
-		ft_strlcat_alt(returner, str, size + 1);
+		strlcat_alt(returner, str, size + 1);
 	if (value)
 		ft_strlcat(returner, value, size + 1);
 	if (end)
@@ -143,7 +141,7 @@ char	*ft_strjoin_big(char *str, char *value, char *end)
 	return (returner);
 }
 
-int	ft_find_key(char *str)
+int	find_key(char *str)
 {
 	int	i;
 
@@ -159,7 +157,7 @@ int	ft_find_key(char *str)
 	return (i);
 }
 
-char	*ft_find_value(char *key, int i_pos, t_list *env, t_data *data)
+char	*find_value(char *key, int i_pos, t_list *env, t_data *data)
 {
 	if ((*key) == '?')
 	{
@@ -175,29 +173,29 @@ char	*ft_find_value(char *key, int i_pos, t_list *env, t_data *data)
 	return (NULL);
 }
 
-char	*ft_expand_string(char *str, t_list *env, t_data *data)
+char	*expand_string(char *str, t_list *env, t_data *data)
 {
 	char	*temp;
 	char	*value;
 	int		pos_key;
 	int		status;
 
-	temp = ft_strchr_alt(str, '$');
+	temp = strchr_alt(str, '$');
 	status = 0;
 	if (!temp)
 		return (str);
 	while (temp)
 	{
-		pos_key = ft_find_key(temp + 1);
-		value = ft_find_value(temp + 1, pos_key, env, data);
+		pos_key = find_key(temp + 1);
+		value = find_value(temp + 1, pos_key, env, data);
 		if (temp[1] == '?' && (temp[2] == ' ' || temp[2] == '\0'))
 			status = 1;
-		str = ft_strjoin_big(str, value, temp + pos_key + 1);
+		str = strjoin_big(str, value, temp + pos_key + 1);
 		if (status == 1)
 			free(value);
 		if (!str)
 			return (NULL);
-		temp = ft_strchr_alt(str, '$');
+		temp = strchr_alt(str, '$');
 	}
 	return (str);
 }

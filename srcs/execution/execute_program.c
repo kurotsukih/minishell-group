@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   ft_execute_program.c                               :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: akalimol <akalimol@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/05/26 11:48:10 by akalimol          #+#    #+#             */
-/*   Updated: 2023/05/31 18:34:39 by akalimol         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "minishell.h"
 
 // Do I have reallocate the memmory for this command? or can keep it like this?

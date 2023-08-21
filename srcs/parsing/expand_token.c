@@ -1,29 +1,4 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   ft_expand_token.c                                  :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: akalimol <akalimol@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/05/23 11:15:26 by akalimol          #+#    #+#             */
-/*   Updated: 2023/06/01 19:59:28 by akalimol         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "minishell.h"
-
-/**
-Expands (env var expansion) the string and create tokens. 
-All key words were already tokenized, but if token contain 
-env var and env var contains a space, then our token have 
-to be divided
- * 					
-Suppose $a="s -la". Then l$a -> ls -la with ls is a command
-Suppose $a=" ". Then ls$a-la$a"Makefile" -> ls -la Makefile 
-
-@return t_list*	=	NULL - some malloc problems
-list - with all variables
- */
 
 t_list	*ft_free_expand_token(char **words, t_list **head)
 {
@@ -37,7 +12,29 @@ t_list	*ft_free_expand_token(char **words, t_list **head)
 	return (NULL);
 }
 
-int	ft_skip(char const *str, int i, char c);
+static int	skip(char const *str, int i, char c)
+{
+	if (c == '\'')
+	{
+		i++;
+		while (str[i] && str[i] != '\'')
+			i++;
+		if (str[i] == '\'')
+			i++;
+	}
+	else if (c == '\"')
+	{
+		i++;
+		while (str[i] && str[i] != '\"')
+			i++;
+		if (str[i] == '\"')
+			i++;
+	}
+	else
+		while (str[i] && str[i] == ' ')
+			i++;
+	return (i);
+}
 
 int	ft_find_n_word4(char const *s, char c)
 {
@@ -45,18 +42,18 @@ int	ft_find_n_word4(char const *s, char c)
 	int	n;
 
 	n = 0;
-	i = ft_skip(s, 0, ' ');
+	i = skip(s, 0, ' ');
 	if (s[i] != '\0')
 		n++;
 	while (s[i])
 	{
 		if (s[i] == '\'' && i++ >= 0)
-			i = ft_skip(s, i, '\'');
+			i = skip(s, i, '\'');
 		else if (s[i] == '\"' && i++ >= 0)
-			i = ft_skip(s, i, '\"');
+			i = skip(s, i, '\"');
 		else if (s[i] == c)
 		{
-			i = ft_skip(s, i, ' ');
+			i = skip(s, i, ' ');
 			if (s[i] != c)
 				n++;
 		}
@@ -116,18 +113,7 @@ static char	*ft_add_word(char const *s, char c, int *pos)
 	return (word);
 }
 
-static void	*ft_free(char **s)
-{
-	int	i;
-
-	i = 0;
-	while (s[i])
-		free(s[i++]);
-	free(s);
-	return (NULL);
-}
-
-char	**ft_split_alt(char const *s, char c)
+static char	**split_alt(char const *s, char c)
 {
 	char	**returner;
 	int		n_word;
@@ -146,38 +132,19 @@ char	**ft_split_alt(char const *s, char c)
 	{
 		returner[i_word] = ft_add_word(s, c, &i);
 		if (!returner[i_word])
-			return (ft_free(returner));
+			return (free_charchar(returner));
 		i_word++;
 	}
 	returner[i_word] = 0;
 	return (returner);
 }
 
-int	ft_skip(char const *str, int i, char c)
-{
-	if (c == '\'')
-	{
-		i++;
-		while (str[i] && str[i] != '\'')
-			i++;
-		if (str[i] == '\'')
-			i++;
-	}
-	else if (c == '\"')
-	{
-		i++;
-		while (str[i] && str[i] != '\"')
-			i++;
-		if (str[i] == '\"')
-			i++;
-	}
-	else
-		while (str[i] && str[i] == ' ')
-			i++;
-	return (i);
-}
-
-t_list	*ft_expand_token(char *str, t_list *env, t_data *data)
+// Expands (env var expansion) the string and create tokens. 
+// All key words were already tokenized, except if token contain 
+// env var and env var contains a space,
+// a="s -la"   > l$a -> ls -la
+// $a=" "      > ls$a-la$a"Makefile" -> ls -la Makefile 
+t_list	*expand_token(char *str, t_list *env, t_data *data)
 {
 	t_list	*head;
 	t_list	*token;
@@ -185,12 +152,12 @@ t_list	*ft_expand_token(char *str, t_list *env, t_data *data)
 	char	**words;
 	int		i;
 
-	exp_string = ft_expand_string(str, env, data);
+	exp_string = expand_string(str, env, data);
 	if (!exp_string)
 		return (NULL);
 	if (ft_find_n_word4(exp_string, ' ') <= 1)
 		return (ft_lstnew(exp_string, 0));
-	words = ft_split_alt(exp_string, ' ');
+	words = split_alt(exp_string, ' ');
 	if (!words)
 		return (NULL);
 	i = 0;

@@ -20,14 +20,14 @@ typedef struct s_heredoc
 	int		status;	
 }	t_heredoc;
 
-void	close_heredoc(int fd, int fd_cpy)
+static void	close_heredoc(int fd, int fd_cpy)
 {
 	close(fd);
 	dup2(fd_cpy, STDIN_FILENO); // зачем
 	close(fd_cpy);
 }
 
-int	get_heredoc(char *delimiter, t_list *env, int *my_fd)
+static int	get_heredoc(char *delimiter, t_list *env, int *my_fd)
 {
 	t_heredoc	a;
 
@@ -38,7 +38,7 @@ int	get_heredoc(char *delimiter, t_list *env, int *my_fd)
 	a.line = readline(">");
 	while (a.line && ft_strcmp(a.line, delimiter) != 0)
 	{
-		a.line = ft_strjoin(ft_expand_string(a.line, env, NULL), "\n"); ///
+		a.line = ft_strjoin(expand_string(a.line, env, NULL), "\n"); ///
 		if (!a.line && a.status++ < 2)
 			break ;
 		ft_remove_quotes_string(a.line);

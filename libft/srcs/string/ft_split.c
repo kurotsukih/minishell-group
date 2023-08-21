@@ -62,7 +62,7 @@ static char	*ft_add_word(char const *s, char c, int *pos)
 	return (word);
 }
 
-static void	*ft_free(char **s)
+static void	*free_(char **s)
 {
 	int	i;
 
@@ -92,7 +92,7 @@ char	**ft_split(char const *s, char c)
 	{
 		returner[i_word] = ft_add_word(s, c, &i);
 		if (!returner[i_word])
-			return (ft_free(returner));
+			return (free_(returner));
 		i_word++;
 	}
 	returner[i_word] = 0;

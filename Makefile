@@ -2,16 +2,15 @@ SRCS = main.c \
 	   util1.c \
 	   util2_clean.c \
 	   utils3_add_spaces.c \
+	   utils4.c \
+	   parsing1.c \
+	   parsing2_check_tokens.c \
+	   parsing3_open_heredocs.c \
 	   parsing/expand_string.c \
 	   parsing/expand_token.c \
-	   parsing/check_tokens.c \
-	   parsing/assign_types.c \
-	   parsing/open_heredocs.c \
 	   parsing/make_tree.c \
-	   execution/execute_builtin.c \
-	   execution/execute_builtins_1.c \
-	   execution/execute_builtins_2.c \
-	   execution/execute_builtins_3.c \
+	   execution/execute_builtins.c \
+	   execution/execute_builtins2.c \
 	   execution/preprocess.c \
 	   execution/preprocess_cmd.c \
 	   execution/prepare_pipe.c \

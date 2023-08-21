@@ -23,7 +23,7 @@ getcwd chdir stat lstat fstat unlink execve dup dup2 pipe
 opendir readdir closedir
 strerror perror
 isatty ttyname ttyslot ioctl
-getenv
+geten v
 tcsetattr tcgetattr tgetent tgetflag tgetnum tgetstr tgoto tputs
 
 SIGIN T = the user types C-c
@@ -42,34 +42,34 @@ list->typ e      - default or not */
 
 int g_signal = 0;
 
-void	init(char **env, t_data *data)
+void	init(char **env, t_data *d)
 {
-	t_list	*token;
+	t_list	*t;
 	char	*str;
 	int		i;
 
 	signal(SIGQUIT, SIG_IGN);
 	signal(SIGINT, &sig_handler_main);
-	data->env = NULL;
+	d->env = NULL;
 	i = 0;
 	while (env[i])
 	{
 		str = ft_strdup(env[i]);
 		if (!str)
 		{
-			exit_(-1, NULL, NULL, &(data->env), &free, NULL);
+			exit_(-1, NULL, NULL, &(d->env), &free, NULL);
 			return ;
 		}
-		token = ft_lstnew(str, 0);
-		if (!token)
+		t = ft_lstnew(str, 0);
+		if (!t)
 		{
-			exit_(-1, NULL, NULL, &token, &free, &str);
+			exit_(-1, NULL, NULL, &t, &free, &str);
 			return ;
 		}
-		ft_lstadd_back(&data->env, token);
+		ft_lstadd_back(&d->env, t);
 		i++;
 	}
-	data->exit_code = 0;
+	d->exit_code = 0;
 }
 
 t_list	*add_token(char *cdm_with_spaces, int i_beg, int i_end, t_data *d)
@@ -91,94 +91,12 @@ t_list	*add_token(char *cdm_with_spaces, int i_beg, int i_end, t_data *d)
 	}
 	new_str[i] = '\0';
 	if (ft_strchr(new_str, '$'))
-		n = ft_expand_token(new_str, d->env, d);
+		n = expand_token(new_str, d->env, d);
 	else
 		n = ft_lstnew(new_str, 0);
 	if (!n)
 		return (NULL);
 	return (n);
-}
-
-int	is_token(char c, int checker)
-{
-	static char	mode;
-
-	if (checker == 1)
-	{
-		if (mode == 0)
-			return (1);
-		return (mode = 0);
-	}
-	else if (mode == 'd' || (c == '\"' && mode == 0))
-	{
-		if (mode == 0)
-			mode = 'd';
-		else if (c == '\"')
-			mode = 0;
-	}
-	else if (mode == 's' || (c == '\'' && mode == 0))
-	{
-		if (mode == 0)
-			mode = 's';
-		else if (c == '\'')
-			mode = 0;
-	}
-	else if (ft_isspace(c) == 1)
-		return (0);
-	return (1);
-}
-
-// each key word into token : cat || ls  -> ['cat', '|', 'ls']
-t_list	*tokenization(char *cmd, t_data *data)
-{
-	t_list	*head;
-	int		i_beg;
-	int		i_end;
-	t_list	*token;
-	char	*cmd_with_spaces;
-
-	cmd_with_spaces = add_spaces(cmd);
-	if (!cmd_with_spaces)
-		return (NULL);
-	i_beg = 0;
-	head = NULL;
-	while (cmd_with_spaces[i_beg])
-	{
-		i_end = i_beg;
-		while (cmd_with_spaces[i_end] && is_token(cmd_with_spaces[i_end], 0))
-			i_end++;
-		token = add_token(cmd_with_spaces, i_beg, i_end, data);
-		if (!token)
-			return (exit_(-1, NULL, NULL, &head, &free, NULL), NULL);
-		ft_lstadd_back(&head, token);
-		i_beg = i_end + 1;
-	}
-	if (is_token(0, 1) == 0)
-		return (exit_(-1, "BASH: unclosed quotes\n", NULL, &head, &free, NULL), NULL);
-	ft_remove_quotes_list(head);
-	free(cmd_with_spaces);
-	return (head);
-}
-
-int	parse(char *cmd, t_list *env, t_data *data)
-{
-	t_list	*head;
-	int		code;
-
-	head = tokenization(cmd, data);
-	if (!head)
-		return (data->exit_code = 255, 255);
-	assign_types(head);
-	if (check_tokens(head) == 0)
-		return (data->exit_code = 2, free_redirections(head), 2);
-	code = open_heredocs(head, env);
-	if (code != 0)
-		return (data->exit_code = code, free_redirections(head), code);
-	data->n = NULL;
-	data->n = make_tree(head, NULL);
-	if (data->n == NULL)
-		return (data->exit_code = 255, free_redirections(head), 255);
-	return (0);
 }
 
 int	main(int argc, char **argv, char **env)

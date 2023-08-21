@@ -100,27 +100,26 @@ char	*ft_open_all_files(t_list *token, t_cmd *cmd);
 void	ft_execute_pwd(void);
 void	ft_execute_unset(t_list **env, t_list *token);
 int		ft_execute_exit(t_data *data, t_node *n, t_list *token);
-void	ft_execute_env(t_list *env);
-void	ft_execute_echo(t_list *token);
 int		ft_execute_export(t_list *params, t_list **env);
-int		ft_execute_cd(t_list *params, t_list *env);
 
-char	*ft_strchr_alt(const char *s, int c);
-int		ft_size_expanded(char *str, char *value, char *end);
-char	*ft_strjoin_big(char *str, char *value, char *end);
-int		ft_find_key(char *str);
-char	*ft_find_value(char *key, int i_pos, t_list *env, t_data *data);
+char	*strchr_alt(const char *s, int c);
+int		size_expanded(char *str, char *value, char *end);
+char	*strjoin_big(char *str, char *value, char *end);
+int		find_key(char *str);
+char	*find_value(char *key, int i_pos, t_list *env, t_data *data);
 
-char	*ft_expand_string(char *str, t_list *env, t_data *data);
+char	*expand_string(char *str, t_list *env, t_data *data);
 t_list	*ft_free_expand_token(char **words, t_list **head);
-char	**ft_split_alt(char const *s, char c);
-t_list	*ft_expand_token(char *str, t_list *env, t_data *data);
 
 t_list	*add_token(char *str, int i_beg, int i_end, t_data *data);
 
 void	ft_preprocess_cmd(t_cmd *cmds, t_list *token);
 
-//// utils
+// parsing
+int		parse(char *cmd, t_list *env, t_data *data);
+t_list	*expand_token(char *str, t_list *env, t_data *data);
+
+// utils
 void	sig_handler_main(int signal);
 void	sig_handler_fork(int signal);
 void	sig_handler_heredoc(int signal);
@@ -130,5 +129,10 @@ void	ft_remove_quotes_list(t_list *head);
 void	exit_(int exit_code, char *msg, char *msg_param, t_list **lst_to_clear, void (*func_to_clear_lst)(void*), char **str_to_sree);
 void	ft_clean_fds(t_cmd *cmd);
 void	ft_clean_tree(t_node *n);
+int		ft_isnum(char *str);
+int		ft_abs(int num);
+void	ft_bubble_sort_list(t_list *head);
+int		ft_strcmp_alt(char *str);
+void	*free_charchar(char **s);
 
 #endif
