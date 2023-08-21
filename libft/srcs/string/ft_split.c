@@ -37,7 +37,7 @@ static int	ft_find_n_word3(char const *s, char c)
 	return (n);
 }
 
-static char	*ft_add_word(char const *s, char c, int *pos)
+static char	*add_word(char const *s, char c, int *pos)
 {
 	char	*word;
 	int		word_len;
@@ -90,7 +90,7 @@ char	**ft_split(char const *s, char c)
 	i_word = 0;
 	while (i_word < n_word)
 	{
-		returner[i_word] = ft_add_word(s, c, &i);
+		returner[i_word] = add_word(s, c, &i);
 		if (!returner[i_word])
 			return (free_(returner));
 		i_word++;

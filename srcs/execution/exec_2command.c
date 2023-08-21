@@ -45,7 +45,7 @@ static void	ft_wait_child_processes(int *is_success, int size, int pid)
 }
 
 // Add a moment when there can be only one command and it is builtin
-int	ft_execute(t_cmd *cmd, t_data *data, t_node *n)
+int	ft_execute(t_cmd *cmd, t_data *d, t_node *n)
 {
 	int	pid;
 	int	exit_c;
@@ -64,10 +64,10 @@ int	ft_execute(t_cmd *cmd, t_data *data, t_node *n)
 			exit_(-1, NULL, NULL, NULL, NULL, NULL);
 		ft_clean_fds(cmd);
 		if (cmd->params && ft_is_builtin(cmd->params) == 1)
-			exit_c = ft_execute_builtin(cmd, data, n);
+			exit_c = ft_execute_builtin(cmd, d, n);
 		else if (cmd->params)
-			exit_c = ft_execute_program(cmd, data->env, n);
-		return (ft_clean_tree(n), free_redirections(*(&(data->env))), exit(exit_c), 0);
+			exit_c = ft_execute_program(cmd, d->env, n);
+		return (ft_clean_tree(n), free_redirections(*(&(d->env))), exit(exit_c), 0);
 	}
 	else if (cmd->in_fd != 0)
 		close(cmd->in_fd);
@@ -100,7 +100,7 @@ int	check(t_cmd *cmd, int count, int result)
 	return (0);
 }
 
-int	ft_exec_command(t_node *n, t_data *data)
+int	ft_exec_command(t_node *n, t_data *d)
 {
 	int	i_cmd;
 	int	num;
@@ -115,9 +115,9 @@ int	ft_exec_command(t_node *n, t_data *data)
 	{
 		result = ft_prepare_pipe(n, i_cmd);
 		if (check(&(n->cmds[i_cmd]), n->count_cmd, result) && num++ >= 0)
-			pid = ft_execute(&n->cmds[i_cmd], data, n);
+			pid = ft_execute(&n->cmds[i_cmd], d, n);
 		else if (result == 0 && n->count_cmd == 1)
-			result = ft_execute_builtin(&n->cmds[i_cmd], data, n);
+			result = ft_execute_builtin(&n->cmds[i_cmd], d, n);
 		i_cmd++;
 	}
 	ft_wait_child_processes(&result, num, pid);

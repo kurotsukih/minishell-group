@@ -58,46 +58,46 @@ void	ft_execute_env(t_list *env)
 	}
 }
 
-int	ft_execute_exit(t_data *data, t_node *n, t_list *token)
+int	ft_execute_exit(t_data *d, t_node *n, t_list *token)
 {
 	char	*str;
 	int		code;
 
 	if (!token)
 	{
-		code = data->exit_code;
-		return (ft_clean_tree(n), free_redirections(*(&(data->env))), exit(code), 0);
+		code = d->exit_code;
+		return (ft_clean_tree(n), free_redirections(*(&(d->env))), exit(code), 0);
 	}
 	str = (char *)token->content;
 	if (ft_isnum(str) != 1)
 	{
 		exit_(-1, "bash: exit: %s: numeric argument required", str, NULL, NULL, NULL);
-		return (ft_clean_tree(n), free_redirections(*(&(data->env))), exit(2), 0);
+		return (ft_clean_tree(n), free_redirections(*(&(d->env))), exit(2), 0);
 	}
 	if (ft_lstsize(token) > 1)
 		return (exit_(-1, "bash: exit: too many arguments\n", NULL, NULL, NULL, NULL), 1);
 	code = ft_abs(ft_atoi(str) % 256);
-	return (ft_clean_tree(n), free_redirections(*(&(data->env))), exit(code), 0);
+	return (ft_clean_tree(n), free_redirections(*(&(d->env))), exit(code), 0);
 }
 
-int	ft_execute_builtin(t_cmd *cmd, t_data *data, t_node *n)
+int	ft_execute_builtin(t_cmd *cmd, t_data *d, t_node *n)
 {
 	int	result;
 
 	result = 0;
 	if (ft_strcmp((char *)cmd->params->content, "cd") == 0)
-		result = ft_execute_cd(cmd->params->next, data->env);
+		result = ft_execute_cd(cmd->params->next, d->env);
 	else if (ft_strcmp((char *)cmd->params->content, "pwd") == 0)
 		ft_execute_pwd();
 	else if (ft_strcmp((char *)cmd->params->content, "echo") == 0)
 		ft_execute_echo(cmd->params->next);
 	else if (ft_strcmp((char *)cmd->params->content, "export") == 0)
-		result = ft_execute_export(cmd->params->next, &data->env);
+		result = ft_execute_export(cmd->params->next, &d->env);
 	else if (ft_strcmp((char *)cmd->params->content, "unset") == 0)
-		ft_execute_unset(&data->env, cmd->params->next);
+		ft_execute_unset(&d->env, cmd->params->next);
 	else if (ft_strcmp((char *)cmd->params->content, "env") == 0)
-		ft_execute_env(data->env);
+		ft_execute_env(d->env);
 	else if (ft_strcmp((char *)cmd->params->content, "exit") == 0)
-		result = ft_execute_exit(data, n, cmd->params->next);
+		result = ft_execute_exit(d, n, cmd->params->next);
 	return (result);
 }

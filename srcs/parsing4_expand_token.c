@@ -1,6 +1,6 @@
 #include "minishell.h"
 
-t_list	*ft_free_expand_token(char **words, t_list **head)
+static t_list	*free_expand_token(char **words, t_list **head)
 {
 	int	i;
 
@@ -36,7 +36,7 @@ static int	skip(char const *str, int i, char c)
 	return (i);
 }
 
-int	ft_find_n_word4(char const *s, char c)
+int	find_n_word4(char const *s, char c)
 {
 	int	i;
 	int	n;
@@ -63,7 +63,7 @@ int	ft_find_n_word4(char const *s, char c)
 	return (n);
 }
 
-static int	ft_strlen_alt(const char *str, int i_pos)
+static int	strlen_alt(const char *str, int i_pos)
 {
 	char	mode;
 	int		size;
@@ -90,7 +90,7 @@ static int	ft_strlen_alt(const char *str, int i_pos)
 	return (size);
 }
 
-static char	*ft_add_word(char const *s, char c, int *pos)
+static char	*add_word(char const *s, char c, int *pos)
 {
 	char	*word;
 	int		word_len;
@@ -98,7 +98,7 @@ static char	*ft_add_word(char const *s, char c, int *pos)
 
 	while (s[*pos] == c)
 		*pos = *pos + 1;
-	word_len = ft_strlen_alt(s, *pos);
+	word_len = strlen_alt(s, *pos);
 	word = (char *)malloc(word_len + 1);
 	if (!word)
 		return (NULL);
@@ -122,7 +122,7 @@ static char	**split_alt(char const *s, char c)
 
 	if (!s)
 		return (NULL);
-	n_word = ft_find_n_word4(s, c);
+	n_word = find_n_word4(s, c);
 	returner = (char **)malloc(sizeof(char *) * (n_word + 1));
 	if (!returner)
 		return (NULL);
@@ -130,7 +130,7 @@ static char	**split_alt(char const *s, char c)
 	i_word = 0;
 	while (i_word < n_word)
 	{
-		returner[i_word] = ft_add_word(s, c, &i);
+		returner[i_word] = add_word(s, c, &i);
 		if (!returner[i_word])
 			return (free_charchar(returner));
 		i_word++;
@@ -144,7 +144,7 @@ static char	**split_alt(char const *s, char c)
 // env var and env var contains a space,
 // a="s -la"   > l$a -> ls -la
 // $a=" "      > ls$a-la$a"Makefile" -> ls -la Makefile 
-t_list	*expand_token(char *str, t_list *env, t_data *data)
+t_list	*expand_token(char *str, t_list *env, t_data *d)
 {
 	t_list	*head;
 	t_list	*token;
@@ -152,10 +152,10 @@ t_list	*expand_token(char *str, t_list *env, t_data *data)
 	char	**words;
 	int		i;
 
-	exp_string = expand_string(str, env, data);
+	exp_string = expand_string(str, env, d);
 	if (!exp_string)
 		return (NULL);
-	if (ft_find_n_word4(exp_string, ' ') <= 1)
+	if (find_n_word4(exp_string, ' ') <= 1)
 		return (ft_lstnew(exp_string, 0));
 	words = split_alt(exp_string, ' ');
 	if (!words)
@@ -166,7 +166,7 @@ t_list	*expand_token(char *str, t_list *env, t_data *data)
 	{
 		token = ft_lstnew(words[i], 11);
 		if (!token)
-			return (ft_free_expand_token(words, &head));
+			return (free_expand_token(words, &head));
 		ft_lstadd_back(&head, token);
 		i++;
 	}

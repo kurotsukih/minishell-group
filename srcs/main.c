@@ -72,42 +72,15 @@ void	init(char **env, t_data *d)
 	d->exit_code = 0;
 }
 
-t_list	*add_token(char *cdm_with_spaces, int i_beg, int i_end, t_data *d)
-{
-	char	*new_str;
-	t_list	*n;
-	int		i;
-
-	if (i_beg == i_end)
-		i_end++;
-	new_str = (char *)malloc((i_end - i_beg + 1));
-	if (!new_str)
-		return (NULL);
-	i = 0;
-	while (i < i_end - i_beg)
-	{
-		new_str[i] = cdm_with_spaces[i + i_beg];
-		i++;
-	}
-	new_str[i] = '\0';
-	if (ft_strchr(new_str, '$'))
-		n = expand_token(new_str, d->env, d);
-	else
-		n = ft_lstnew(new_str, 0);
-	if (!n)
-		return (NULL);
-	return (n);
-}
-
 int	main(int argc, char **argv, char **env)
 {
-	t_data	data;
+	t_data	d;
 	char	*cmd;
 
 	(void)argc;
 	(void)argv;
 	cmd = NULL;
-	init(env, &data);
+	init(env, &d);
 	while (1)
 	{
 		cmd = readline("$");
@@ -116,14 +89,14 @@ int	main(int argc, char **argv, char **env)
 		if (g_signal == 1)
 		{
 			g_signal = 0;
-			data.exit_code = 130;
+			d.exit_code = 130;
 			continue;
 		}
 		add_history(cmd);
-		data.exit_code = parse(cmd, data.env, &data);
-		if (data.exit_code == 0)
-			ft_execution(&data);
-		ft_clean_tree(data.n);
+		d.exit_code = parse(cmd, d.env, &d);
+		if (d.exit_code == 0)
+			ft_execution(&d);
+		ft_clean_tree(d.n);
 	}
-	return (free_redirections(data.env), data.exit_code);
+	return (free_redirections(d.env), d.exit_code);
 }

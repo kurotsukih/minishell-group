@@ -30,6 +30,33 @@ static int	is_token(char c, int checker)
 	return (1);
 }
 
+static t_list	*add_token(char *cdm_with_spaces, int i_beg, int i_end, t_data *d)
+{
+	char	*new_str;
+	t_list	*n;
+	int		i;
+
+	if (i_beg == i_end)
+		i_end++;
+	new_str = (char *)malloc((i_end - i_beg + 1));
+	if (!new_str)
+		return (NULL);
+	i = 0;
+	while (i < i_end - i_beg)
+	{
+		new_str[i] = cdm_with_spaces[i + i_beg];
+		i++;
+	}
+	new_str[i] = '\0';
+	if (ft_strchr(new_str, '$'))
+		n = expand_token(new_str, d->env, d);
+	else
+		n = ft_lstnew(new_str, 0);
+	if (!n)
+		return (NULL);
+	return (n);
+}
+
 t_list	*tokenization(char *cmd, t_data *d)
 {
 	t_list	*head;
@@ -61,7 +88,7 @@ t_list	*tokenization(char *cmd, t_data *d)
 	return (head);
 }
 
-static void	ft_assign_type(t_list *n, int is_filename)
+static void	assign_type(t_list *n, int is_filename)
 {
 	if (!ft_strcmp(n->content, "|") && n->type == INDEF)
 		n->type = PIPE;
@@ -96,7 +123,7 @@ void	assign_types(t_list *n)
 	is_filename = 0;
 	while (n)
 	{
-		ft_assign_type(n, is_filename);
+		assign_type(n, is_filename);
 		is_filename = 0;
 		if (n->type == REDIR_IN || n->type == REDIR_IN || n->type == HEREDOC || n->type == REDIR_OUT2)
 			is_filename = 1;
@@ -104,23 +131,23 @@ void	assign_types(t_list *n)
 	}
 }
 
-int	parse(char *cmd, t_list *env, t_data *data)
+int	parse(char *cmd, t_list *env, t_data *d)
 {
 	t_list	*head;
 	int		code;
 
-	head = tokenization(cmd, data);
+	head = tokenization(cmd, d);
 	if (!head)
-		return (data->exit_code = 255, 255);
+		return (d->exit_code = 255, 255);
 	assign_types(head);
 	if (check_tokens(head) == 0)
-		return (data->exit_code = 2, free_redirections(head), 2);
+		return (d->exit_code = 2, free_redirections(head), 2);
 	code = open_heredocs(head, env);
 	if (code != 0)
-		return (data->exit_code = code, free_redirections(head), code);
-	data->n = NULL;
-	data->n = make_tree(head, NULL);
-	if (data->n == NULL)
-		return (data->exit_code = 255, free_redirections(head), 255);
+		return (d->exit_code = code, free_redirections(head), code);
+	d->n = NULL;
+	d->n = make_tree(head, NULL);
+	if (d->n == NULL)
+		return (d->exit_code = 255, free_redirections(head), 255);
 	return (0);
 }

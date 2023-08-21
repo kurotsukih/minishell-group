@@ -84,14 +84,14 @@ int		open_heredocs(t_list *head, t_list *env);
 t_node	*make_tree(t_list *token, t_node *parent);
 
 int		ft_preprocess(t_node *n);
-int		ft_exec_command(t_node *n, t_data *data);
+int		ft_exec_command(t_node *n, t_data *d);
 
 int		ft_prepare_pipe(t_node *n, int i_cmd);
 int		ft_is_builtin(t_list *token);
 int		ft_execute_program(t_cmd *cmd, t_list *env, t_node *n);
-int		ft_execute_builtin(t_cmd *cmd, t_data *data, t_node *n);
+int		ft_execute_builtin(t_cmd *cmd, t_data *d, t_node *n);
 
-void	ft_execution(t_data *data);
+void	ft_execution(t_data *d);
 
 int		ft_find_path(char *cmd, t_list *env, char **place);
 int		ft_open_in(t_list *token, int fd);
@@ -99,25 +99,20 @@ int		ft_open_out(t_list *token, int fd);
 char	*ft_open_all_files(t_list *token, t_cmd *cmd);
 void	ft_execute_pwd(void);
 void	ft_execute_unset(t_list **env, t_list *token);
-int		ft_execute_exit(t_data *data, t_node *n, t_list *token);
+int		ft_execute_exit(t_data *d, t_node *n, t_list *token);
 int		ft_execute_export(t_list *params, t_list **env);
 
 char	*strchr_alt(const char *s, int c);
 int		size_expanded(char *str, char *value, char *end);
 char	*strjoin_big(char *str, char *value, char *end);
-int		find_key(char *str);
-char	*find_value(char *key, int i_pos, t_list *env, t_data *data);
 
-char	*expand_string(char *str, t_list *env, t_data *data);
-t_list	*ft_free_expand_token(char **words, t_list **head);
-
-t_list	*add_token(char *str, int i_beg, int i_end, t_data *data);
+char	*expand_string(char *str, t_list *env, t_data *d);
 
 void	ft_preprocess_cmd(t_cmd *cmds, t_list *token);
 
 // parsing
-int		parse(char *cmd, t_list *env, t_data *data);
-t_list	*expand_token(char *str, t_list *env, t_data *data);
+int		parse(char *cmd, t_list *env, t_data *d);
+t_list	*expand_token(char *str, t_list *env, t_data *d);
 
 // utils
 void	sig_handler_main(int signal);

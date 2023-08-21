@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   ft_expand_string.c                                 :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: akalimol <akalimol@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/05/22 18:24:59 by akalimol          #+#    #+#             */
-/*   Updated: 2023/06/01 17:23:52 by akalimol         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "minishell.h"
 
 char	*strchr_alt(const char *s, int c)
@@ -141,7 +129,7 @@ char	*strjoin_big(char *str, char *value, char *end)
 	return (returner);
 }
 
-int	find_key(char *str)
+static int	find_key(char *str)
 {
 	int	i;
 
@@ -157,11 +145,11 @@ int	find_key(char *str)
 	return (i);
 }
 
-char	*find_value(char *key, int i_pos, t_list *env, t_data *data)
+static char	*find_value(char *key, int i_pos, t_list *env, t_data *d)
 {
 	if ((*key) == '?')
 	{
-		return (ft_itoa(data->exit_code));
+		return (ft_itoa(d->exit_code));
 	}
 	while (env)
 	{
@@ -173,7 +161,7 @@ char	*find_value(char *key, int i_pos, t_list *env, t_data *data)
 	return (NULL);
 }
 
-char	*expand_string(char *str, t_list *env, t_data *data)
+char	*expand_string(char *str, t_list *env, t_data *d)
 {
 	char	*temp;
 	char	*value;
@@ -187,7 +175,7 @@ char	*expand_string(char *str, t_list *env, t_data *data)
 	while (temp)
 	{
 		pos_key = find_key(temp + 1);
-		value = find_value(temp + 1, pos_key, env, data);
+		value = find_value(temp + 1, pos_key, env, d);
 		if (temp[1] == '?' && (temp[2] == ' ' || temp[2] == '\0'))
 			status = 1;
 		str = strjoin_big(str, value, temp + pos_key + 1);

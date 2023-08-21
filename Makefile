@@ -6,9 +6,9 @@ SRCS = main.c \
 	   parsing1.c \
 	   parsing2_check_tokens.c \
 	   parsing3_open_heredocs.c \
+	   parsing4_expand_token.c \
+	   parsing5_make_tree.c \
 	   parsing/expand_string.c \
-	   parsing/expand_token.c \
-	   parsing/make_tree.c \
 	   execution/execute_builtins.c \
 	   execution/execute_builtins2.c \
 	   execution/preprocess.c \
