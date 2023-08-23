@@ -170,7 +170,7 @@ int	mod_(char c)
 {
 	static char	mod = OUTSIDE_QUOTES;
 
-	if (c == REINIT_MOD)
+	if (c == REINIT_QUOTES_MOD)
 		return (mod = OUTSIDE_QUOTES, mod);
 	if (mod == OUTSIDE_QUOTES && c == '\'')
 		mod = INSIDE_SIMP_QUOTES;
@@ -199,3 +199,30 @@ char	*redirect_(char *s)
 		return ("");
 }
 
+//if $a="s -la" then l$a -> ls -la ???
+// static int	is_correct_token_(char *s, int len)
+// {
+// 	int	i;
+
+// 	if (s[0] == '\'' && s[len - 1] == '\'')
+// 	{
+// 		i = 0;
+// 		while (++i < len - 1)
+// 			if (s[i] == '\'' || s[i] == '\"')
+// 				return (0);
+// 		return (1);
+// 	}
+// 	if (s[0] == '\"' && s[len - 1] == '\"')
+// 	{
+// 		i = 0;
+// 		while (++i < len - 1)
+// 			if (s[i] == '\'' || s[i] == '\"' || len_dollar_convers(&s[i], len - i + 1) == -1)
+// 				return (0);
+// 		return (1);
+// 	}
+// 	i = -1;
+// 	while (++i < len)
+// 		if (s[i] == '\'' || s[i] == '\"' || len_dollar_convers(&s[i], len - i + 1) == -1 || (i < len - 1 && s[i] != '$' && s[i + 1] == '?'))
+// 			return (0);
+// 	return (1);
+// }

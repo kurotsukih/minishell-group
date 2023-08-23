@@ -29,7 +29,9 @@ int	init_new_elt(t_list **new)
 	(*new)->nxt = NULL;
 	(*new)->prv = NULL;
 	(*new)->cmd = NULL;
-	(*new)->params = NULL;
+	(*new)->args = NULL;
+	(*new)->nb_args = 0;
+	(*new)->redirect = NULL;
 	(*new)->is_filename = 0;
 	return (0);
 }
@@ -70,7 +72,7 @@ void print_cmd(t_list *cmd) /// ft_printf
 		printf("  cmd = NULL\n");
 		return ;
 	}
-	printf("  %p: [%s] [%s]\n", cmd, cmd->cmd, cmd->redirect);
+	printf("  %p: [%s] %d args [%s]\n", cmd, cmd->cmd, cmd->nb_args, cmd->redirect);
 }
 
 void print_list(t_list **l) /// ft_printf

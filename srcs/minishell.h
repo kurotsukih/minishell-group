@@ -28,7 +28,7 @@
 # include <dirent.h>
 # include "libft.h"
 
-# define REINIT_MOD 0
+# define REINIT_QUOTES_MOD 0
 # define OUTSIDE_QUOTES 0
 # define INSIDE_SIMP_QUOTES 1
 # define INSIDE_DOUB_QUOTES 2
@@ -38,8 +38,9 @@ extern int g_signal;
 // args = mixed args and options 
 typedef struct s_list
 {
-	char 			*cmd;
-	char 			**args;
+	char			*cmd;
+	char			**args;
+	int				nb_args;
 	char			*redirect;
 	int				is_filename;
 	int				in_fd;
