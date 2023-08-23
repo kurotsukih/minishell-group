@@ -1,14 +1,12 @@
 SRCS = main.c \
 	   util1.c \
-	   util2_clean.c \
-	   utils3_add_spaces.c \
+	   utils_list.c \
 	   utils4.c \
 	   parsing1.c \
 	   parsing2_check_tokens.c \
-	   parsing3_open_heredocs.c \
 	   parsing4_expand_token.c \
-	   parsing5_make_tree.c \
-	   parsing/expand_string.c \
+	   parsing5_expand_string.c \
+	   parsing6_expand_dollar_conversions.c \
 	   execution/execute_builtins.c \
 	   execution/execute_builtins2.c \
 	   execution/preprocess.c \

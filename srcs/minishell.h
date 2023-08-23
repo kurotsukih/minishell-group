@@ -10,11 +10,6 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-/* extern следующие за ним типы и имена переменных объявляются где-то в другом месте. 
-Позволяет компилятору знать о типах ипеременных без действительного создания их. 
-Когда два модуля объединяются, все ссылки на внешние переменные пересматриваются.
-*/
-
 #ifndef MAIN_H
 # define MAIN_H
 
@@ -33,101 +28,58 @@
 # include <dirent.h>
 # include "libft.h"
 
+# define NO_USED 0
+# define OUTSIDE_QUOTES 0
+# define INSIDE_SIMP_QUOTES 1
+# define INSIDE_DOUB_QUOTES 2
+
 extern int g_signal;
 
-# define INDEF 0
-# define PIPE 1
-# define OR 2
-# define AND 3
-# define LEFT_P 4
-# define RIGHT_P 5
-# define REDIR_IN 6
-# define REDIR_OUT 7
-# define HEREDOC 8
-# define REDIR_OUT2 9
-# define FILENAME 10
-# define PARAM 11
-
+// tokens[0] = cmd, tokens[i] = mixed args and options 
 typedef struct s_cmd
 {
-	t_list			*params;
-	t_list			*redir;
+	char 			**tokens;
+	int				nb_tokens;
+	struct s_cmd	*nxt;
+	struct s_cmd	*prv;
+	char			*redirect;
+	int				is_filename;
 	int				in_fd;
 	int				out_fd;
-	int				out_pipe_fd;
+	int				exit_code;
 } t_cmd;
 
-typedef struct s_node
-{
-	t_list			*elems;
-	t_cmd			*cmds;
-	int				count_cmd;
-	int				type;
-	struct s_node	*parent;
-	struct s_node	*left;
-	struct s_node	*right;
-	int				is_micro;
-	int				exit_code;
-} t_node;
-
-typedef struct s_data
-{
-	t_list			*env;
-	t_node			*n;
-	int				exit_code;
-} t_data;
-
-char	*add_spaces(char *str);
-void	assign_types(t_list *n);
-int		check_tokens(t_list *n);
-int		open_heredocs(t_list *head, t_list *env);
-t_node	*make_tree(t_list *token, t_node *parent);
-
-int		ft_preprocess(t_node *n);
-int		ft_exec_command(t_node *n, t_data *d);
-
-int		ft_prepare_pipe(t_node *n, int i_cmd);
-int		ft_is_builtin(t_list *token);
-int		ft_execute_program(t_cmd *cmd, t_list *env, t_node *n);
-int		ft_execute_builtin(t_cmd *cmd, t_data *d, t_node *n);
-
-void	ft_execution(t_data *d);
-
-int		ft_find_path(char *cmd, t_list *env, char **place);
-int		ft_open_in(t_list *token, int fd);
-int		ft_open_out(t_list *token, int fd);
-char	*ft_open_all_files(t_list *token, t_cmd *cmd);
-void	ft_execute_pwd(void);
-void	ft_execute_unset(t_list **env, t_list *token);
-int		ft_execute_exit(t_data *d, t_node *n, t_list *token);
-int		ft_execute_export(t_list *params, t_list **env);
-
-char	*strchr_alt(const char *s, int c);
-int		size_expanded(char *str, char *value, char *end);
-char	*strjoin_big(char *str, char *value, char *end);
-
-char	*expand_string(char *str, t_list *env, t_data *d);
-
-void	ft_preprocess_cmd(t_cmd *cmds, t_list *token);
-
 // parsing
-int		parse(char *cmd, t_list *env, t_data *d);
-t_list	*expand_token(char *str, t_list *env, t_data *d);
+int		parse(char *cmd, char **env);
 
 // utils
+char	*alphanum_(char *s);
 void	sig_handler_main(int signal);
 void	sig_handler_fork(int signal);
 void	sig_handler_heredoc(int signal);
-void	free_redirections(t_list *head);
 void	ft_remove_quotes_string(char *str);
-void	ft_remove_quotes_list(t_list *head);
-void	exit_(int exit_code, char *msg, char *msg_param, t_list **lst_to_clear, void (*func_to_clear_lst)(void*), char **str_to_sree);
-void	ft_clean_fds(t_cmd *cmd);
-void	ft_clean_tree(t_node *n);
+void	ft_remove_quotes_list(t_cmd *head);
+void	exit_(int exit_code, char *msg, char *msg_param, t_cmd **lst_to_clear, char **str_to_sree);
 int		ft_isnum(char *str);
 int		ft_abs(int num);
-void	ft_bubble_sort_list(t_list *head);
+void	ft_bubble_sort_cmd(t_cmd *head);
 int		ft_strcmp_alt(char *str);
 void	*free_charchar(char **s);
+char	*strdup_(char *s, size_t len);
+void	print_cmds(t_cmd **cmd);
+
+// utils list
+int			ft_lstsize(t_cmd *lst);
+int			ft_lstremove(t_cmd **lst, t_cmd *node);
+void		ft_lstadd_front(t_cmd **lst, t_cmd *new_node);
+void		ft_lstadd_back(t_cmd **lst, t_cmd *new_node);
+void		ft_lstdelone(t_cmd *lst);
+void		ft_lstclear(t_cmd **lst);
+void		ft_lstiter(t_cmd *lst, void (*f)(void *));
+t_cmd		*ft_lstnew();
+t_cmd		*ft_lstlast(t_cmd *lst);
+t_cmd		*ft_lstmap(t_cmd *lst, void *(*f)(void *), void (*del)(void *));
+t_cmd		*ft_lstretrieve(t_cmd **lst, t_cmd *node);
+t_cmd		*ft_lstfirst(t_cmd *lst);
 
 #endif

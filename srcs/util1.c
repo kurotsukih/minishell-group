@@ -32,19 +32,19 @@ void	sig_handler_fork(int signal)
 		exit(131);
 }
 
-void	free_redirections(t_list *head)
-{
-	t_list	*token;
+// void	free_redirections(t_cmd *head)
+// {
+// 	t_cmd	*token;
 
-	token = head;
-	while (token)
-	{
-		if (token->type == HEREDOC && token->next && token->next->next)
-			close(*((int *)token->content));
-		token = token->next;
-	}
-	ft_lstclear(&head, &free);
-}
+// 	token = head;
+// 	while (token)
+// 	{
+// 		if (token->type == HEREDOC && token->next && token->next->next)
+// 			close(*((int *)token->content));
+// 		token = token->next;
+// 	}
+// 	ft_lstclear(&head);
+// }
 
 void	*ft_memset(void *b, int c, size_t len)
 {
@@ -92,21 +92,21 @@ void	ft_remove_quotes_string(char *str)
 		str[j++] = '\0';
 }
 
-void	ft_remove_quotes_list(t_list *head)
-{
-	t_list	*token;
-	char	*str;
+// void	ft_remove_quotes_list(t_cmd *cmd)
+// {
+// 	t_cmd	*cur;
+// 	char	*str;
 
-	token = head;
-	while (token)
-	{
-		str = (char *)token->content;
-		ft_remove_quotes_string(str);
-		token = token->next;
-	}
-}
+// 	cur = cmd;
+// 	while (cur)
+// 	{
+// 		str = (char *)cur->content;
+// 		ft_remove_quotes_string(str);
+// 		cur = cur->nxt;
+// 	}
+// }
 
-void	exit_(int exit_code, char *msg, char *msg_param, t_list **lst_to_clear, void (*func_to_clear_lst)(void*), char **str_to_free)
+void	exit_(int exit_code, char *msg, char *msg_param, t_cmd **lst_to_clear, char **str_to_free)
 {
 	if (msg == NULL)
 		printf("%s\n", strerror(errno));
@@ -115,9 +115,86 @@ void	exit_(int exit_code, char *msg, char *msg_param, t_list **lst_to_clear, voi
 	else if (msg != NULL && msg_param != NULL)
 		printf(msg, msg_param);
 	if (lst_to_clear != NULL)
-	ft_lstclear(lst_to_clear, func_to_clear_lst);
+	ft_lstclear(lst_to_clear);
 	if (str_to_free != NULL)
 		free(*str_to_free);
 	if (exit_code != -1)
 		exit(exit_code);
 }
+
+char *alphanum_(char *s)
+{
+	int		i;
+	char	*alphanum;
+
+	if ((s[0] < 'a' || s[0] > 'z') && (s[0] < 'A' && s[0] > 'Z'))
+		return("");
+	i = 0;
+	while ((s[i] >= '0' && s[i] < '9') || (s[i] >= 'a' && s[i] < 'z') || (s[i] >= 'A' && s[i] < 'Z'))
+		i++;
+	alphanum = NULL;
+	alphanum = (char *)malloc(i + 1);
+	if (alphanum == NULL)
+		return (""); // -1 ?
+	i = 0;
+	while ((s[i] >= '0' && s[i] < '9') || (s[i] >= 'a' && s[i] < 'z') || (s[i] >= 'A' && s[i] < 'Z'))
+	{
+		alphanum[i] = s[i];
+		i++;
+	}
+	alphanum[i] = '\0';
+	return (alphanum);
+}
+
+char *strdup_(char *s, size_t len)
+{
+	size_t	i;
+	char	*strdup;
+
+	strdup = NULL;
+	strdup = (char *)malloc(len + 1);
+	if (strdup == NULL)
+		return (""); // -1 ?
+	i = 0;
+	while (i < len)
+	{
+		strdup[i] = s[i];
+		i++;
+	}
+	strdup[i] = '\0';
+	return (strdup);
+}
+
+void print_cmd(t_cmd *cmd) /// ft_printf
+{	
+	if (cmd == NULL)
+	{
+		printf("empty\n");
+		return ;
+	}
+	printf("  %14p tokens: \n", cmd);
+	// while(i < cur->nb_tokens)
+	// 	printf("[%s] ", cur->tokens[i]);
+	printf("\n");
+}
+
+void print_cmds(t_cmd **cmds) /// ft_printf
+{
+	t_cmd	*cmd;
+
+	printf("LIST %14p: ", cmds);
+	if (cmds == NULL)
+	{
+		printf("empty\n");
+		return ;
+	}
+	printf("\n");
+	cmd = *cmds;
+//	while (cur != NULL)
+	{
+		print_cmd(cmd);
+		cmd = cmd->nxt;
+	}
+	printf("end\n");
+}
+

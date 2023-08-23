@@ -1,15 +1,17 @@
 // #include "minishell.h"
 
-// char	*find_dollar_conversion(const char *s) //// много меняла
+// char	*strchr_alt(const char *s, int c)
 // {
 // 	int		i;
 // 	char	mode;
 
 // 	mode = '\0';
-// 	i = -1;
-// 	while (s[++i])
+// 	i = 0;
+// 	if (c < 0)
+// 		return (NULL);
+// 	while (s[i])
 // 	{
-// 		if      (mode == 0 && s[i] == '\'')
+// 		if (mode == 0 && s[i] == '\'')
 // 			mode = '\'';
 // 		else if (mode == '\'' && s[i] == '\'')
 // 			mode = '\0';
@@ -18,9 +20,12 @@
 // 		else if (mode == '\"' && s[i] == '\"')
 // 			mode = '\0';
 // 		else if (mode == '\0' || mode == '\"')
-// 			if (s[i] == '$' && (ft_isalnum(s[i + 1]) || s[i + 1] == '?'))
+// 			if (s[i] == c % 256 && (ft_isalnum(s[i + 1]) || s[i + 1] == '?'))
 // 				return ((char *)(s + i));
+// 		i++;
 // 	}
+// 	if (c == 0)
+// 		return ((char *)(s + i));
 // 	return (NULL);
 // }
 
@@ -51,7 +56,7 @@
 // 	return (size);
 // }
 
-// static int	new_size(char *str, char *value, char *end)
+// int	size_expanded(char *str, char *value, char *end)
 // {
 // 	char	mode;
 // 	int		size;
@@ -106,22 +111,22 @@
 
 // char	*strjoin_big(char *str, char *value, char *end)
 // {
-// 	char	*to_return;
+// 	char	*returner;
 // 	int		size;
 
-// 	size = new_size(str, value, end);
-// 	to_return = (char *)malloc(size + 1);
-// 	if (!to_return)
+// 	size = size_expanded(str, value, end);
+// 	returner = (char *)malloc(size + 1);
+// 	ft_memset(returner, '\0', size + 1); /// было memset_
+// 	if (!returner)
 // 		return (NULL);
-// 	ft_memset(to_return, '\0', size + 1); /// было memset_
 // 	if (str)
-// 		strlcat_alt(to_return, str, size + 1);
+// 		strlcat_alt(returner, str, size + 1);
 // 	if (value)
-// 		ft_strlcat(to_return, value, size + 1);
+// 		ft_strlcat(returner, value, size + 1);
 // 	if (end)
-// 		ft_strlcat(to_return, end, size + 1);
+// 		ft_strlcat(returner, end, size + 1);
 // 	free(str);
-// 	return (to_return);
+// 	return (returner);
 // }
 
 // static int	find_key(char *str)
@@ -140,14 +145,13 @@
 // 	return (i);
 // }
 
-// static char	*find_value(char *key, int i_pos, t_data *d)
+// static char	*find_value(char *key, int i_pos, t_lis t *env, t_data *d)
 // {
-// 	t_lis t *env;
-
 // 	if ((*key) == '?')
+// 	{
 // 		return (ft_itoa(d->exit_code));
-// 	env = d->env;
-// 	while (env) //// был отдельный аргумент t_lis t *env
+// 	}
+// 	while (env)
 // 	{
 // 		if (ft_strncmp((char *)env->content, key, i_pos) == 0)
 // 			if (((char *)env->content)[i_pos] == '=')
@@ -157,29 +161,29 @@
 // 	return (NULL);
 // }
 
-// char	*expand_dollar_conversions(char *str, t_lis t *env, t_data *d)
+// char	*expand_string(char *str, t_lis t *env, t_data *d)
 // {
-// 	char	*c;
+// 	char	*temp;
 // 	char	*value;
 // 	int		pos_key;
-// 	int		to_free_value;
+// 	int		status;
 
-// 	c = find_dollar_conversion(str);
-// 	if (!c)
+// 	temp = strchr_alt(str, '$');
+// 	status = 0;
+// 	if (!temp)
 // 		return (str);
-// 	to_free_value = 0;
-// 	while (c)
+// 	while (temp)
 // 	{
-// 		pos_key = find_key(c + 1);
-// 		value = find_value(c + 1, pos_key, d);
-// 		if (c[1] == '?' && (c[2] == ' ' || c[2] == '\0'))
-// 			to_free_value = 1;
-// 		str = strjoin_big(str, value, c + pos_key + 1);
-// 		if (to_free_value == 1)
+// 		pos_key = find_key(temp + 1);
+// 		value = find_value(temp + 1, pos_key, env, d);
+// 		if (temp[1] == '?' && (temp[2] == ' ' || temp[2] == '\0'))
+// 			status = 1;
+// 		str = strjoin_big(str, value, temp + pos_key + 1);
+// 		if (status == 1)
 // 			free(value);
 // 		if (!str)
 // 			return (NULL);
-// 		c = find_dollar_conversion(str);
+// 		temp = strchr_alt(str, '$');
 // 	}
 // 	return (str);
 // }

@@ -21,42 +21,6 @@ int	ft_abs(int num)
 	return (num);
 }
 
-static void	ft_swap(t_list *a, t_list *b)
-{
-	void	*temp;
-
-	temp = a->content;
-	a->content = b->content;
-	b->content = temp;
-}
-
-void	ft_bubble_sort_list(t_list *head)
-{
-	int		swapped;
-	t_list	*ptr1;
-	t_list	*ptr2;
-
-	swapped = 1;
-	ptr2 = NULL;
-	if (head == NULL)
-		return ;
-	while (swapped)
-	{
-		swapped = 0;
-		ptr1 = head;
-		while (ptr1->next != ptr2)
-		{
-			if (ft_strcmp(ptr1->content, ptr1->next->content) > 0)
-			{
-				ft_swap(ptr1, ptr1->next);
-				swapped = 1;
-			}
-			ptr1 = ptr1->next;
-		}
-		ptr2 = ptr1;
-	}
-}
-
 int	ft_strcmp_alt(char *str)
 {
 	int	i;

@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: akalimol <akalimol@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/05/01 17:31:49 by akalimol          #+#    #+#             */
-/*   Updated: 2023/07/08 19:32:59 by akalimol         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 /*
 после "cat файл", "cat файл | cat -e" : free(): double free detected in tcache 2
 
@@ -30,68 +18,38 @@ SIGIN T = the user types C-c
 SIGQUI T = SIGIN T, except that it’s controlled by C-\ + produces a core dump when it terminates the process, 
 CTRL-\ causes a program to terminate and dump core
 
-The line is allocated with malloc, the caller must free it.
-Returns the line without \n, "" for "", NULL for "" + EOF
-If an EOF is read with a non-empty line, it is treated as a newline.
-
-linked list:
-list->content	- full string (ex. "USER=akostrik")
-list->typ e      - default or not */
+*/
 
 #include "minishell.h"
 
 int g_signal = 0;
 
-int	init(char **env, t_data *d)
-{
-	t_list	*t;
-	char	*str;
-	int		i;
-
-	signal(SIGQUIT, SIG_IGN);
-	signal(SIGINT, &sig_handler_main);
-	d->env = NULL;
-	i = 0;
-	while (env[i])
-	{
-		str = ft_strdup(env[i]);
-		if (!str)
-			return (exit_(-1, NULL, NULL, &(d->env), &free, NULL), -1);
-		t = ft_lstnew(str, 0);
-		if (!t)
-			return (exit_(-1, NULL, NULL, &t, &free, &str), -1);
-		ft_lstadd_back(&d->env, t);
-		i++;
-	}
-	d->exit_code = 0;
-	return (0);
-}
-
 int	main(int argc, char **argv, char **env)
 {
-	t_data	d;
-	char	*cmd;
+	char	*cmd_line;
 
 	(void)argc;
 	(void)argv;
-	cmd = NULL;
-	init(env, &d);
+	// signal(SIGQUIT, SIG_IGN);
+	// signal(SIGINT, &sig_handler_main);
+	cmd_line = NULL;
 	while (1)
 	{
-		cmd = readline("$");
-		if (cmd == NULL) // EOF
+		cmd_line = readline("$");
+		if (cmd_line == NULL) // EOF
 			break ;
-		if (g_signal == 1)
-		{
-			g_signal = 0;
-			d.exit_code = 130;
-			continue;
-		}
-		add_history(cmd);
-		d.exit_code = parse(cmd, d.env, &d);
-		if (d.exit_code == 0)
-			ft_execution(&d);
-		ft_clean_tree(d.n);
+		// if (g_signal == 1)
+		// {
+		// 	g_signal = 0;
+		// 	d.exit_code = 130;
+		// 	continue;
+		// }
+		add_history(cmd_line);
+		parse(cmd_line, env);
+		// if (d.exit_code == 0)
+		// 	ft_execution(&d);
+		// ft_clean_tree(d.n);
 	}
-	return (free_redirections(d.env), d.exit_code);
+	//free_redirections(d.env);
+	return 0; //(exit_code);
 }
