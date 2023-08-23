@@ -32,7 +32,7 @@ static char	*get_value_from_env(char *key, char **env)
 }
 
 // " $ " is ok ?
-int	replace_dollar_conversions(char **s, char **env)
+static int	put_doll_conversions_str(char **s, char **env)
 {
 	int		i;
 	int		j;
@@ -41,8 +41,6 @@ int	replace_dollar_conversions(char **s, char **env)
 	int		new_size;
 	char	*new_s;
 
-	if(*s == NULL)
-		return (0);
 	i = -1;
 	while ((*s)[++i] != '\0' && (*s)[i + 1] != '\0')
 	{
@@ -77,8 +75,30 @@ int	replace_dollar_conversions(char **s, char **env)
 			}
 			new_s[j] = '\0';
 			free(*s);
+			free(key);
 			*s = new_s;
 		}
+	}
+	return (0);
+}
+
+int	put_doll_conversions(t_list **l, char **env)
+{
+	t_list	*cmd;
+	int		i;
+
+	cmd = *l;
+	while(cmd != NULL)
+	{
+		i = -1;
+		while(++i < cmd->nb_args)
+		{
+			// printf();
+			if (cmd->args[i][0] != '\'')
+				if (put_doll_conversions_str(&(cmd->args[i]), env) == -1)
+					return (-1);
+		}
+		cmd = cmd->nxt;
 	}
 	return (0);
 }

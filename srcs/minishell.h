@@ -55,7 +55,7 @@ int 	put_cmd_and_redirect_all(char *cmd_line, t_list **l);
 void 	calc_nb_args_all(t_list **l);
 int		put_args_all(t_list **l);
 int		verify_unclosed_quotes(t_list **l);
-int		replace_dollar_conversions(char **s, char **env);
+int		put_doll_conversions(t_list **l, char **env);
 
 
 // utils
