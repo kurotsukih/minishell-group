@@ -51,11 +51,12 @@ typedef struct s_list
 } t_list;
 
 // treat_cmd_line
-int 	put_cmd_and_redirect_all(char *cmd_line, t_list **l);
-void 	calc_nb_args_all(t_list **l);
-int		put_args_all(t_list **l);
+int 	put_cmd_and_redirect(char *cmd_line, t_list **l);
+void 	put_nb_args(t_list **l);
+int		put_args(t_list **l);
 int		verify_unclosed_quotes(t_list **l);
 int		put_doll_conversions(t_list **l, char **env);
+int		exec_cmds(t_list **l, char **env);
 
 
 // utils

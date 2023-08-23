@@ -1,11 +1,11 @@
 SRCS = main.c \
-	   treat_cmd_line1.c \
-	   treat_cmd_line2.c \
+	   minishell1.c \
+	   minishell2.c \
+	   minishell3_builtins.c \
+	   minishell4_builtins.c \
 	   utils1.c \
 	   utils2.c \
 	   utils3_list.c \
-	   execution/execute_builtins.c \
-	   execution/execute_builtins2.c \
 	   execution/preprocess.c \
 	   execution/preprocess_cmd.c \
 	   execution/prepare_pipe.c \

@@ -12,8 +12,6 @@
 //  *                                int     out_fd;
 //  *                            }           t_cmd;
 //  * 
-//  * @param node      head node
-//  * @return int      0 if everything is ok, -1  if malloc fails
 //  */
 
 // void	ft_init_cmds(t_cmd *cmds, int num_cmds)

@@ -29,7 +29,7 @@ int	put_cmd_and_redirect_1(t_list **l, char *cmd, int len_cmd, char *redirect)
 	return (0);
 }
 
-int put_cmd_and_redirect_all(char *cmd_line, t_list **l)
+int put_cmd_and_redirect(char *cmd_line, t_list **l)
 {
 	int		i_beg;
 	int 	i;
@@ -57,7 +57,7 @@ int put_cmd_and_redirect_all(char *cmd_line, t_list **l)
 	return (0);
 }
 
-void calc_nb_args_all(t_list **l)
+void put_nb_args(t_list **l)
 {
 	int		i;
 	int		nb_args;
@@ -103,7 +103,7 @@ static int	put_args_1(t_list *cmd)
 	return (cmd->cmd[to_put_EOL] = '\0', 0);
 }
 
-int	put_args_all(t_list **l)
+int	put_args(t_list **l)
 {
 	t_list	*cmd;
 

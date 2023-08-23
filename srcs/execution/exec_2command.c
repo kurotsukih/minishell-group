@@ -23,7 +23,6 @@
 // {
 // 	int	i;
 // 	int	status;
-
 // 	i = 0;
 // 	while (i < size)
 // 	{
@@ -77,7 +76,6 @@
 // int	check(t_cmd *cmd, int count, int result)
 // {
 // 	char	*str;
-
 // 	if (result == 0)
 // 	{
 // 		if (count != 1)

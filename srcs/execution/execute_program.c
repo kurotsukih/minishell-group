@@ -1,4 +1,4 @@
-// #include "minishell.h"
+#include "minishell.h"
 
 // // Do I have reallocate the memmory for this command? or can keep it like this?
 // char	**ft_construct_command(t_list *params)
@@ -6,11 +6,8 @@
 // 	char	**returner;
 // 	int		size;
 // 	int		i;
-
 // 	size = ft_lstsize(params);
 // 	returner = (char **)malloc(sizeof(char *) * (size + 1));
-// 	if (!returner)
-// 		return (exit_(-1, NULL, NULL, NULL, NULL, NULL), NULL);
 // 	i = 0;
 // 	while (i < size)
 // 	{
@@ -28,8 +25,6 @@
 // 	char	*path;
 // 	char	**params;
 // 	int		code;
-
-// 	(void)n;
 // 	path = NULL;
 // 	if (!ft_strcmp((char *)cmd->params->content, "."))
 // 		return (exit_(-1, "bash: .: filename arg required\n", NULL, NULL, NULL, NULL), -1);

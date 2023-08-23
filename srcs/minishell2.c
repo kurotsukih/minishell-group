@@ -92,12 +92,9 @@ int	put_doll_conversions(t_list **l, char **env)
 	{
 		i = -1;
 		while(++i < cmd->nb_args)
-		{
-			// printf();
 			if (cmd->args[i][0] != '\'')
 				if (put_doll_conversions_str(&(cmd->args[i]), env) == -1)
 					return (-1);
-		}
 		cmd = cmd->nxt;
 	}
 	return (0);
@@ -142,15 +139,14 @@ int	put_doll_conversions(t_list **l, char **env)
 // 	return (1);
 // }
 
-
 //////////////////////////////////////////////
 
+// Expands (env var expansion) the string and create tokens. 
+// All key words were already tokenized, except if token contain 
+// env var and env var contains a space,
+// a="s -la"   > l$a -> ls -la
+// $a=" "      > ls$a-la$a"Makefile" -> ls -la Makefile 
 
-// // Expands (env var expansion) the string and create tokens. 
-// // All key words were already tokenized, except if token contain 
-// // env var and env var contains a space,
-// // a="s -la"   > l$a -> ls -la
-// // $a=" "      > ls$a-la$a"Makefile" -> ls -la Makefile 
 // t_lis t	*expand_token(char *str, t_lis t *env, t_data *d)
 // {
 // 	t_lis t	*head;
@@ -158,7 +154,6 @@ int	put_doll_conversions(t_list **l, char **env)
 // 	char	*exp_string;
 // 	char	**words;
 // 	int		i;
-
 // 	exp_string = expand_string(str, env, d);
 // 	if (!exp_string)
 // 		return (NULL);

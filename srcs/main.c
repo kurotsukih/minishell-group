@@ -29,16 +29,16 @@ int	treat_cmd_line(char *cmd_line, char **env)
 	t_list	**l;
 
 	init_list(&l);
-	if (put_cmd_and_redirect_all(cmd_line, l) == -1)
+	if (put_cmd_and_redirect(cmd_line, l) == -1)
 		return (-1);
-	calc_nb_args_all(l);
-	if (put_args_all(l) == -1)
+	put_nb_args(l);
+	if (put_args(l) == -1)
 		return (-1);
 	if (verify_unclosed_quotes(l) == -1)
 		return (-1);
-	print_list(l);
 	put_doll_conversions(l, env);
 	print_list(l);
+	exec_cmds(l, env);
 	return (0);
 }
 
