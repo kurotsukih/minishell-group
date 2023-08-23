@@ -28,19 +28,18 @@
 # include <dirent.h>
 # include "libft.h"
 
-# define NO_USED 0
+# define REINIT_MOD 0
 # define OUTSIDE_QUOTES 0
 # define INSIDE_SIMP_QUOTES 1
 # define INSIDE_DOUB_QUOTES 2
 
 extern int g_signal;
 
-// tokens[i] = mixed args and options 
+// args = mixed args and options 
 typedef struct s_list
 {
 	char 			*cmd;
-	char 			**params;
-	int				nb_params;
+	char 			**args;
 	char			*redirect;
 	int				is_filename;
 	int				in_fd;
@@ -51,7 +50,7 @@ typedef struct s_list
 } t_list;
 
 // parsing
-int		process(char *cmd, char **env);
+int		minishell(char *cmd, char **env);
 
 // utils
 char	*alphanum_(char *s);
@@ -67,6 +66,8 @@ void	ft_bubble_sort_cmd(t_list *head);
 int		ft_strcmp_alt(char *str);
 void	*free_charchar(char **s);
 char	*strdup_(char *s, size_t len);
+int	mod_(char c);
+char	*redirect_(char *s);
 
 // utils list
 int	init_list(t_list ***l);

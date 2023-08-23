@@ -128,14 +128,14 @@ char *alphanum_(char *s)
 	char	*alphanum;
 
 	if ((s[0] < 'a' || s[0] > 'z') && (s[0] < 'A' && s[0] > 'Z'))
-		return("");
+		return (NULL);
 	i = 0;
 	while ((s[i] >= '0' && s[i] < '9') || (s[i] >= 'a' && s[i] < 'z') || (s[i] >= 'A' && s[i] < 'Z'))
 		i++;
 	alphanum = NULL;
 	alphanum = (char *)malloc(i + 1);
 	if (alphanum == NULL)
-		return (""); // -1 ?
+		return (NULL);
 	i = 0;
 	while ((s[i] >= '0' && s[i] < '9') || (s[i] >= 'a' && s[i] < 'z') || (s[i] >= 'A' && s[i] < 'Z'))
 	{
@@ -163,5 +163,39 @@ char *strdup_(char *s, size_t len)
 	}
 	strdup[i] = '\0';
 	return (strdup);
+}
+
+/// double quotes insdide simple ones ?
+int	mod_(char c)
+{
+	static char	mod = OUTSIDE_QUOTES;
+
+	if (c == REINIT_MOD)
+		return (mod = OUTSIDE_QUOTES, mod);
+	if (mod == OUTSIDE_QUOTES && c == '\'')
+		mod = INSIDE_SIMP_QUOTES;
+	else if (mod == OUTSIDE_QUOTES && c == '\"')
+		mod = INSIDE_DOUB_QUOTES;
+	else if (mod == INSIDE_SIMP_QUOTES && c == '\'')
+		mod = OUTSIDE_QUOTES;
+	else if (mod == INSIDE_DOUB_QUOTES && c == '\"')
+		mod = OUTSIDE_QUOTES;
+	return (mod);
+}
+
+char	*redirect_(char *s)
+{
+	if (s[0] == '>' && s[1] == '>')
+		return (">>");
+	else if (s[0] == '<' && s[1] == '<')
+		return ("<<");
+	else if (s[1] == '>' && s[1] != '\0' && s[2] != '>')
+		return (">");
+	else if (s[1] == '<' && s[1] != '\0' && s[2] != '<')
+		return ("<");
+	else if (s[1] == '|')
+		return ("|");
+	else
+		return ("");
 }
 
