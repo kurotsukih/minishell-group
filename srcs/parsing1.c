@@ -84,42 +84,47 @@ int	put_all_args_for_1_cmd(t_list *cmd)
 	int		i_beg;
 	int		k;
 	int		mod;
-	int		len_cmd;
 
 	mod_(REINIT_QUOTES_MOD);
 	i = 0;
 	k = -2;
-	len_cmd = ft_strlen(cmd->cmd);
-	while (i < len_cmd)
+	while (i < (int)ft_strlen(cmd->cmd))
 	{
 		mod = mod_(cmd->cmd[i]);
 		while (mod == OUTSIDE_QUOTES && cmd->cmd[i] == ' ')
 			i++;
 		i_beg = i;
-		while (mod == OUTSIDE_QUOTES && cmd->cmd[i] != ' ' && i < len_cmd)
-			i++;
+		while (mod == OUTSIDE_QUOTES && cmd->cmd[i] != ' ' && i < (int)ft_strlen(cmd->cmd))
+			mod = mod_(cmd->cmd[i++]);
 		if (i == i_beg)
 			break ;
-		k++;
-		if (k != -1)
-			if (strdup_(&(cmd->cmd[i_beg]), &(cmd->args[k]), i - i_beg) == -1)
-				return (-1);
+		if (++k != -1 && strdup_(&(cmd->cmd[i_beg]), &(cmd->args[k]), i - i_beg) == -1)
+			return (-1);
 	}
 	return (0);
 }
 
 int	put_all_args_for_all_cmds(t_list **l)
 {
-	t_list	*cur;
+	t_list	*cmd;
+	int		mod;
+	int		i;
 
-	cur = *l;
-	while(cur != NULL)
+	cmd = *l;
+	while(cmd != NULL)
 	{
-		cur->args = (char **)malloc(cur->nb_args * sizeof(char *));
-		if (cur->args == NULL)
+		cmd->args = (char **)malloc(cmd->nb_args * sizeof(char *));
+		if (cmd->args == NULL)
 			return (-1);
-		put_all_args_for_1_cmd(cur);
-		cur = cur->nxt;
+		put_all_args_for_1_cmd(cmd);
+		mod = mod_(REINIT_QUOTES_MOD);
+		i = 0;
+		while (mod == OUTSIDE_QUOTES && cmd->cmd[i] == ' ')
+			i++;
+		while (mod == OUTSIDE_QUOTES && cmd->cmd[i] != ' ' && i < (int)ft_strlen(cmd->cmd))
+			mod = mod_(cmd->cmd[i++]);
+		cmd->cmd[i] = '\0';
+		cmd = cmd->nxt;
 	}
 	return (0);
 }
