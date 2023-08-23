@@ -19,7 +19,7 @@ void	exec_echo(t_list *cmd)
 		ft_printf("\n");
 }
 
-void	ft_execute_env(char **env)
+void	exec_env(char **env)
 {
 	int	i;
 
@@ -29,6 +29,39 @@ void	ft_execute_env(char **env)
 		if (ft_strchr(env[i], '='))
 			ft_printf("%s\n", env[i]);
 	}
+}
+
+void	exec_pwd(void)
+{
+	char	*s;
+
+	s = getcwd(NULL, 0);
+	ft_printf("%s\n", s);
+	free(s);
+}
+
+int	exec_cd(t_list *cmd, char **env)
+{
+	char	*home_dir;
+	int		i;
+
+	if (cmd->nb_args == 0)
+	{
+		home_dir = NULL;
+		i = -1;
+		while (env[++i])
+			if (ft_strncmp(env[i], "HOME=", 5) == 0)
+				home_dir = &(env[i][5]);
+		if (home_dir == NULL)
+			return (-1); // "bash: cd: HOME not set\n"
+		if (chdir(home_dir) == -1)
+			return (-1); // "bash: cd: HOME not set properly%s\n", home_dir);
+	}
+	else if (cmd->nb_args > 1)
+		return (-1); // "bash: cd: Too many arguments\n" 
+	else if (chdir(cmd->args[0]) == -1)
+		return (-1);
+	return (0);
 }
 
 int	exec_cmds(t_list **l, char **env)
@@ -43,70 +76,19 @@ int	exec_cmds(t_list **l, char **env)
 		if (ft_strcmp(cmd->cmd, "echo") == 0)
 			exec_echo(cmd);
 		else if (ft_strcmp(cmd->cmd, "env") == 0)
-			ft_execute_env(env);
-		// else if (ft_strcmp((char *)cmd->params->content, "pwd") == 0)
-		// 	ft_execute_pwd();
-		// else if (ft_strcmp((char *)cmd->params->content, "unset") == 0)
+			exec_env(env);
+		else if (ft_strcmp(cmd->cmd, "pwd") == 0)
+			exec_pwd();
+		else if (ft_strcmp(cmd->cmd, "cd") == 0)
+			result = exec_cd(cmd, env);
+		// else if (ft_strcmp(cmd->cmd, "export") == 0)
+		// 	result = ft_execute_export(cmd, env);
+		// else if (ft_strcmp(cmd->cmd, "unset") == 0)
 		// 	ft_execute_unset(&d->env, cmd->params->next);
-		// else if (ft_strcmp((char *)cmd->params->content, "cd") == 0)
-		// 	result = ft_execute_cd(cmd->params->next, d->env);
-		// else if (ft_strcmp((char *)cmd->params->content, "export") == 0)
-		// 	result = ft_execute_export(cmd->params->next, &d->env);
-		// else if (ft_strcmp((char *)cmd->params->content, "exit") == 0)
+		// else if (ft_strcmp(cmd->cmd, "exit") == 0)
 		// 	result = ft_execute_exit(d, n, cmd->params->next);
 		cmd = cmd->nxt;
 	}
 	(void)env;
 	return (result);
 }
-
-// int	ft_execute_cd(t_list *params, t_list *env)
-// {
-// 	int		nb_params;
-// 	char	*home_dir;
-
-// 	nb_params = ft_lstsize(params);
-// 	if (nb_params == 0)
-// 	{
-// 		home_dir = NULL;
-// 		while (env)
-// 		{
-// 			if (ft_strncmp((char *)env->content, "HOME=", 5) == 0)
-// 				home_dir = ((char *)env->content + 5);
-// 			env = env->next;
-// 		}
-// 		if (home_dir == NULL)
-// 			return (exit_(-1, "bash: cd: HOME not set\n", NULL, NULL, NULL, NULL), -1);
-// 		if (chdir(home_dir) == -1)
-// 			return (exit_(-1, "bash: cd: HOME not set properly%s\n", home_dir, NULL, NULL, NULL), -1);
-// 	}
-// 	else if (nb_params > 1)
-// 		return (exit_(-1, "bash: cd: Too many arguments\n", NULL, NULL, NULL, NULL), -1); // str to free?
-// 	else if (chdir((char *)params->content) == -1)
-// 		return (exit_(-1, (char *)params->content, NULL, NULL, NULL, NULL), -1); // str to free?
-// 	return (0);
-// }
-
-
-// int	ft_execute_exit(t_data *d, t_node *n, t_list *token)
-// {
-// 	char	*str;
-// 	int		code;
-
-// 	if (!token)
-// 	{
-// 		code = d->exit_code;
-// 		return (ft_clean_tree(n), free_redirections(*(&(d->env))), exit(code), 0);
-// 	}
-// 	str = (char *)token->content;
-// 	if (ft_isnum(str) != 1)
-// 	{
-// 		exit_(-1, "bash: exit: %s: numeric argument required", str, NULL, NULL, NULL);
-// 		return (ft_clean_tree(n), free_redirections(*(&(d->env))), exit(2), 0);
-// 	}
-// 	if (ft_lstsize(token) > 1)
-// 		return (exit_(-1, "bash: exit: too many arguments\n", NULL, NULL, NULL, NULL), 1);
-// 	code = ft_abs(ft_atoi(str) % 256);
-// 	return (ft_clean_tree(n), free_redirections(*(&(d->env))), exit(code), 0);
-// }
-

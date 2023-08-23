@@ -1,13 +1,5 @@
 // #include "minishell.h"
 
-// void	ft_execute_pwd(void)
-// {
-// 	char	*response;
-
-// 	response = getcwd(NULL, 0);
-// 	ft_printf("%s\n", response);
-// 	free(response);
-// }
 
 // void	ft_execute_unset(t_list **env, t_list *head)
 // {
@@ -32,6 +24,32 @@
 // 		return ;
 // 	ft_lstremove(env, token);
 // }
+
+
+// int	ft_execute_exit(t_data *d, t_node *n, t_list *token)
+// {
+// 	char	*str;
+// 	int		code;
+
+// 	if (!token)
+// 	{
+// 		code = d->exit_code;
+// 		return (ft_clean_tree(n), free_redirections(*(&(d->env))), exit(code), 0);
+// 	}
+// 	str = (char *)token->content;
+// 	if (ft_isnum(str) != 1)
+// 	{
+// 		exit_(-1, "bash: exit: %s: numeric argument required", str, NULL, NULL, NULL);
+// 		return (ft_clean_tree(n), free_redirections(*(&(d->env))), exit(2), 0);
+// 	}
+// 	if (ft_lstsize(token) > 1)
+// 		return (exit_(-1, "bash: exit: too many arguments\n", NULL, NULL, NULL, NULL), 1);
+// 	code = ft_abs(ft_atoi(str) % 256);
+// 	return (ft_clean_tree(n), free_redirections(*(&(d->env))), exit(code), 0);
+// }
+
+
+/////////////////////////////////////////////////////////////
 
 // static void	ft_print_export_token(char *str)
 // {
