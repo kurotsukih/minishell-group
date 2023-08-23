@@ -1,10 +1,10 @@
 #include "minishell.h"
 
-t_cmd	*ft_lstnew()
+t_list	*ft_lstnew()
 {
-	t_cmd	*node;
+	t_list	*node;
 
-	node = (t_cmd *)malloc(sizeof(t_cmd));
+	node = (t_list *)malloc(sizeof(t_list));
 	if (!node)
 		return (NULL);
 	node->nxt = NULL;
@@ -12,7 +12,86 @@ t_cmd	*ft_lstnew()
 	return (node);
 }
 
-void	ft_lstadd_front(t_cmd **lst, t_cmd *new_node)
+int	init_list(t_list ***l)
+{
+	*l = (t_list **)malloc(sizeof(t_list *));
+	if (*l == NULL)
+		return (-1);
+	**l = NULL;
+	return (0);
+}
+
+int	init_new_elt(t_list **new)
+{
+	*new = (t_list *)malloc(sizeof(t_list));
+	if (*new == NULL)
+		return (-1);
+	(*new)->nxt = NULL;
+	(*new)->prv = NULL;
+	(*new)->cmd = NULL;
+	(*new)->params = NULL;
+	(*new)->is_filename = 0;
+	return (0);
+}
+
+int	put_cmd_and_redirect_to_l(t_list **l, char *cmd, int len_cmd, char *redirect)
+{
+	t_list	*new;
+	t_list	*cur;
+	int	i;
+
+	if (init_new_elt(&new) == -1)
+		return (-1);
+	new->redirect = redirect;
+	new->cmd = (char *)malloc(len_cmd + 1);
+	if (new->cmd == NULL)
+		return (-1);
+	i = -1;
+	while (++i < len_cmd)
+		new->cmd[i] = cmd[i];
+	new->cmd[i] = '\0';
+	if (*l == NULL)
+		*l = new;
+	else
+	{
+		cur = *l;
+		while (cur != NULL && cur->nxt != NULL)
+			cur = cur->nxt;
+		cur->nxt = new;
+		new->prv = cur;
+	}
+	return (0);
+}
+
+void print_cmd(t_list *cmd) /// ft_printf
+{	
+	if (cmd == NULL)
+	{
+		printf("  cmd = NULL\n");
+		return ;
+	}
+	printf("  %p: [%s] [%s]\n", cmd, cmd->cmd, cmd->redirect);
+}
+
+void print_list(t_list **l) /// ft_printf
+{
+	t_list	*cur;
+
+	printf("LIST %14p:\n", l);
+	if (l == NULL || *l == NULL)
+	{
+		printf("  empty\n");
+		return ;
+	}
+	cur = *l;
+	while (cur != NULL)
+	{
+		print_cmd(cur);
+		cur = cur->nxt;
+	}
+}
+
+void	ft_lstadd_front(t_list **lst, t_list *new_node)
 {
 	if (lst)
 	{
@@ -25,9 +104,9 @@ void	ft_lstadd_front(t_cmd **lst, t_cmd *new_node)
 	}
 }
 
-void	ft_lstadd_back(t_cmd **lst, t_cmd *new_node)
+void	ft_lstadd_back(t_list **lst, t_list *new_node)
 {
-	t_cmd	*lastnode;
+	t_list	*lastnode;
 
 	lastnode = ft_lstlast(*lst);
 	if (!lastnode)
@@ -39,7 +118,7 @@ void	ft_lstadd_back(t_cmd **lst, t_cmd *new_node)
 	}
 }
 
-int	ft_lstsize(t_cmd *lst)
+int	ft_lstsize(t_list *lst)
 {
 	int	i;
 
@@ -52,9 +131,9 @@ int	ft_lstsize(t_cmd *lst)
 	return (i);
 }
 
-t_cmd  *ft_lstretrieve(t_cmd **lst, t_cmd *node)
+t_list  *ft_lstretrieve(t_list **lst, t_list *node)
 {
-    t_cmd  *i_token;
+    t_list  *i_token;
 
     i_token = *lst;
     while (i_token && i_token != node)
@@ -74,9 +153,9 @@ t_cmd  *ft_lstretrieve(t_cmd **lst, t_cmd *node)
     return (NULL);
 }
 
-int ft_lstremove(t_cmd **lst, t_cmd *node)
+int ft_lstremove(t_list **lst, t_list *node)
 {
-    t_cmd  *i_token;
+    t_list  *i_token;
 
     i_token = *lst;
     while (i_token && i_token != node)
@@ -95,9 +174,9 @@ int ft_lstremove(t_cmd **lst, t_cmd *node)
     return (0);
 }
 
-void	ft_lstclear(t_cmd **lst)
+void	ft_lstclear(t_list **lst)
 {
-	t_cmd	*temp;
+	t_list	*temp;
 
 	if (lst)
 	{
@@ -111,7 +190,7 @@ void	ft_lstclear(t_cmd **lst)
 	}
 }
 
-void	ft_lstdelone(t_cmd *lst)
+void	ft_lstdelone(t_list *lst)
 {
 	if (lst)
 	{

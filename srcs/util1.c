@@ -106,7 +106,7 @@ void	ft_remove_quotes_string(char *str)
 // 	}
 // }
 
-void	exit_(int exit_code, char *msg, char *msg_param, t_cmd **lst_to_clear, char **str_to_free)
+void	exit_(int exit_code, char *msg, char *msg_param, t_list **lst_to_clear, char **str_to_free)
 {
 	if (msg == NULL)
 		printf("%s\n", strerror(errno));
@@ -163,38 +163,5 @@ char *strdup_(char *s, size_t len)
 	}
 	strdup[i] = '\0';
 	return (strdup);
-}
-
-void print_cmd(t_cmd *cmd) /// ft_printf
-{	
-	if (cmd == NULL)
-	{
-		printf("empty\n");
-		return ;
-	}
-	printf("  %14p tokens: \n", cmd);
-	// while(i < cur->nb_tokens)
-	// 	printf("[%s] ", cur->tokens[i]);
-	printf("\n");
-}
-
-void print_cmds(t_cmd **cmds) /// ft_printf
-{
-	t_cmd	*cmd;
-
-	printf("LIST %14p: ", cmds);
-	if (cmds == NULL)
-	{
-		printf("empty\n");
-		return ;
-	}
-	printf("\n");
-	cmd = *cmds;
-//	while (cur != NULL)
-	{
-		print_cmd(cmd);
-		cmd = cmd->nxt;
-	}
-	printf("end\n");
 }
 

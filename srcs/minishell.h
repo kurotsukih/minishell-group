@@ -35,22 +35,23 @@
 
 extern int g_signal;
 
-// tokens[0] = cmd, tokens[i] = mixed args and options 
-typedef struct s_cmd
+// tokens[i] = mixed args and options 
+typedef struct s_list
 {
-	char 			**tokens;
-	int				nb_tokens;
-	struct s_cmd	*nxt;
-	struct s_cmd	*prv;
+	char 			*cmd;
+	char 			**params;
+	int				nb_params;
 	char			*redirect;
 	int				is_filename;
 	int				in_fd;
 	int				out_fd;
 	int				exit_code;
-} t_cmd;
+	struct s_list	*nxt;
+	struct s_list	*prv;
+} t_list;
 
 // parsing
-int		parse(char *cmd, char **env);
+int		process(char *cmd, char **env);
 
 // utils
 char	*alphanum_(char *s);
@@ -58,28 +59,32 @@ void	sig_handler_main(int signal);
 void	sig_handler_fork(int signal);
 void	sig_handler_heredoc(int signal);
 void	ft_remove_quotes_string(char *str);
-void	ft_remove_quotes_list(t_cmd *head);
-void	exit_(int exit_code, char *msg, char *msg_param, t_cmd **lst_to_clear, char **str_to_sree);
+void	ft_remove_quotes_list(t_list *head);
+void	exit_(int exit_code, char *msg, char *msg_param, t_list **lst_to_clear, char **str_to_sree);
 int		ft_isnum(char *str);
 int		ft_abs(int num);
-void	ft_bubble_sort_cmd(t_cmd *head);
+void	ft_bubble_sort_cmd(t_list *head);
 int		ft_strcmp_alt(char *str);
 void	*free_charchar(char **s);
 char	*strdup_(char *s, size_t len);
-void	print_cmds(t_cmd **cmd);
 
 // utils list
-int			ft_lstsize(t_cmd *lst);
-int			ft_lstremove(t_cmd **lst, t_cmd *node);
-void		ft_lstadd_front(t_cmd **lst, t_cmd *new_node);
-void		ft_lstadd_back(t_cmd **lst, t_cmd *new_node);
-void		ft_lstdelone(t_cmd *lst);
-void		ft_lstclear(t_cmd **lst);
-void		ft_lstiter(t_cmd *lst, void (*f)(void *));
-t_cmd		*ft_lstnew();
-t_cmd		*ft_lstlast(t_cmd *lst);
-t_cmd		*ft_lstmap(t_cmd *lst, void *(*f)(void *), void (*del)(void *));
-t_cmd		*ft_lstretrieve(t_cmd **lst, t_cmd *node);
-t_cmd		*ft_lstfirst(t_cmd *lst);
+int	init_list(t_list ***l);
+int		init_new_elt(t_list	**new);
+void	print_list(t_list **cmd);
+int	put_cmd_and_redirect_to_l(t_list **l, char *cmd, int len_cmd, char *redirect);
+
+int			ft_lstsize(t_list *lst);
+int			ft_lstremove(t_list **lst, t_list *node);
+void		ft_lstadd_front(t_list **lst, t_list *new_node);
+void		ft_lstadd_back(t_list **lst, t_list *new_node);
+void		ft_lstdelone(t_list *lst);
+void		ft_lstclear(t_list **lst);
+void		ft_lstiter(t_list *lst, void (*f)(void *));
+t_list		*ft_lstnew();
+t_list		*ft_lstlast(t_list *lst);
+t_list		*ft_lstmap(t_list *lst, void *(*f)(void *), void (*del)(void *));
+t_list		*ft_lstretrieve(t_list **lst, t_list *node);
+t_list		*ft_lstfirst(t_list *lst);
 
 #endif

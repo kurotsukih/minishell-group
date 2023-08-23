@@ -1,17 +1,12 @@
 #include "minishell.h"
 
 /// double quotes insdide simple ones ?
-int	mod_(char c, int reinitialize)
+int	mod_(char c, int to_reinitialize)
 {
 	static char	mod = OUTSIDE_QUOTES;
 
-	if (reinitialize)
-	{
-		mod = OUTSIDE_QUOTES;
-		return (mod);
-	}
-	if (c == 0)
-		return (mod);
+	if (to_reinitialize)
+		return (mod = OUTSIDE_QUOTES, mod);
 	if (mod == OUTSIDE_QUOTES && c == '\'')
 		mod = INSIDE_SIMP_QUOTES;
 	else if (mod == OUTSIDE_QUOTES && c == '\"')
@@ -106,16 +101,16 @@ static char	*redirect_(char *s)
 // 	return (nb_tokens);
 // }
 
-// static int	add_cmd(t_cmd **cmds, char *s, size_t s_len)
+// static int	parse_and_add_cmd_to_list(t_list **cmds, char *s, size_t s_len)
 // {
-// 	t_cmd	*new;
+// 	t_list	*new;
 // 	size_t	i;
 // 	size_t	i_beg;
 // 	size_t	j;
-// 	t_cmd	*cur;
+// 	t_list	*cur;
 
 // 	new = NULL;
-// 	new = (t_cmd *)malloc(sizeof(t_cmd));
+// 	new = (t_list *)malloc(sizeof(t_list));
 // 	if (new == NULL)
 // 		return (-1);
 // 	new->nxt = NULL;
@@ -158,45 +153,47 @@ static char	*redirect_(char *s)
 // 	return (0);
 // }
 
-int	parse(char *s, char **env)
+// ab <   cd<< ef <
+int treat_redirects(char *cmd_line, t_list **l)
 {
-	// t_cmd	**cmds;
 	int		i_beg;
 	int 	i;
 	int		mod;
-	int		len_redirect;
-	int k;
+	char	*redirect;
+	int		len_cmd;
 
-	(void)env;
 	i_beg = 0;
 	i = 0;
-	while (s[i] != '\0')
+	while (cmd_line[i] != '\0')
 	{
-		mod = mod_(s[i], 0);
-		len_redirect = ft_strlen(redirect_(&s[i]));
-		printf("i = %d, len_redirect = %d, mod = %d\n", i, len_redirect, mod);
-		if ((mod == OUTSIDE_QUOTES && len_redirect > 0) || s[i + 1] == '\0')
+		printf("i = %d, i_beg = %d\n", i, i_beg);
+		mod = mod_(cmd_line[i], 0);
+		redirect = redirect_(&cmd_line[i]);
+		if ((mod == OUTSIDE_QUOTES && ft_strlen(redirect) > 0) || cmd_line[i + 1] == '\0')
 		{
-			printf("add_cmd (%s, %d)\n", &s[i_beg], i - i_beg + len_redirect + (s[i + 1] == '\0'));
-		// 	// k = i_beg;
-		// 	// while (k < i - i_beg + len_redirect)
-		// 	// 	printf("%c", s[k++]);
-		// 	printf(")\n");
-		// 	// if (add_cmd(cmds, &s[i_beg], i - i_beg + len_redirect) == -1)
-		// 	// 	return (-1);
-		// 	// print_cmds(cmds);
-			i += len_redirect;
+			len_cmd = i - i_beg + (cmd_line[i + 1] == '\0');
+			if (put_cmd_and_redirect_to_l(l, &cmd_line[i_beg], len_cmd, redirect) == -1)
+				return (-1);
+			i += ft_strlen(redirect) + 1;
 			i_beg = i;
+			printf("i = %d, i_beg = %d *\n", i, i_beg);
 		}
 		i++;
 	}
-	if (mod_(s[i], 0) != OUTSIDE_QUOTES)
-	{
-		// delete cdm
-		return (-1); // error msg
-	}
-	(void)k;
-	(void)i_beg;
-	(void)mod;
+	if (mod_(cmd_line[i], 0) != OUTSIDE_QUOTES)
+		return (-1);
+	return (0);
+}
+
+int	process(char *cmd_line, char **env)
+{
+	t_list	**l;
+
+	init_list(&l);
+	print_list(l);
+	if (treat_redirects(cmd_line, l) == -1)
+		return (-1);
+	print_list(l);
+	(void)env;
 	return (0);
 }
