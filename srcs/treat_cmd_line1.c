@@ -1,21 +1,33 @@
 #include "minishell.h"
 
-// " $ " is ok ?
-// static int len_dollar_convers(char *s, int len)
-// {
-// 	int	len_alphanum;
+int	put_cmd_and_redirect_1(t_list **l, char *cmd, int len_cmd, char *redirect)
+{
+	t_list	*new;
+	t_list	*cur;
+	int	i;
 
-// 	if (s[0] != '$')
-// 		return (0);
-// 	if (s[1] == ' ')
-// 		return (1);
-// 	if (s[1] == '?' && len >= 2 && s[2] == ' ')
-// 		return (2);
-// 	len_alphanum = ft_strlen(alphanum_(&s[1]));
-// 	if (len_alphanum > 0 && len_alphanum + 1 < len && s[len_alphanum + 1] == ' ')
-// 		return (len_alphanum + 1);
-// 	return (-1);
-// }
+	if (init_new_elt(&new) == -1)
+		return (-1);
+	new->redirect = redirect;
+	new->cmd = (char *)malloc(len_cmd + 1);
+	if (new->cmd == NULL)
+		return (-1);
+	i = -1;
+	while (++i < len_cmd)
+		new->cmd[i] = cmd[i];
+	new->cmd[i] = '\0';
+	if (*l == NULL)
+		*l = new;
+	else
+	{
+		cur = *l;
+		while (cur != NULL && cur->nxt != NULL)
+			cur = cur->nxt;
+		cur->nxt = new;
+		new->prv = cur;
+	}
+	return (0);
+}
 
 int put_cmd_and_redirect_all(char *cmd_line, t_list **l)
 {
@@ -45,26 +57,6 @@ int put_cmd_and_redirect_all(char *cmd_line, t_list **l)
 	return (0);
 }
 
-int	verify_unclosed_quotes(t_list **l)
-{
-	int		mod;
-	int		i;
-	t_list	*cmd;
-
-	cmd = *l;
-	while(cmd != NULL)
-	{
-		mod_(REINIT_QUOTES);
-		i = -1;
-		while (cmd->cmd[++i] != '\0')
-			mod = mod_(cmd->cmd[i]);
-		if (mod == QUOTES1 || mod == QUOTES2)
-			return (-1);
-		cmd = cmd->nxt;
-	}
-	return (0);
-}
-
 void calc_nb_args_all(t_list **l)
 {
 	int		i;
@@ -85,7 +77,7 @@ void calc_nb_args_all(t_list **l)
 	}
 }
 
-int	put_args_1(t_list *cmd)
+static int	put_args_1(t_list *cmd)
 {
 	int		i;
 	int		i_beg;
@@ -125,22 +117,5 @@ int	put_args_all(t_list **l)
 			return (-1);
 		cmd = cmd->nxt;
 	}
-	return (0);
-}
-
-int	treat_cmd_line(char *cmd_line, char **env)
-{
-	t_list	**l;
-
-	init_list(&l);
-	if (put_cmd_and_redirect_all(cmd_line, l) == -1)
-		return (-1);
-	calc_nb_args_all(l);
-	if (put_args_all(l) == -1)
-		return (-1);
-	if (verify_unclosed_quotes(l) == -1)
-		return (-1);
-	print_list(l);
-	(void)env;
 	return (0);
 }

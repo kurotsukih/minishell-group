@@ -1,12 +1,9 @@
 SRCS = main.c \
-	   minishell1.c \
+	   treat_cmd_line1.c \
+	   treat_cmd_line2.c \
 	   utils1.c \
 	   utils2.c \
-	   utils_list.c \
-	   parsing2_check_tokens.c \
-	   parsing4_expand_token.c \
-	   parsing5_expand_string.c \
-	   parsing6_expand_dollar_conversions.c \
+	   utils3_list.c \
 	   execution/execute_builtins.c \
 	   execution/execute_builtins2.c \
 	   execution/preprocess.c \

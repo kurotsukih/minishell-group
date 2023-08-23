@@ -36,35 +36,6 @@ int	init_new_elt(t_list **new)
 	return (0);
 }
 
-int	put_cmd_and_redirect_1(t_list **l, char *cmd, int len_cmd, char *redirect)
-{
-	t_list	*new;
-	t_list	*cur;
-	int	i;
-
-	if (init_new_elt(&new) == -1)
-		return (-1);
-	new->redirect = redirect;
-	new->cmd = (char *)malloc(len_cmd + 1);
-	if (new->cmd == NULL)
-		return (-1);
-	i = -1;
-	while (++i < len_cmd)
-		new->cmd[i] = cmd[i];
-	new->cmd[i] = '\0';
-	if (*l == NULL)
-		*l = new;
-	else
-	{
-		cur = *l;
-		while (cur != NULL && cur->nxt != NULL)
-			cur = cur->nxt;
-		cur->nxt = new;
-		new->prv = cur;
-	}
-	return (0);
-}
-
 void print_cmd(t_list *cmd) /// ft_printf
 {
 	int	i;

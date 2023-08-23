@@ -50,8 +50,13 @@ typedef struct s_list
 	struct s_list	*prv;
 } t_list;
 
-// parsing
-int		treat_cmd_line(char *cmd, char **env);
+// treat_cmd_line
+int 	put_cmd_and_redirect_all(char *cmd_line, t_list **l);
+void 	calc_nb_args_all(t_list **l);
+int		put_args_all(t_list **l);
+int		verify_unclosed_quotes(t_list **l);
+int		treat_dollar_conversions(char *s, char **env);
+
 
 // utils
 char	*alphanum_(char *s);

@@ -24,6 +24,32 @@ CTRL-\ causes a program to terminate and dump core
 
 int g_signal = 0;
 
+int	treat_cmd_line(char *cmd_line, char **env)
+{
+	t_list	**l;
+	t_list	*cmd;
+
+	init_list(&l);
+	if (put_cmd_and_redirect_all(cmd_line, l) == -1)
+		return (-1);
+	calc_nb_args_all(l);
+	if (put_args_all(l) == -1)
+		return (-1);
+	if (verify_unclosed_quotes(l) == -1)
+		return (-1);
+	print_list(l);
+
+	cmd = *l;
+	while(cmd != NULL)
+	{
+		if (cmd->nb_args > 0)
+			treat_dollar_conversions(cmd->args[0], env);
+		cmd = cmd->nxt;
+	}
+	print_list(l);
+	return (0);
+}
+
 int	main(int argc, char **argv, char **env)
 {
 	char	*cmd_line;
