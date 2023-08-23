@@ -36,7 +36,7 @@ int	init_new_elt(t_list **new)
 	return (0);
 }
 
-int	put_cmd_and_redirect_to_l(t_list **l, char *cmd, int len_cmd, char *redirect)
+int	put_cmd_and_redirect_1(t_list **l, char *cmd, int len_cmd, char *redirect)
 {
 	t_list	*new;
 	t_list	*cur;
@@ -74,11 +74,13 @@ void print_cmd(t_list *cmd) /// ft_printf
 		printf("  cmd = NULL\n");
 		return ;
 	}
-	printf("  %p [%s] : ", cmd, cmd->cmd);
+	printf("  %p [%s] %d agrs : ", cmd, cmd->cmd, cmd->nb_args);
 	i = 0;
-	while (i < cmd->nb_args)
-		printf("[%s] ", cmd->args[i++]);
+	if (cmd->args != NULL)
+		while (i < cmd->nb_args)
+			printf("[%s] ", cmd->args[i++]);
 	printf(": [%s]\n", cmd->redirect);
+	(void)i;
 }
 
 void print_list(t_list **l) /// ft_printf

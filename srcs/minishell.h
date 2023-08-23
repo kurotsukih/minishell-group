@@ -28,10 +28,10 @@
 # include <dirent.h>
 # include "libft.h"
 
-# define REINIT_QUOTES_MOD 0
-# define OUTSIDE_QUOTES 0
-# define INSIDE_SIMP_QUOTES 1
-# define INSIDE_DOUB_QUOTES 2
+# define REINIT_QUOTES -1
+# define QUOTES0 0
+# define QUOTES1 1
+# define QUOTES2 2
 
 extern int g_signal;
 
@@ -51,7 +51,7 @@ typedef struct s_list
 } t_list;
 
 // parsing
-int		minishell(char *cmd, char **env);
+int		treat_cmd_line(char *cmd, char **env);
 
 // utils
 char	*alphanum_(char *s);
@@ -66,7 +66,7 @@ int		ft_abs(int num);
 void	ft_bubble_sort_cmd(t_list *head);
 int		ft_strcmp_alt(char *str);
 void	*free_charchar(char **s);
-int		strdup_(char *srs, char **dest, int len);
+int		strdup_and_trim(char *srs, char **dest, int len);
 int		mod_(char c);
 char	*redirect_(char *s);
 
@@ -74,7 +74,7 @@ char	*redirect_(char *s);
 int	init_list(t_list ***l);
 int		init_new_elt(t_list	**new);
 void	print_list(t_list **cmd);
-int	put_cmd_and_redirect_to_l(t_list **l, char *cmd, int len_cmd, char *redirect);
+int	put_cmd_and_redirect_1(t_list **l, char *cmd, int len_cmd, char *redirect);
 
 int			ft_lstsize(t_list *lst);
 int			ft_lstremove(t_list **lst, t_list *node);

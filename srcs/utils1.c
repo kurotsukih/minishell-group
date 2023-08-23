@@ -146,11 +146,25 @@ char *alphanum_(char *s)
 	return (alphanum);
 }
 
-int strdup_(char *srs, char **dest0, int len)
+int strdup_and_trim(char *src, char **dest0, int len)
 {
-	int	i;
-	char *dest;
+	int		i;
+	char	*dest;
 
+	printf("src [%s]\n", src);
+	while (src[0] == ' ' && src[0] != '\0')
+	{
+		src++;
+		len--;
+		printf("new src [%s]\n", src);
+	}
+	i = len;
+	while (src[--i] == ' ' && i >= 0)
+	{
+		src[i] = '\0';
+		printf("new src [%s]\n", src);
+		len--;
+	}
 	dest = NULL;
 	dest = (char *)malloc(len + 1);
 	if (dest == NULL)
@@ -158,30 +172,29 @@ int strdup_(char *srs, char **dest0, int len)
 	i = 0;
 	while (i < len)
 	{
-		dest[i] = srs[i];
+		dest[i] = src[i];
 		i++;
 	}
 	dest[i] = '\0';
 	*dest0 = dest;
-	printf("dest0 = %s\n", *dest0);
 	return (0);
 }
 
 /// double quotes insdide simple ones ?
 int	mod_(char c)
 {
-	static char	mod = OUTSIDE_QUOTES;
+	static char	mod = QUOTES0;
 
-	if (c == REINIT_QUOTES_MOD)
-		return (mod = OUTSIDE_QUOTES, mod);
-	if (mod == OUTSIDE_QUOTES && c == '\'')
-		mod = INSIDE_SIMP_QUOTES;
-	else if (mod == OUTSIDE_QUOTES && c == '\"')
-		mod = INSIDE_DOUB_QUOTES;
-	else if (mod == INSIDE_SIMP_QUOTES && c == '\'')
-		mod = OUTSIDE_QUOTES;
-	else if (mod == INSIDE_DOUB_QUOTES && c == '\"')
-		mod = OUTSIDE_QUOTES;
+	if (c == REINIT_QUOTES)
+		mod = QUOTES0;
+	else if (mod == QUOTES0 && c == '\'')
+		mod = QUOTES1;
+	else if (mod == QUOTES0 && c == '\"')
+		mod = QUOTES2;
+	else if (mod == QUOTES1 && c == '\'')
+		mod = QUOTES0;
+	else if (mod == QUOTES2 && c == '\"')
+		mod = QUOTES0;
 	return (mod);
 }
 

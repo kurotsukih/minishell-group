@@ -45,7 +45,7 @@ int	main(int argc, char **argv, char **env)
 		// 	continue;
 		// }
 		add_history(cmd_line);
-		minishell(cmd_line, env);
+		treat_cmd_line(cmd_line, env);
 		// if (d.exit_code == 0)
 		// 	ft_execution(&d);
 	}

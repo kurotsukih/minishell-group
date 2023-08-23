@@ -1,8 +1,8 @@
 SRCS = main.c \
-	   util1.c \
+	   minishell1.c \
+	   utils1.c \
+	   utils2.c \
 	   utils_list.c \
-	   utils4.c \
-	   parsing1.c \
 	   parsing2_check_tokens.c \
 	   parsing4_expand_token.c \
 	   parsing5_expand_string.c \
