@@ -43,7 +43,7 @@ int	treat_cmd_line(char *cmd_line, char **env)
 	while(cmd != NULL)
 	{
 		if (cmd->nb_args > 0)
-			treat_dollar_conversions(cmd->args[0], env);
+			replace_dollar_conversions(&(cmd->args[0]), env);
 		cmd = cmd->nxt;
 	}
 	print_list(l);

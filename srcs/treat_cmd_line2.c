@@ -32,7 +32,7 @@ static char	*get_value_from_env(char *key, char **env)
 }
 
 // " $ " is ok ?
-int	treat_dollar_conversions(char *s, char **env)
+int	replace_dollar_conversions(char **s, char **env)
 {
 	int		i;
 	int		j;
@@ -41,21 +41,20 @@ int	treat_dollar_conversions(char *s, char **env)
 	int		new_size;
 	char	*new_s;
 
-	if(s == NULL)
+	if(*s == NULL)
 		return (0);
 	i = -1;
-	while (s[++i] != '\0' && s[i + 1] != '\0')
+	while ((*s)[++i] != '\0' && (*s)[i + 1] != '\0')
 	{
 		// if (s[i] == '$' && s[i + 1] == '?')
 		// 	return (ft_itoa(exit_code));
-		if (s[i] == '$')
+		if ((*s)[i] == '$')
 		{
-			key = alphanum_(&s[i + 1]);
+			key = alphanum_(&((*s)[i + 1]));
 			if (key == NULL)
 				return (-1);
 			value = get_value_from_env(key, env);
-			printf("value = %s\n", value);
-			new_size = ft_strlen(s) - ft_strlen(key) + ft_strlen(value);
+			new_size = ft_strlen(*s) - ft_strlen(key) + ft_strlen(value);
 			new_s = NULL;
 			new_s = (char*)malloc(new_size + 1);
 			if (new_s == NULL)
@@ -63,25 +62,22 @@ int	treat_dollar_conversions(char *s, char **env)
 			j = 0;
 			while (j < i)
 			{
-				new_s[j] = s[j];
+				new_s[j] = (*s)[j];
 				j++;
 			}
 			while (j < i + (int)ft_strlen(value))
 			{
-				printf("new_s[%d] = value[%d]\n", j, j - i);
 				new_s[j] = value[j - i];
 				j++;
 			}
 			while(j < new_size)
 			{
-				printf("new_s[%d] = s[%d]\n", j, j + (int)ft_strlen(key) - (int)ft_strlen(value) );
-				new_s[j] = s[j + (int)ft_strlen(key) - (int)ft_strlen(value) ];
+				new_s[j] = (*s)[j + (int)ft_strlen(key) - (int)ft_strlen(value) + 1];
 				j++;
 			}
 			new_s[j] = '\0';
-			printf("new_s = %s\n", new_s);
-			free(s);
-			s = new_s;
+			free(*s);
+			*s = new_s;
 		}
 	}
 	return (0);
