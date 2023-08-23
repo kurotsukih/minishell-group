@@ -66,8 +66,8 @@ int		ft_abs(int num);
 void	ft_bubble_sort_cmd(t_list *head);
 int		ft_strcmp_alt(char *str);
 void	*free_charchar(char **s);
-char	*strdup_(char *s, size_t len);
-int	mod_(char c);
+int		strdup_(char *srs, char **dest, int len);
+int		mod_(char c);
 char	*redirect_(char *s);
 
 // utils list

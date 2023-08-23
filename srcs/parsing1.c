@@ -17,32 +17,6 @@
 // 	return (-1);
 // }
 
-// static int	parse_and_add_cmd_to_list(t_list **cmds, char *s, size_t s_len)
-// {
-// 	size_t	i;
-// 	size_t	i_beg;
-// 	size_t	j;
-// 	t_list	*cur;
-
-// 	i = 0;
-// 	j = -1;
-// 	while (i < s_len - ft_strlen(new->redirect))
-// 	{
-// 		while (s[i] == ' ')
-// 			i++;
-// 		i_beg = i;
-// 		while (is_correct_token_(&s[i_beg], i) == 1)
-// 			i++;
-// 		if (i == i_beg)
-// 			break ;
-// 		new->tokens[++j] = NULL;
-// 		new->tokens[j] = strdup_(&s[i_beg], i - i_beg + 1);
-// 		if (new->tokens[j] == NULL)
-// 			return (-1); // error msg
-// 	}
-// 	return (0);
-// }
-
 int treat_redirects(char *cmd_line, t_list **l)
 {
 	int		i_beg;
@@ -54,16 +28,13 @@ int treat_redirects(char *cmd_line, t_list **l)
 	i_beg = 0;
 	i = 0;
 	mod_(REINIT_QUOTES_MOD);
-	printf("cmd_line = [%s]\n", cmd_line);
 	while (cmd_line[i] != '\0')
 	{
-		printf("while %s, i = %d\n", &cmd_line[i_beg], i);
 		mod = mod_(cmd_line[i]);
 		redirect = redirect_(&cmd_line[i]);
 		if ((mod == OUTSIDE_QUOTES && ft_strlen(redirect) > 0) || cmd_line[i + 1] == '\0')
 		{
 			len_cmd = i - i_beg + (cmd_line[i + 1] == '\0');
-			printf("put %s %d\n", &cmd_line[i_beg], len_cmd);
 			if (put_cmd_and_redirect_to_l(l, &cmd_line[i_beg], len_cmd, redirect) == -1)
 				return (-1);
 			if (cmd_line[i + 1] == '\0')
@@ -78,7 +49,7 @@ int treat_redirects(char *cmd_line, t_list **l)
 	return (0);
 }
 
-void calc_nb_args(t_list **l)
+void calc_nb_args_for_each_cmd(t_list **l)
 {
 	int		i;
 	int		mod;
@@ -107,6 +78,52 @@ void calc_nb_args(t_list **l)
 	}
 }
 
+int	put_all_args_for_1_cmd(t_list *cmd)
+{
+	int		i;
+	int		i_beg;
+	int		k;
+	int		mod;
+	int		len_cmd;
+
+	mod_(REINIT_QUOTES_MOD);
+	i = 0;
+	k = -2;
+	len_cmd = ft_strlen(cmd->cmd);
+	while (i < len_cmd)
+	{
+		mod = mod_(cmd->cmd[i]);
+		while (mod == OUTSIDE_QUOTES && cmd->cmd[i] == ' ')
+			i++;
+		i_beg = i;
+		while (mod == OUTSIDE_QUOTES && cmd->cmd[i] != ' ' && i < len_cmd)
+			i++;
+		if (i == i_beg)
+			break ;
+		k++;
+		if (k != -1)
+			if (strdup_(&(cmd->cmd[i_beg]), &(cmd->args[k]), i - i_beg) == -1)
+				return (-1);
+	}
+	return (0);
+}
+
+int	put_all_args_for_all_cmds(t_list **l)
+{
+	t_list	*cur;
+
+	cur = *l;
+	while(cur != NULL)
+	{
+		cur->args = (char **)malloc(cur->nb_args * sizeof(char *));
+		if (cur->args == NULL)
+			return (-1);
+		put_all_args_for_1_cmd(cur);
+		cur = cur->nxt;
+	}
+	return (0);
+}
+
 int	minishell(char *cmd_line, char **env)
 {
 	t_list	**l;
@@ -114,8 +131,9 @@ int	minishell(char *cmd_line, char **env)
 	init_list(&l);
 	if (treat_redirects(cmd_line, l) == -1)
 		return (-1);
-	print_list(l);
-	calc_nb_args(l);
+	calc_nb_args_for_each_cmd(l);
+	if (put_all_args_for_all_cmds(l) == -1)
+		return (-1);
 	print_list(l);
 	(void)env;
 	return (0);

@@ -66,13 +66,19 @@ int	put_cmd_and_redirect_to_l(t_list **l, char *cmd, int len_cmd, char *redirect
 }
 
 void print_cmd(t_list *cmd) /// ft_printf
-{	
+{
+	int	i;
+
 	if (cmd == NULL)
 	{
 		printf("  cmd = NULL\n");
 		return ;
 	}
-	printf("  %p: [%s] %d args [%s]\n", cmd, cmd->cmd, cmd->nb_args, cmd->redirect);
+	printf("  %p [%s] : ", cmd, cmd->cmd);
+	i = 0;
+	while (i < cmd->nb_args)
+		printf("[%s] ", cmd->args[i++]);
+	printf(": [%s]\n", cmd->redirect);
 }
 
 void print_list(t_list **l) /// ft_printf
@@ -195,7 +201,5 @@ void	ft_lstclear(t_list **lst)
 void	ft_lstdelone(t_list *lst)
 {
 	if (lst)
-	{
 		free(lst);
-	}
 }

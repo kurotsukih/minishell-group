@@ -146,23 +146,25 @@ char *alphanum_(char *s)
 	return (alphanum);
 }
 
-char *strdup_(char *s, size_t len)
+int strdup_(char *srs, char **dest0, int len)
 {
-	size_t	i;
-	char	*strdup;
+	int	i;
+	char *dest;
 
-	strdup = NULL;
-	strdup = (char *)malloc(len + 1);
-	if (strdup == NULL)
-		return (""); // -1 ?
+	dest = NULL;
+	dest = (char *)malloc(len + 1);
+	if (dest == NULL)
+		return (-1);
 	i = 0;
 	while (i < len)
 	{
-		strdup[i] = s[i];
+		dest[i] = srs[i];
 		i++;
 	}
-	strdup[i] = '\0';
-	return (strdup);
+	dest[i] = '\0';
+	*dest0 = dest;
+	printf("dest0 = %s\n", *dest0);
+	return (0);
 }
 
 /// double quotes insdide simple ones ?
