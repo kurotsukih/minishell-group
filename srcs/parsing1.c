@@ -82,12 +82,13 @@ int	put_all_args_for_1_cmd(t_list *cmd)
 {
 	int		i;
 	int		i_beg;
-	int		k;
+	int		num_arg;
 	int		mod;
+	int 	i_end_cmd;
 
 	mod_(REINIT_QUOTES_MOD);
 	i = 0;
-	k = -2;
+	num_arg = -1;
 	while (i < (int)ft_strlen(cmd->cmd))
 	{
 		mod = mod_(cmd->cmd[i]);
@@ -98,17 +99,19 @@ int	put_all_args_for_1_cmd(t_list *cmd)
 			mod = mod_(cmd->cmd[i++]);
 		if (i == i_beg)
 			break ;
-		if (++k != -1 && strdup_(&(cmd->cmd[i_beg]), &(cmd->args[k]), i - i_beg) == -1)
+		if (num_arg == -1)
+			i_end_cmd = i;
+		if (num_arg != -1 && strdup_(&(cmd->cmd[i_beg]), &(cmd->args[num_arg]), i - i_beg) == -1)
 			return (-1);
+		num_arg++;
 	}
+	cmd->cmd[i_end_cmd] = '\0';
 	return (0);
 }
 
 int	put_all_args_for_all_cmds(t_list **l)
 {
 	t_list	*cmd;
-	int		mod;
-	int		i;
 
 	cmd = *l;
 	while(cmd != NULL)
@@ -117,13 +120,6 @@ int	put_all_args_for_all_cmds(t_list **l)
 		if (cmd->args == NULL)
 			return (-1);
 		put_all_args_for_1_cmd(cmd);
-		mod = mod_(REINIT_QUOTES_MOD);
-		i = 0;
-		while (mod == OUTSIDE_QUOTES && cmd->cmd[i] == ' ')
-			i++;
-		while (mod == OUTSIDE_QUOTES && cmd->cmd[i] != ' ' && i < (int)ft_strlen(cmd->cmd))
-			mod = mod_(cmd->cmd[i++]);
-		cmd->cmd[i] = '\0';
 		cmd = cmd->nxt;
 	}
 	return (0);
