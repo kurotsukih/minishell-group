@@ -19,6 +19,18 @@ void	exec_echo(t_list *cmd)
 		ft_printf("\n");
 }
 
+void	ft_execute_env(char **env)
+{
+	int	i;
+
+	i = -1;
+	while (env[++i])
+	{
+		if (ft_strchr(env[i], '='))
+			ft_printf("%s\n", env[i]);
+	}
+}
+
 int	exec_cmds(t_list **l, char **env)
 {
 	t_list *cmd;
@@ -30,12 +42,12 @@ int	exec_cmds(t_list **l, char **env)
 		result = 0;
 		if (ft_strcmp(cmd->cmd, "echo") == 0)
 			exec_echo(cmd);
+		else if (ft_strcmp(cmd->cmd, "env") == 0)
+			ft_execute_env(env);
 		// else if (ft_strcmp((char *)cmd->params->content, "pwd") == 0)
 		// 	ft_execute_pwd();
 		// else if (ft_strcmp((char *)cmd->params->content, "unset") == 0)
 		// 	ft_execute_unset(&d->env, cmd->params->next);
-		// else if (ft_strcmp((char *)cmd->params->content, "env") == 0)
-		// 	ft_execute_env(d->env);
 		// else if (ft_strcmp((char *)cmd->params->content, "cd") == 0)
 		// 	result = ft_execute_cd(cmd->params->next, d->env);
 		// else if (ft_strcmp((char *)cmd->params->content, "export") == 0)
@@ -75,15 +87,6 @@ int	exec_cmds(t_list **l, char **env)
 // 	return (0);
 // }
 
-// void	ft_execute_env(t_list *env)
-// {
-// 	while (env)
-// 	{
-// 		if (ft_strchr((char *)env->content, '='))
-// 			ft_printf("%s\n", (char *)env->content);
-// 		env = env->next;
-// 	}
-// }
 
 // int	ft_execute_exit(t_data *d, t_node *n, t_list *token)
 // {
