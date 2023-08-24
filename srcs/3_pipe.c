@@ -4,7 +4,6 @@
 // {
 // 	int		fd[2];
 // 	char	*err;
-
 // 	if (i_cmd != 0 && n->cmds[i_cmd - 1].out_fd != 1)
 // 		close(n->cmds[i_cmd - 1].out_fd);
 // 	if (i_cmd < n->count_cmd - 1)
@@ -28,25 +27,6 @@
 // 	return (0);
 // }
 
-// char	*ft_open_all_files(t_list *token, t_cmd *cmd)
-// {
-// 	while (token)
-// 	{
-// 		if (token->type == REDIR_IN)
-// 			cmd->in_fd = ft_open_in(token, cmd->in_fd);
-// 		else if (token->type == REDIR_OUT)
-// 			cmd->out_fd = ft_open_out(token, cmd->out_fd);
-// 		else if (token->type == REDIR_OUT2)
-// 			cmd->out_fd = ft_open_out(token, cmd->out_fd);
-// 		else
-// 			cmd->in_fd = ft_open_in(token, cmd->in_fd);
-// 		if (cmd->in_fd == -1 || cmd->out_fd == -1)
-// 			return ((char *)token->content);
-// 		token = token->next;
-// 	}
-// 	return (NULL);
-// }
-
 // int	ft_open_in(t_list *token, int fd)
 // {
 // 	if (token->type == REDIR_IN)
@@ -67,7 +47,6 @@
 // int	ft_open_out(t_list *token, int fd)
 // {
 // 	char	*str;
-
 // 	str = (char *)token->content;
 // 	if (token->type == REDIR_OUT)
 // 	{
@@ -83,3 +62,23 @@
 // 	}
 // 	return (fd);
 // }
+
+// char	*ft_open_all_files(t_list *token, t_cmd *cmd)
+// {
+// 	while (token)
+// 	{
+// 		if (token->type == REDIR_IN)
+// 			cmd->in_fd = ft_open_in(token, cmd->in_fd);
+// 		else if (token->type == REDIR_OUT)
+// 			cmd->out_fd = ft_open_out(token, cmd->out_fd);
+// 		else if (token->type == REDIR_OUT2)
+// 			cmd->out_fd = ft_open_out(token, cmd->out_fd);
+// 		else
+// 			cmd->in_fd = ft_open_in(token, cmd->in_fd);
+// 		if (cmd->in_fd == -1 || cmd->out_fd == -1)
+// 			return ((char *)token->content);
+// 		token = token->next;
+// 	}
+// 	return (NULL);
+// }
+

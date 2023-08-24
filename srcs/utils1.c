@@ -42,42 +42,6 @@ void	*ft_memset(void *b, int c, size_t len)
 	return (b);
 }
 
-void	memset_(void *s, size_t n)
-{
-	size_t	i;
-
-	i = 0;
-	while (i < n)
-		((unsigned char *)s)[i++] = '\0';
-}
-
-void	ft_remove_quotes_string(char *str)
-{
-	char	mode;
-	int		i;
-	int		j;
-
-	i = 0;
-	j = 0;
-	mode = '\0';
-	while (str[i])
-	{
-		if (mode == '\0' && str[i] == '\'')
-			mode = 's';
-		else if (mode == 's' && str[i] == '\'')
-			mode = '\0';
-		else if (mode == '\0' && str[i] == '\"')
-			mode = 'd';
-		else if (mode == 'd' && str[i] == '\"')
-			mode = '\0';
-		else
-			str[j++] = str[i];
-		i++;
-	}
-	while (j != i)
-		str[j++] = '\0';
-}
-
 void	exit_(int exit_code, char *msg, char *msg_param, t_list **lst_to_clear, char **str_to_free)
 {
 	if (msg == NULL)
@@ -87,7 +51,7 @@ void	exit_(int exit_code, char *msg, char *msg_param, t_list **lst_to_clear, cha
 	else if (msg != NULL && msg_param != NULL)
 		printf(msg, msg_param);
 	if (lst_to_clear != NULL)
-	ft_lstclear(lst_to_clear);
+	// ft_lstclear(lst_to_clear);
 	if (str_to_free != NULL)
 		free(*str_to_free);
 	if (exit_code != -1)

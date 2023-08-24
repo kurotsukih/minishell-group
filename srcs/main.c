@@ -14,56 +14,37 @@ isatty ttyname ttyslot ioctl
 geten v 
 tcsetattr tcgetattr tgetent tgetflag tgetnum tgetstr tgoto tputs
 
+not authorised:  putenv(3), setenv(3), unsetenv(3), environ(5)
+
 SIGIN T = the user types C-c
 SIGQUI T = SIGIN T, except that it’s controlled by C-\ + produces a core dump when it terminates the process, 
 CTRL-\ causes a program to terminate and dump core
+
+cd : Quand on change de répertoire, le bash voit sa variable $PWD changer automatiquement
+
+si on met pas les waitpid juste apres l'execution de la commande et qu'on les met a la fin dans une boucle il y a beaucoup de commandes avec des pipes qui ne fonctionnent plus correctement, par exemple ls|wc fait une boucle infini 
+
+ft_execution
+ft_exec_recursion
+ft_exec_command
+ft_execute
+ft_execute_builtin ft_execute_program
 */
-
-// cd : Quand on change de répertoire, le bash voit sa variable $PWD changer automatiquement
-// not authorised:  putenv(3), setenv(3), unsetenv(3), environ(5)
-
-	// t_env	*cur;
-	// cur = *env;
-	// while (cur != NULL)
-	// 	cur = cur->nxt;
-
-// ft_execution
-// ft_exec_recursion
-// ft_exec_command
-// ft_execute
 
 #include "minishell.h"
 
 int g_signal = 0;
 
-static int	treat_cmd_line(char *cmd_line, t_env **env)
-{
-	t_list	**l;
-
-	init_list(&l);
-	if (put_cmd_and_redirect(cmd_line, l) == -1)
-		return (-1);
-	put_nb_args(l);
-	if (put_args(l) == -1)
-		return (-1);
-	if (verify_unclosed_quotes(l) == -1)
-		return (-1);
-	put_doll_conversions(l, env);
-	print_list(l);
-	exec_cmds(l, env);
-	return (0);
-}
-
-static int init_env(char **env_main, t_env ***env)
+static int init_env(char **env_main, t_env ***env_list)
 {
 	int		i;
 	t_env	*new;
 
-	*env = NULL;
-	*env = (t_env **)malloc(sizeof(t_env *)); ///
-	if (*env == NULL)
+	*env_list = NULL;
+	*env_list = (t_env **)malloc(sizeof(t_env *)); ///
+	if (*env_list == NULL)
 		return (-1);
-	**env = NULL;
+	**env_list = NULL;
 	i = -1;
 	while (env_main[++i])
 	{
@@ -77,11 +58,34 @@ static int init_env(char **env_main, t_env ***env)
 		new->key = part_before_sign_equal(env_main[i]);
 		if (new->key == NULL)
 			return (-1);
-		new->nxt = **env;
-		**env = new;
+		new->nxt = **env_list;
+		**env_list = new;
 	}
 	return (0);
 };
+
+static int	treat_cmd_line(char *cmd_line, t_env **env)
+{
+	t_list	**l;
+
+	l = (t_list **)malloc(sizeof(t_list *));
+	if (l == NULL)
+		return (-1);
+	*l = NULL;
+	if (put_cmd_and_redirect(cmd_line, l) == -1)
+		return (-1);
+	put_nb_args(l);
+	if (put_args(l) == -1)
+		return (-1);
+	if (verify_unclosed_quotes(l) == -1)
+		return (-1);
+	put_doll_conversions(l, env);
+	print_list(l);
+	exec_cmds(l, env);
+	// if (d.exit_code == 0)
+	// 	ft_execution(&d);
+	return (0);
+}
 
 int	main(int argc, char **argv, char **env_main)
 {
@@ -109,8 +113,6 @@ int	main(int argc, char **argv, char **env_main)
 		// }
 		add_history(cmd_line);
 		treat_cmd_line(cmd_line, env);
-		// if (d.exit_code == 0)
-		// 	ft_execution(&d);
 	}
 	return 0; //(exit_code);
 }

@@ -1,12 +1,12 @@
 #include "minishell.h"
 
-int	put_cmd_and_redirect_1(t_list **l, char *cmd, int len_cmd, char *redirect)
+int	put_cmd_and_redirect_1(t_list **l, char *cmd_str, int len_cmd, char *redirect)
 {
 	t_list	*new;
-	t_list	*cur;
+	t_list	*cmd_list;
 	int	i;
 
-	if (init_new_elt(&new) == -1)
+	if (init_new_cmd(&new) == -1)
 		return (-1);
 	new->redirect = redirect;
 	new->cmd = (char *)malloc(len_cmd + 1);
@@ -14,17 +14,17 @@ int	put_cmd_and_redirect_1(t_list **l, char *cmd, int len_cmd, char *redirect)
 		return (-1);
 	i = -1;
 	while (++i < len_cmd)
-		new->cmd[i] = cmd[i];
+		new->cmd[i] = cmd_str[i];
 	new->cmd[i] = '\0';
 	if (*l == NULL)
 		*l = new;
 	else
 	{
-		cur = *l;
-		while (cur != NULL && cur->nxt != NULL)
-			cur = cur->nxt;
-		cur->nxt = new;
-		new->prv = cur;
+		cmd_list = *l;
+		while (cmd_list != NULL && cmd_list->nxt != NULL)
+			cmd_list = cmd_list->nxt;
+		cmd_list->nxt = new;
+		new->prv = cmd_list;
 	}
 	return (0);
 }

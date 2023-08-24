@@ -65,8 +65,9 @@ int		verify_unclosed_quotes(t_list **l);
 int		put_doll_conversions(t_list **l, t_env **env);
 int		exec_cmds(t_list **l, t_env **env);
 int		exec_export(t_list *cmd, t_env **env);
+void	exec_env(t_env **env); 
+void	exec_unset(t_list *cmd, t_env **env);
 
-void	exec_env(t_env **env); /// tmp
 // utils
 char	*alphanum_(char *s);
 void	sig_handler_main(int signal);
@@ -84,8 +85,7 @@ char	*part_after_sign_equal(char *s);
 char	*part_before_sign_equal(char *s);
 void	exit_(int exit_code, char *msg, char *msg_param, t_list **lst_to_clear, char **str_to_sree);
 
-int		init_list(t_list ***l);
-int		init_new_elt(t_list	**new);
+int		init_new_cmd(t_list	**new);
 void	print_list(t_list **cmd);
 int		put_cmd_and_redirect_1(t_list **l, char *cmd, int len_cmd, char *redirect);
 int		ft_lstsize(t_list *lst);

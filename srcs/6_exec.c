@@ -19,18 +19,6 @@ void	exec_echo(t_list *cmd)
 		printf("\n");
 }
 
-void	exec_env(t_env **env)
-{
-	t_env	*cur;
-
-	cur = *env;
-	while (cur != NULL)
-	{
-		printf("%s=%s\n", cur->key, cur->val);
-		cur = cur->nxt;
-	}
-}
-
 void	exec_pwd(void)
 {
 	char	*s;
@@ -43,17 +31,17 @@ void	exec_pwd(void)
 int	exec_cd(t_list *cmd, t_env **env)
 {
 	char	*home_dir;
-	t_env	*cur;
+	t_env	*var;
 
 	if (cmd->nb_args == 0)
 	{
 		home_dir = NULL;
-		cur = *env;
-		while (cur != NULL)
+		var = *env;
+		while (var != NULL)
 		{
-			if (ft_strncmp(cur->key, "HOME", 4) == 0)
-				home_dir = cur->val;
-			cur = cur->nxt;
+			if (ft_strncmp(var->key, "HOME", 4) == 0)
+				home_dir = var->val;
+			var = var->nxt;
 		}
 		if (home_dir == NULL)
 			return (-1); // "bash: cd: HOME not set\n"
@@ -66,6 +54,29 @@ int	exec_cd(t_list *cmd, t_env **env)
 		return (-1);
 	return (0);
 }
+
+
+// int	exec_exit(t_data *d, t_node *n, t_list *token)
+// {
+// 	char	*str;
+// 	int		code;
+
+// 	if (!token)
+// 	{
+// 		code = d->exit_code;
+// 		return (ft_clean_tree(n), free_redirections(*(&(d->env))), exit(code), 0);
+// 	}
+// 	str = (char *)token->content;
+// 	if (ft_isnum(str) != 1)
+// 	{
+// 		exit_(-1, "bash: exit: %s: numeric argument required", str, NULL, NULL, NULL);
+// 		return (ft_clean_tree(n), free_redirections(*(&(d->env))), exit(2), 0);
+// 	}
+// 	if (ft_lstsize(token) > 1)
+// 		return (exit_(-1, "bash: exit: too many arguments\n", NULL, NULL, NULL, NULL), 1);
+// 	code = ft_abs(ft_atoi(str) % 256);
+// 	return (ft_clean_tree(n), free_redirections(*(&(d->env))), exit(code), 0);
+// }
 
 int	exec_cmds(t_list **l, t_env **env)
 {
@@ -85,11 +96,9 @@ int	exec_cmds(t_list **l, t_env **env)
 		else if (ft_strcmp(cmd->cmd, "cd") == 0)
 			result = exec_cd(cmd, env);
 		else if (ft_strcmp(cmd->cmd, "export") == 0)
-		{
-			result = exec_export(cmd, env); //// & ?
-		}
-		// else if (ft_strcmp(cmd->cmd, "unset") == 0)
-		// 	exec_unset(&d->env, cmd->params->next);
+			result = exec_export(cmd, env);
+		else if (ft_strcmp(cmd->cmd, "unset") == 0)
+			exec_unset(cmd, env );
 		// else if (ft_strcmp(cmd->cmd, "exit") == 0)
 		// 	result = exec_exit(d, n, cmd->params->next);
 		cmd = cmd->nxt;

@@ -54,31 +54,6 @@
 // 	return (signal(SIGINT, SIG_IGN), pid);
 // }
 
-// int	check(t_cmd *cmd, int count, int result)
-// {
-// 	char	*str;
-// 	if (result == 0)
-// 	{
-// 		if (count != 1)
-// 			return (1);
-// 		if (!cmd->params)
-// 			return (1);
-// 		if (cmd->params && ft_is_builtin(cmd->params) != 1)
-// 			return (1);
-// 		else if (cmd->params && ft_is_builtin(cmd->params) == 1)
-// 		{
-// 			str = (char *)cmd->params->content;
-// 			if (ft_strcmp(str, "cd") == 0 || ft_strcmp(str, "exit") == 0)
-// 				return (0);
-// 			else if (ft_strcmp(str, "export") == 0 || !ft_strcmp(str, "unset"))
-// 				return (0);
-// 			else
-// 				return (1);
-// 		}
-// 	}
-// 	return (0);
-// }
-
 // int	ft_exec_command(t_node *n, t_data *d)
 // {
 // 	int	i_cmd;
@@ -105,24 +80,6 @@
 // }
 
 ////////////////////////////////////////////////////////////////
-// // Do I have reallocate the memmory for this command? or can keep it like this?
-// char	**ft_construct_command(t_list *params)
-// {
-// 	char	**returner;
-// 	int		size;
-// 	int		i;
-// 	size = ft_lstsize(params);
-// 	returner = (char **)malloc(sizeof(char *) * (size + 1));
-// 	i = 0;
-// 	while (i < size)
-// 	{
-// 		returner[i] = (char *)params->content;
-// 		params = params->next;
-// 		i++;
-// 	}
-// 	returner[i] = NULL;
-// 	return (returner);
-// }
 
 // //  I have to think of exit and free strategy
 // int	ft_execute_program(t_cmd *cmd, t_list *env, t_node *n)

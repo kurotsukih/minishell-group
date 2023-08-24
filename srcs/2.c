@@ -22,14 +22,14 @@ int	verify_unclosed_quotes(t_list **l)
 
 static char	*get_value_from_env(char *key, t_env **env)
 {
-	t_env	*cur;
+	t_env	*var;
 
-	cur = *env;
-	while (cur != NULL)
+	var = *env;
+	while (var != NULL)
 	{
-		if (ft_strcmp(cur->key, key) == 0)
-			return (cur->val);
-		cur = cur->nxt;
+		if (ft_strcmp(var->key, key) == 0)
+			return (var->val);
+		var = var->nxt;
 	}
 	return (NULL);
 }
@@ -140,6 +140,31 @@ int	put_doll_conversions(t_list **l, t_env **env)
 // 		n = n->next;
 // 	}
 // 	return (1);
+// }
+
+// int	check(t_cmd *cmd, int count, int result)
+// {
+// 	char	*str;
+// 	if (result == 0)
+// 	{
+// 		if (count != 1)
+// 			return (1);
+// 		if (!cmd->params)
+// 			return (1);
+// 		if (cmd->params && ft_is_builtin(cmd->params) != 1)
+// 			return (1);
+// 		else if (cmd->params && ft_is_builtin(cmd->params) == 1)
+// 		{
+// 			str = (char *)cmd->params->content;
+// 			if (ft_strcmp(str, "cd") == 0 || ft_strcmp(str, "exit") == 0)
+// 				return (0);
+// 			else if (ft_strcmp(str, "export") == 0 || !ft_strcmp(str, "unset"))
+// 				return (0);
+// 			else
+// 				return (1);
+// 		}
+// 	}
+// 	return (0);
 // }
 
 //////////////////////////////////////////////
