@@ -1,4 +1,4 @@
-// #include "minishell.h"
+#include "headers.h"
 
 // int	ft_prepare_pipe(t_node *n, int i_cmd)
 // {

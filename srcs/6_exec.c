@@ -1,4 +1,4 @@
-#include "minishell.h"
+#include "headers.h"
 
 void	exec_echo(t_list *cmd)
 {
@@ -89,16 +89,16 @@ int	exec_cmds(t_list **l, t_env **env)
 		result = 0;
 		if (ft_strcmp(cmd->cmd, "echo") == 0)
 			exec_echo(cmd);
-		else if (ft_strcmp(cmd->cmd, "env") == 0)
+		else if (ft_strcmp(cmd->cmd, "env") == 0 && env != NULL)
 			exec_env(env);
 		else if (ft_strcmp(cmd->cmd, "pwd") == 0)
 			exec_pwd();
 		else if (ft_strcmp(cmd->cmd, "cd") == 0)
 			result = exec_cd(cmd, env);
 		else if (ft_strcmp(cmd->cmd, "export") == 0)
-			result = exec_export(cmd, env);
+			result = exec_export(cmd, &env);
 		else if (ft_strcmp(cmd->cmd, "unset") == 0)
-			exec_unset(cmd, env );
+			exec_unset(cmd, &env);
 		// else if (ft_strcmp(cmd->cmd, "exit") == 0)
 		// 	result = exec_exit(d, n, cmd->params->next);
 		cmd = cmd->nxt;

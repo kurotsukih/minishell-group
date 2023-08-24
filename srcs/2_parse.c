@@ -1,4 +1,4 @@
-#include "minishell.h"
+#include "headers.h"
 
 int	verify_unclosed_quotes(t_list **l)
 {

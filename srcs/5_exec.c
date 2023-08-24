@@ -1,4 +1,4 @@
-#include "minishell.h"
+#include "headers.h"
 
 // static void	ft_wait_child_processes(int *is_success, int size, int pid)
 // {

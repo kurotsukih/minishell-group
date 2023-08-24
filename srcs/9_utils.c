@@ -1,4 +1,4 @@
-#include "minishell.h"
+#include "headers.h"
 
 char *part_after_sign_equal(char *s) //// malloc ?
 {
@@ -19,22 +19,20 @@ char *part_after_sign_equal(char *s) //// malloc ?
 	return (NULL);
 }
 
-char *part_before_sign_equal(char *s) //// malloc ?
+char *part_before_sign_equal(char *s)
 {
 	int		i;
 	char	*s_dup;
 
 	i = -1;
 	while (s[++i] != '\0')
-	{
 		if (s[i] == '=')
-			{
-				s_dup = ft_strdup(s);
-				if (s_dup == NULL)
-					return (NULL);
-				s_dup[i] = '\0';
-				return (s_dup);
-			}
-	}
+		{
+			s_dup = ft_strdup(s);
+			if (s_dup == NULL)
+				return (NULL);
+			s_dup[i] = '\0';
+			return (s_dup);
+		}
 	return (NULL);
 }

@@ -1,4 +1,4 @@
-#include "minishell.h"
+#include "headers.h"
 
 void	sig_handler_main(int signal)
 {

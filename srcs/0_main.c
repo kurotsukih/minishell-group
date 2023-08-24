@@ -31,7 +31,7 @@ ft_execute
 ft_execute_builtin ft_execute_program
 */
 
-#include "minishell.h"
+#include "headers.h"
 
 int g_signal = 0;
 

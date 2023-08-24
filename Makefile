@@ -1,4 +1,5 @@
-SRCS = main.c 1.c 2.c 3_pipe.c 4_path.c 6_exec.c 7_exec.c utils1.c utils2.c utils3.c 5_exec.c 
+SRCS = 0_main.c 1_parse.c 2_parse.c 3_pipe.c 4_path.c 5_exec.c 6_exec.c \
+	   7_exec.c 8_utils.c 9_utils.c 10_utils.c
 OBJS = $(addprefix ./.build/, $(SRCS))
 OBJS := $(OBJS:%.c=%.o)
 

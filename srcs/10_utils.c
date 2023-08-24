@@ -1,4 +1,4 @@
-#include "minishell.h"
+#include "headers.h"
 
 int	init_new_cmd(t_list **new)
 {

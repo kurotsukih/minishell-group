@@ -64,9 +64,9 @@ int		put_args(t_list **l);
 int		verify_unclosed_quotes(t_list **l);
 int		put_doll_conversions(t_list **l, t_env **env);
 int		exec_cmds(t_list **l, t_env **env);
-int		exec_export(t_list *cmd, t_env **env);
 void	exec_env(t_env **env); 
-void	exec_unset(t_list *cmd, t_env **env);
+int		exec_export(t_list *cmd, t_env ***env);
+void	exec_unset(t_list *cmd, t_env ***env);
 
 // utils
 char	*alphanum_(char *s);

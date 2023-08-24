@@ -1,4 +1,4 @@
-#include "minishell.h"
+#include "headers.h"
 
 int	put_cmd_and_redirect_1(t_list **l, char *cmd_str, int len_cmd, char *redirect)
 {
