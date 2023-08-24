@@ -21,14 +21,12 @@ void	exec_unset(t_list *cmd, t_env ***env)
 	i = -1;
 	while (++i < cmd->nb_args)
 	{
-		// printf("UNSET ARG = %s\n", cmd->args[i]);
 		prv = NULL;
 		var = **env;
 		while (var != NULL)
 		{
 			if (ft_strcmp(var->key, part_before_sign_equal(cmd->args[i])) == 0)
 			{
-				// printf("UNSET !!!\n");
 				free(var->key);
 				free(var->val);
 				if (prv != NULL)
@@ -36,7 +34,6 @@ void	exec_unset(t_list *cmd, t_env ***env)
 				else if (**env == var)
 					**env = var->nxt;
 				free(var);
-				break ;
 			}
 			prv = var;
 			var = var->nxt;
@@ -52,10 +49,6 @@ int	exec_export(t_list *cmd, t_env ***env)
 	if (cmd->nb_args == 0)
 		return (exec_env(*env), 0);
 	exec_unset(cmd, env);
-	// printf("ENV AFTER UNSET: ********************\n");
-	exec_env(*env);
-	// printf("END *********************************\n");
-	
 	i = -1;
 	while (++i < cmd->nb_args)
 	{
@@ -67,9 +60,6 @@ int	exec_export(t_list *cmd, t_env ***env)
 		new->val = part_after_sign_equal(cmd->args[i]);
 		new->nxt = **env;
 		**env = new;
-		// printf("ENV AFTER ARG: ____________________\n");
-		exec_env(*env);
-		// printf("END _______________________________\n");
 	}
 	return (0);
 }
