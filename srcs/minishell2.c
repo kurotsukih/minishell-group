@@ -20,19 +20,22 @@ int	verify_unclosed_quotes(t_list **l)
 	return (0);
 }
 
-static char	*get_value_from_env(char *key, char **env)
+static char	*get_value_from_env(char *key, t_env **env)
 {
-	int i;
+	t_env	*cur;
 
-	i = -1;
-	while (env[++i])
-		if (ft_strncmp(env[i], key, ft_strlen(key)) == 0 && env[i][ft_strlen(key)] == '=')
-			return (&(env[i][ft_strlen(key) + 1]));
+	cur = *env;
+	while (cur != NULL)
+	{
+		if (ft_strcmp(cur->key, key) == 0)
+			return (cur->val);
+		cur = cur->nxt;
+	}
 	return (NULL);
 }
 
 // " $ " is ok ?
-static int	put_doll_conversions_str(char **s, char **env)
+static int	put_doll_conversions_1(char **s, t_env **env)
 {
 	int		i;
 	int		j;
@@ -82,7 +85,7 @@ static int	put_doll_conversions_str(char **s, char **env)
 	return (0);
 }
 
-int	put_doll_conversions(t_list **l, char **env)
+int	put_doll_conversions(t_list **l, t_env **env)
 {
 	t_list	*cmd;
 	int		i;
@@ -93,7 +96,7 @@ int	put_doll_conversions(t_list **l, char **env)
 		i = -1;
 		while(++i < cmd->nb_args)
 			if (cmd->args[i][0] != '\'')
-				if (put_doll_conversions_str(&(cmd->args[i]), env) == -1)
+				if (put_doll_conversions_1(&(cmd->args[i]), env) == -1)
 					return (-1);
 		cmd = cmd->nxt;
 	}

@@ -9,25 +9,25 @@ void	exec_echo(t_list *cmd)
 	i = -1;
 	while (++i < cmd->nb_args)
 	{
-		ft_printf("%s", cmd->args[i]);
+		printf("%s", cmd->args[i]);
 		if (i != cmd->nb_args - 1)
-			ft_printf(" ");
+			printf(" ");
 		if (cmd->args[i][0] == '-' && cmd->args[i][1] == 'n' && cmd->args[i][2] == '\0')
 			option_n = 1;
 	}
 	if (option_n == 0)
-		ft_printf("\n");
+		printf("\n");
 }
 
-void	exec_env(char **env)
+void	exec_env(t_env **env)
 {
-	int	i;
+	t_env	*cur;
 
-	i = -1;
-	while (env[++i])
+	cur = *env;
+	while (cur != NULL)
 	{
-		if (ft_strchr(env[i], '='))
-			ft_printf("%s\n", env[i]);
+		printf("%s=%s\n", cur->key, cur->val);
+		cur = cur->nxt;
 	}
 }
 
@@ -36,22 +36,25 @@ void	exec_pwd(void)
 	char	*s;
 
 	s = getcwd(NULL, 0);
-	ft_printf("%s\n", s);
+	printf("%s\n", s);
 	free(s);
 }
 
-int	exec_cd(t_list *cmd, char **env)
+int	exec_cd(t_list *cmd, t_env **env)
 {
 	char	*home_dir;
-	int		i;
+	t_env	*cur;
 
 	if (cmd->nb_args == 0)
 	{
 		home_dir = NULL;
-		i = -1;
-		while (env[++i])
-			if (ft_strncmp(env[i], "HOME=", 5) == 0)
-				home_dir = &(env[i][5]);
+		cur = *env;
+		while (cur != NULL)
+		{
+			if (ft_strncmp(cur->key, "HOME", 4) == 0)
+				home_dir = cur->val;
+			cur = cur->nxt;
+		}
 		if (home_dir == NULL)
 			return (-1); // "bash: cd: HOME not set\n"
 		if (chdir(home_dir) == -1)
@@ -64,7 +67,7 @@ int	exec_cd(t_list *cmd, char **env)
 	return (0);
 }
 
-int	exec_cmds(t_list **l, char **env)
+int	exec_cmds(t_list **l, t_env **env)
 {
 	t_list *cmd;
 	int	result;
@@ -81,14 +84,15 @@ int	exec_cmds(t_list **l, char **env)
 			exec_pwd();
 		else if (ft_strcmp(cmd->cmd, "cd") == 0)
 			result = exec_cd(cmd, env);
-		// else if (ft_strcmp(cmd->cmd, "export") == 0)
-		// 	result = ft_execute_export(cmd, env);
+		else if (ft_strcmp(cmd->cmd, "export") == 0)
+		{
+			result = exec_export(cmd, env); //// & ?
+		}
 		// else if (ft_strcmp(cmd->cmd, "unset") == 0)
-		// 	ft_execute_unset(&d->env, cmd->params->next);
+		// 	exec_unset(&d->env, cmd->params->next);
 		// else if (ft_strcmp(cmd->cmd, "exit") == 0)
-		// 	result = ft_execute_exit(d, n, cmd->params->next);
+		// 	result = exec_exit(d, n, cmd->params->next);
 		cmd = cmd->nxt;
 	}
-	(void)env;
 	return (result);
 }

@@ -85,20 +85,6 @@ void	ft_lstadd_front(t_list **lst, t_list *new_node)
 	}
 }
 
-void	ft_lstadd_back(t_list **lst, t_list *new_node)
-{
-	t_list	*lastnode;
-
-	lastnode = ft_lstlast(*lst);
-	if (!lastnode)
-		*lst = new_node;
-	else
-	{
-		lastnode->nxt = new_node;
-		new_node->prv = lastnode;
-	}
-}
-
 int	ft_lstsize(t_list *lst)
 {
 	int	i;

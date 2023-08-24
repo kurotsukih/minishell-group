@@ -1,18 +1,14 @@
 SRCS = main.c \
 	   minishell1.c \
 	   minishell2.c \
-	   minishell3_builtins.c \
-	   minishell4_builtins.c \
+	   minishell4_exec.c \
+	   minishell5_exec.c \
 	   utils1.c \
 	   utils2.c \
 	   utils3_list.c \
-	   execution/preprocess.c \
-	   execution/preprocess_cmd.c \
-	   execution/prepare_pipe.c \
-	   execution/execute_program.c \
-	   execution/find_path.c \
-	   execution/exec_1recursion.c \
-	   execution/exec_2command.c
+	   prepare_pipe.c \
+	   find_path.c \
+#	   minishell3_exec.c \
 
 OBJS = $(addprefix ./.build/, $(SRCS))
 OBJS := $(OBJS:%.c=%.o)

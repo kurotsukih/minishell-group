@@ -54,19 +54,6 @@ SRCS	= 	other/ft_atoi.c				\
 			string/ft_strtrim.c			\
 			string/ft_substr.c			\
 			string/ft_strstr.c			\
-			linked_list/ft_lstadd_back.c    	\
-			linked_list/ft_lstadd_front.c		\
-			linked_list/ft_lstclear.c			\
-			linked_list/ft_lstclear_safe.c		\
-			linked_list/ft_lstdelone.c			\
-			linked_list/ft_lstiter.c			\
-			linked_list/ft_lstlast.c			\
-			linked_list/ft_lstmap.c				\
-			linked_list/ft_lstnew.c				\
-			linked_list/ft_lstsize.c			\
-			linked_list/ft_lstretrieve.c		\
-			linked_list/ft_lstremove.c			\
-			linked_list/ft_lstfirst.c			\
 		  	get_next_line/get_next_line.c 		\
 			get_next_line/get_next_line_utils.c  \
 
@@ -133,15 +120,4 @@ SRCS	= 	ft_atoi.c				\
 			ft_strtrim.c			\
 			ft_substr.c				\
 			ft_tolower.c			\
-			ft_toupper.c			\
-
-BONUS_SRCS =    ft_lstadd_back.c    	\
-				ft_lstadd_front.c		\
-				ft_lstclear.c			\
-				ft_lstdelone.c			\
-				ft_lstiter.c			\
-				ft_lstlast.c			\
-				ft_lstmap.c				\
-				ft_lstnew.c				\
-				ft_lstsize.c			\
-
+			ft_toupper.c			
