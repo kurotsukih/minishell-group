@@ -34,7 +34,7 @@
 // 	int		fd[2];
 // 	char	*err;
 
-// 	if (i_cmd != 0 && n->cmds[i_cmd - 1].out_fd != 1)
+// 	if (i_cmd != 0 && ns[i_cmd - 1].out_fd != 1)
 // 		close(n->cmds[i_cmd - 1].out_fd);
 // 	if (i_cmd < n->count_cmd - 1)
 // 	{

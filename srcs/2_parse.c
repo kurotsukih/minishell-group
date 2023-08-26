@@ -11,8 +11,8 @@ int	verify_unclosed_quotes(t_cmds **l)
 	{
 		mod_(REINIT_QUOTES);
 		i = -1;
-		while (cmd->cmd[++i] != '\0')
-			mod = mod_(cmd->cmd[i]);
+		while (cmd->args[0][++i] != '\0')
+			mod = mod_(cmd->args[0][i]);
 		if (mod != QUOTES0)
 			return (-1);
 		cmd = cmd->nxt;
@@ -46,6 +46,7 @@ static int	put_doll_conversions_1(char **s, t_env **env)
 			new_s = (char*)malloc(new_size + 1);
 			if (new_s == NULL)
 				return (-1);
+			ft_memset(new_s, '\0', new_size + 1);
 			j = 0;
 			while (j < i)
 			{
@@ -79,7 +80,7 @@ int	put_doll_conversions(t_cmds **l, t_env **env)
 	cmd = *l;
 	while(cmd != NULL)
 	{
-		i = -1;
+		i = 0;
 		while(++i < cmd->nb_args)
 			if (cmd->args[i][0] != '\'')
 				if (put_doll_conversions_1(&(cmd->args[i]), env) == -1)

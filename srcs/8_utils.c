@@ -42,21 +42,21 @@ void	*ft_memset(void *b, int c, size_t len)
 	return (b);
 }
 
-void	exit_(int exit_code, char *msg, char *msg_param, t_list **lst_to_clear, char **str_to_free)
-{
-	if (msg == NULL)
-		printf("%s\n", strerror(errno));
-	else if (msg != NULL && msg_param == NULL)
-		printf("bash: %s\n", msg);
-	else if (msg != NULL && msg_param != NULL)
-		printf(msg, msg_param);
-	if (lst_to_clear != NULL)
-	// ft_lstclear(lst_to_clear);
-	if (str_to_free != NULL)
-		free(*str_to_free);
-	if (exit_code != -1)
-		exit(exit_code);
-}
+// void	exit_(int exit_code, char *msg, char *msg_param, t_list **lst_to_clear, char **str_to_free)
+// {
+// 	if (msg == NULL)
+// 		printf("%s\n", strerror(errno));
+// 	else if (msg != NULL && msg_param == NULL)
+// 		printf("bash: %s\n", msg);
+// 	else if (msg != NULL && msg_param != NULL)
+// 		printf(msg, msg_param);
+// 	if (lst_to_clear != NULL)
+// 	// ft_lstclear(lst_to_clear);
+// 	if (str_to_free != NULL)
+// 		free(*str_to_free);
+// 	if (exit_code != -1)
+// 		exit(exit_code);
+// }
 
 char *alphanum_(char *s)
 {
@@ -139,6 +139,19 @@ char	*redirect_(char *s)
 		return ("|");
 	else
 		return ("");
+}
+
+int	nb_args_(char *s, int len)
+{
+	int	nb_args;
+	int	i;
+
+	nb_args = 0;
+	i = -1;
+	while (++i < len)
+		if (mod_(s[i]) == QUOTES0 && s[i] != ' ' && (s[i + 1] == ' ' || s[i + 1] == '\0' || s[i + 1] == '\'' || s[i + 1] == '\"'))
+			nb_args++;
+	return (nb_args);
 }
 
 //if $a="s -la" then l$a -> ls -la ???

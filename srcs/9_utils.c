@@ -1,6 +1,6 @@
 #include "headers.h"
 
-char *key_(char *s)
+char *key_(char *s) // uses extra bytes
 {
 	int		i;
 	char	*s_copy;

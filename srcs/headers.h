@@ -35,7 +35,7 @@
 
 extern int g_signal;
 
-// args = mixed args and options 
+// args[0] progname, argd[n] mixed args and options 
 typedef struct 		s_cmds
 {
 	char			*cmd;
@@ -79,8 +79,9 @@ int		ft_isnum(char *str);
 int		strdup_and_trim(char *srs, char **dest, int len);
 int		mod_(char c);	
 char	*redirect_(char *s);
+int nb_args_(char *s, int len);
 
-int		init_new_cmd(t_cmds	**new);
+int	init_new_cmd(t_cmds **new, char *redirect);
 void	print_list(t_cmds **cmd);
 int		put_cmd_and_redirect_1(t_cmds **l, char *cmd, int len_cmd, char *redirect);
 

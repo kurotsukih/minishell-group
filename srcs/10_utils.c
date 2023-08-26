@@ -1,16 +1,15 @@
 #include "headers.h"
 
-int	init_new_cmd(t_cmds **new)
+int	init_new_cmd(t_cmds **new, char *redirect)
 {
 	*new = (t_cmds *)malloc(sizeof(t_cmds));
 	if (*new == NULL)
 		return (-1);
 	(*new)->nxt = NULL;
 	(*new)->prv = NULL;
-	(*new)->cmd = NULL;
-	(*new)->args = NULL;
 	(*new)->nb_args = 0;
-	(*new)->redirect = NULL;
+	(*new)->args = NULL;
+	(*new)->redirect = redirect;
 	(*new)->is_filename = 0;
 	return (0);
 }
@@ -24,30 +23,32 @@ void print_cmd(t_cmds *cmd)
 		printf("  cmd = NULL\n");
 		return ;
 	}
-	printf("  %p [%s] %d agrs : ", cmd, cmd->cmd, cmd->nb_args);
-	i = 0;
+	printf("  %p [%s] %d agrs : ", cmd, cmd->args[0], cmd->nb_args);
 	if (cmd->args != NULL)
-		while (i < cmd->nb_args)
-			printf("[%s] ", cmd->args[i++]);
+	{
+		i = -1;
+		while (++i < cmd->nb_args)
+			printf("[%s] ", cmd->args[i]);
+	}
 	printf(": [%s]\n", cmd->redirect);
 	(void)i;
 }
 
-void print_list(t_cmds **l)
+void print_list(t_cmds **cmds)
 {
-	t_cmds	*cur;
+	t_cmds	*cmd;
 
-	printf("LIST %14p:\n", l);
-	if (l == NULL || *l == NULL)
+	printf("LIST %14p:\n", cmds);
+	if (cmds == NULL || *cmds == NULL)
 	{
 		printf("  empty\n");
 		return ;
 	}
-	cur = *l;
-	while (cur != NULL)
+	cmd = *cmds;
+	while (cmd != NULL)
 	{
-		print_cmd(cur);
-		cur = cur->nxt;
+		print_cmd(cmd);
+		cmd = cmd->nxt;
 	}
 }
 

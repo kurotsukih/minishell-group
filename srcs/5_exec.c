@@ -6,7 +6,7 @@ void	exec_echo(t_cmds *cmd)
 	int	i;
 
 	option_n = 0;
-	i = -1;
+	i = 0;
 	while (++i < cmd->nb_args)
 	{
 		if (ft_strcmp(cmd->args[i], "-n") == 0)
@@ -33,9 +33,10 @@ int	exec_cd(t_cmds *cmd, t_env **env)
 {
 	char	*home_dir;
 
-	if (cmd->nb_args > 1)
+	// printf("exec cd %s %s %s\n", cmd->args[0], )
+	if (cmd->nb_args >= 3)
 		return (-1); // "bash: cd: Too many arguments\n" 
-	if (cmd->nb_args == 0)
+	if (cmd->nb_args == 1)
 	{
 		home_dir = get_value_from_env("HOME", env);
 		if (home_dir == NULL)
@@ -43,7 +44,7 @@ int	exec_cd(t_cmds *cmd, t_env **env)
 		if (chdir(home_dir) == -1)
 			return (-1); // "bash: cd: HOME not set properly%s\n", home_dir);
 	}
-	else if (chdir(cmd->args[0]) == -1)
+	else if (chdir(cmd->args[1]) == -1)
 		return (-1);
 	return (0);
 }
@@ -73,22 +74,24 @@ int	exec_cmds(t_cmds **l, t_env **env)
 	while (cmd != NULL)
 	{
 		result = 0;
-		if (ft_strcmp(cmd->cmd, "echo") == 0)
+		if (dup2(cmd->in_fd, STDIN_FILENO) == -1 || dup2(cmd->out_fd, STDOUT_FILENO) == -1)
+			{} //exit_();
+		if (ft_strcmp(cmd->args[0], "echo") == 0)
 			exec_echo(cmd);
-		else if (ft_strcmp(cmd->cmd, "env") == 0 && env != NULL)
+		else if (ft_strcmp(cmd->args[0], "env") == 0 && env != NULL)
 			exec_env(env);
-		else if (ft_strcmp(cmd->cmd, "pwd") == 0)
+		else if (ft_strcmp(cmd->args[0], "pwd") == 0)
 			exec_pwd();
-		else if (ft_strcmp(cmd->cmd, "cd") == 0)
+		else if (ft_strcmp(cmd->args[0], "cd") == 0)
 			result = exec_cd(cmd, env);
-		else if (ft_strcmp(cmd->cmd, "export") == 0)
+		else if (ft_strcmp(cmd->args[0], "export") == 0)
 			result = exec_export(cmd, &env);
-		else if (ft_strcmp(cmd->cmd, "unset") == 0)
+		else if (ft_strcmp(cmd->args[0], "unset") == 0)
 			exec_unset(cmd, &env);
-		// else if (ft_strcmp(cmd->cmd, "exit") == 0)
+		// else if (ft_strcmp(cmd->args[0], "exit") == 0)
 		// 	result = exec_exit(d, n, cmd->params->next);
 		// else
-		// 	ft_execute_program(cmd, env, t_node *n);
+		// 	exec_external_cmd(cmd, env);
 		cmd = cmd->nxt;
 	}
 	return (result);

@@ -32,24 +32,22 @@ int g_signal = 0;
 
 static int	treat_cmd_line(char *cmd_line, t_env **env)
 {
-	t_cmds	**l;
+	t_cmds	**cmds;
 
-	l = (t_cmds **)malloc(sizeof(t_cmds *));
-	if (l == NULL)
+	cmds = (t_cmds **)malloc(sizeof(t_cmds *));
+	if (cmds == NULL)
 		return (-1);
-	*l = NULL;
-	if (put_cmd_and_redirect(cmd_line, l) == -1)
+	*cmds = NULL;
+	if (put_cmd_and_redirect(cmd_line, cmds) == -1)
 		return (-1);
-	put_nb_args(l);
-	if (put_args(l) == -1)
+	if (put_args(cmds) == -1)
 		return (-1);
-	if (verify_unclosed_quotes(l) == -1)
+	if (verify_unclosed_quotes(cmds) == -1)
 		return (-1);
-	put_doll_conversions(l, env);
-	print_list(l);
-	exec_cmds(l, env);
-	// if (d.exit_code == 0)
-	// 	ft_execution(&d);
+	put_doll_conversions(cmds, env);
+	print_list(cmds);
+	exec_cmds(cmds, env);
+	// if (exit_code == 0)
 	return (0);
 }
 

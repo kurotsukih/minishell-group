@@ -1,21 +1,26 @@
 #include "headers.h"
 
-int	put_cmd_and_redirect_1(t_cmds **l, char *cmd_str, int len_cmd, char *redirect)
+int	put_cmd_and_redirect_1(t_cmds **l, char *s, int len_s, char *redirect)
 {
 	t_cmds	*new;
 	t_cmds	*cmd_list;
-	int	i;
+	int		i;
 
-	if (init_new_cmd(&new) == -1)
+	if (init_new_cmd(&new, redirect) == -1)
 		return (-1);
-	new->redirect = redirect;
-	new->cmd = (char *)malloc(len_cmd + 1);
-	if (new->cmd == NULL)
+	mod_(REINIT_QUOTES);
+	new->nb_args = nb_args_(s, len_s);
+	new->args = (char **)malloc((new->nb_args + 1)* sizeof(char *));
+	if (new->args == NULL)
+		return (-1);
+	// ft_memset(new->args, NULL, new->nb_args + 1); ///
+	new->args[0] = (char *)malloc(len_s + 1);
+	if (new->args[0] == NULL)
 		return (-1);
 	i = -1;
-	while (++i < len_cmd)
-		new->cmd[i] = cmd_str[i];
-	new->cmd[i] = '\0';
+	while (++i < len_s)
+		new->args[0][i] = s[i];
+	new->args[0][i] = '\0';
 	if (*l == NULL)
 		*l = new;
 	else
@@ -57,50 +62,35 @@ int put_cmd_and_redirect(char *cmd_line, t_cmds **l)
 	return (0);
 }
 
-void put_nb_args(t_cmds **l)
-{
-	int		i;
-	int		nb_args;
-	t_cmds	*cmd;
-
-	cmd = *l;
-	while(cmd != NULL)
-	{
-		mod_(REINIT_QUOTES);
-		nb_args = 0;
-		i = -1;
-		while (cmd->cmd[++i] != '\0')
-			if (mod_(cmd->cmd[i]) == QUOTES0 && cmd->cmd[i] != ' ' && (cmd->cmd[i + 1] == ' ' || cmd->cmd[i + 1] == '\0' || cmd->cmd[i + 1] == '\'' || cmd->cmd[i + 1] == '\"'))
-				nb_args++;
-		cmd->nb_args = nb_args - 1;
-		cmd = cmd->nxt;
-	}
-}
-
 static int	put_args_1(t_cmds *cmd)
 {
 	int		i;
 	int		i_beg;
-	int		num_arg;
+	int		k;
 	int		len;
 	int		to_put_EOL;
 
+	if (cmd->nb_args <= 1)
+		return (0);
 	mod_(REINIT_QUOTES);
 	i_beg = 0;
-	num_arg = -1;
-	len = (int)ft_strlen(cmd->cmd);
+	k = 0;
+	len = (int)ft_strlen(cmd->args[0]);
 	i = -1;
 	while (++i < len)
-		if (mod_(cmd->cmd[i]) == QUOTES0 && cmd->cmd[i] != ' ' && (cmd->cmd[i + 1] == ' ' || cmd->cmd[i + 1] == '\0' || cmd->cmd[i + 1] == '\'' || cmd->cmd[i + 1] == '\"'))
+	{
+		if (mod_(cmd->args[0][i]) == QUOTES0 && cmd->args[0][i] != ' ' && (cmd->args[0][i + 1] == ' ' || cmd->args[0][i + 1] == '\0' || cmd->args[0][i + 1] == '\'' || cmd->args[0][i + 1] == '\"'))
 		{
-			if (num_arg == -1)
+			if (k == 0)
 				to_put_EOL = i + 1;
-			else if (strdup_and_trim(&(cmd->cmd[i_beg]), &(cmd->args[num_arg]), i - i_beg + 1) == -1)
+			else if (strdup_and_trim(&(cmd->args[0][i_beg]), &(cmd->args[k]), i - i_beg + 1) == -1)
 				return (-1);
 			i_beg = i + 1;
-			num_arg++;
+			k++;
 		}
-	return (cmd->cmd[to_put_EOL] = '\0', 0);
+	}
+	cmd->args[0][to_put_EOL] = '\0';
+	return (0);
 }
 
 int	put_args(t_cmds **l)
@@ -110,11 +100,9 @@ int	put_args(t_cmds **l)
 	cmd = *l;
 	while(cmd != NULL)
 	{
-		cmd->args = (char **)malloc(cmd->nb_args * sizeof(char *));
-		if (cmd->args == NULL)
-			return (-1);
 		if (put_args_1(cmd) == -1)
 			return (-1);
+		cmd->args[cmd->nb_args] = NULL;
 		cmd = cmd->nxt;
 	}
 	return (0);
