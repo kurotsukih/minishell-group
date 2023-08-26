@@ -36,7 +36,7 @@
 extern int g_signal;
 
 // args = mixed args and options 
-typedef struct 		s_list
+typedef struct 		s_cmds
 {
 	char			*cmd;
 	char			**args;
@@ -46,27 +46,26 @@ typedef struct 		s_list
 	int				in_fd;
 	int				out_fd;
 	int				exit_code;
-	struct s_list	*nxt;
-	struct s_list	*prv;
-}					t_list;
+	struct s_cmds	*nxt;
+	struct s_cmds	*prv;
+}					t_cmds;
 
 typedef struct		s_env
 {
-	char			*key;
-	char			*val;
+	char			*var;
 	struct s_env	*nxt;
 }					t_env;
 
 // treat_cmd_line
-int 	put_cmd_and_redirect(char *cmd_line, t_list **l);
-void 	put_nb_args(t_list **l);
-int		put_args(t_list **l);
-int		verify_unclosed_quotes(t_list **l);
-int		put_doll_conversions(t_list **l, t_env **env);
-int		exec_cmds(t_list **l, t_env **env);
+int 	put_cmd_and_redirect(char *cmd_line, t_cmds **l);
+void 	put_nb_args(t_cmds **l);
+int		put_args(t_cmds **l);
+int		verify_unclosed_quotes(t_cmds **l);
+int		put_doll_conversions(t_cmds **l, t_env **env);
+int		exec_cmds(t_cmds **l, t_env **env);
 void	exec_env(t_env **env); 
-int		exec_export(t_list *cmd, t_env ***env);
-void	exec_unset(t_list *cmd, t_env ***env);
+int		exec_export(t_cmds *cmd, t_env ***env);
+void	exec_unset(t_cmds *cmd, t_env ***env);
 
 // utils
 char	*alphanum_(char *s);
@@ -74,30 +73,37 @@ void	sig_handler_main(int signal);
 void	sig_handler_fork(int signal);
 void	sig_handler_heredoc(int signal);
 int		ft_isnum(char *str);
-int		ft_abs(int num);
-void	ft_bubble_sort_cmd(t_list *head);
-int		ft_strcmp_alt(char *str);
-void	*free_charchar(char **s);
+// int		ft_abs(int num);
+// int		ft_strcmp_alt(char *str);
+// void	*free_charchar(char **s);
 int		strdup_and_trim(char *srs, char **dest, int len);
-int		mod_(char c);
+int		mod_(char c);	
 char	*redirect_(char *s);
-char	*part_after_sign_equal(char *s);
-char	*part_before_sign_equal(char *s);
-void	exit_(int exit_code, char *msg, char *msg_param, t_list **lst_to_clear, char **str_to_sree);
 
-int		init_new_cmd(t_list	**new);
-void	print_list(t_list **cmd);
-int		put_cmd_and_redirect_1(t_list **l, char *cmd, int len_cmd, char *redirect);
-int		ft_lstsize(t_list *lst);
-int		ft_lstremove(t_list **lst, t_list *node);
-void	ft_lstadd_front(t_list **lst, t_list *new_node);
-void	ft_lstdelone(t_list *lst);
-void	ft_lstclear(t_list **lst);
-void	ft_lstiter(t_list *lst, void (*f)(void *));
-t_list	*ft_lstnew();
-t_list	*ft_lstlast(t_list *lst);
-t_list	*ft_lstmap(t_list *lst, void *(*f)(void *), void (*del)(void *));
-t_list	*ft_lstretrieve(t_list **lst, t_list *node);
-t_list	*ft_lstfirst(t_list *lst);
+int		init_new_cmd(t_cmds	**new);
+void	print_list(t_cmds **cmd);
+int		put_cmd_and_redirect_1(t_cmds **l, char *cmd, int len_cmd, char *redirect);
+
+// utils env
+char	*val_(char *s);
+char	*key_(char *s);
+int		env_to_list(char **env_main, t_env ***env_list);
+char	**env_to_array(t_env **env_list);
+int		len_list(t_env **env);
+char	*get_value_from_env(char *key, t_env **env);
+
+
+//void	exit_(int exit_code, char *msg, char *msg_param, t_cmds **lst_to_clear, char **str_to_sree);
+// int		ft_lstsize(t_cmds *lst);
+// int		ft_lstremove(t_cmds **lst, t_cmds *node);
+// void	ft_lstadd_front(t_cmds **lst, t_cmds *new_node);
+// void	ft_lstdelone(t_cmds *lst);
+// void	ft_lstclear(t_cmds **lst);
+// void	ft_lstiter(t_cmds *lst, void (*f)(void *));
+// t_cmds	*ft_lstnew();
+// t_cmds	*ft_lstlast(t_cmds *lst);
+// t_cmds	*ft_lstmap(t_cmds *lst, void *(*f)(void *), void (*del)(void *));
+// t_cmds	*ft_lstretrieve(t_cmds **lst, t_cmds *node);
+// t_cmds	*ft_lstfirst(t_cmds *lst);
 
 #endif

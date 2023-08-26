@@ -1,9 +1,9 @@
 #include "headers.h"
 
-int	put_cmd_and_redirect_1(t_list **l, char *cmd_str, int len_cmd, char *redirect)
+int	put_cmd_and_redirect_1(t_cmds **l, char *cmd_str, int len_cmd, char *redirect)
 {
-	t_list	*new;
-	t_list	*cmd_list;
+	t_cmds	*new;
+	t_cmds	*cmd_list;
 	int	i;
 
 	if (init_new_cmd(&new) == -1)
@@ -29,7 +29,7 @@ int	put_cmd_and_redirect_1(t_list **l, char *cmd_str, int len_cmd, char *redirec
 	return (0);
 }
 
-int put_cmd_and_redirect(char *cmd_line, t_list **l)
+int put_cmd_and_redirect(char *cmd_line, t_cmds **l)
 {
 	int		i_beg;
 	int 	i;
@@ -57,11 +57,11 @@ int put_cmd_and_redirect(char *cmd_line, t_list **l)
 	return (0);
 }
 
-void put_nb_args(t_list **l)
+void put_nb_args(t_cmds **l)
 {
 	int		i;
 	int		nb_args;
-	t_list	*cmd;
+	t_cmds	*cmd;
 
 	cmd = *l;
 	while(cmd != NULL)
@@ -77,7 +77,7 @@ void put_nb_args(t_list **l)
 	}
 }
 
-static int	put_args_1(t_list *cmd)
+static int	put_args_1(t_cmds *cmd)
 {
 	int		i;
 	int		i_beg;
@@ -103,9 +103,9 @@ static int	put_args_1(t_list *cmd)
 	return (cmd->cmd[to_put_EOL] = '\0', 0);
 }
 
-int	put_args(t_list **l)
+int	put_args(t_cmds **l)
 {
-	t_list	*cmd;
+	t_cmds	*cmd;
 
 	cmd = *l;
 	while(cmd != NULL)

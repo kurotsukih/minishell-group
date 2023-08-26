@@ -1,10 +1,10 @@
 #include "headers.h"
 
-int	verify_unclosed_quotes(t_list **l)
+int	verify_unclosed_quotes(t_cmds **l)
 {
 	int		mod;
 	int		i;
-	t_list	*cmd;
+	t_cmds	*cmd;
 
 	cmd = *l;
 	while(cmd != NULL)
@@ -20,27 +20,13 @@ int	verify_unclosed_quotes(t_list **l)
 	return (0);
 }
 
-static char	*get_value_from_env(char *key, t_env **env)
-{
-	t_env	*var;
-
-	var = *env;
-	while (var != NULL)
-	{
-		if (ft_strcmp(var->key, key) == 0)
-			return (var->val);
-		var = var->nxt;
-	}
-	return (NULL);
-}
-
 // " $ " is ok ?
 static int	put_doll_conversions_1(char **s, t_env **env)
 {
 	int		i;
 	int		j;
 	char	*key;
-	char	*value;
+	char	*val;
 	int		new_size;
 	char	*new_s;
 
@@ -54,8 +40,8 @@ static int	put_doll_conversions_1(char **s, t_env **env)
 			key = alphanum_(&((*s)[i + 1]));
 			if (key == NULL)
 				return (-1);
-			value = get_value_from_env(key, env);
-			new_size = ft_strlen(*s) - ft_strlen(key) + ft_strlen(value);
+			val = get_value_from_env(key, env);
+			new_size = ft_strlen(*s) - ft_strlen(key) + ft_strlen(val);
 			new_s = NULL;
 			new_s = (char*)malloc(new_size + 1);
 			if (new_s == NULL)
@@ -66,14 +52,14 @@ static int	put_doll_conversions_1(char **s, t_env **env)
 				new_s[j] = (*s)[j];
 				j++;
 			}
-			while (j < i + (int)ft_strlen(value))
+			while (j < i + (int)ft_strlen(val))
 			{
-				new_s[j] = value[j - i];
+				new_s[j] = val[j - i];
 				j++;
 			}
 			while(j < new_size)
 			{
-				new_s[j] = (*s)[j + (int)ft_strlen(key) - (int)ft_strlen(value) + 1];
+				new_s[j] = (*s)[j + (int)ft_strlen(key) - (int)ft_strlen(val) + 1];
 				j++;
 			}
 			new_s[j] = '\0';
@@ -85,9 +71,9 @@ static int	put_doll_conversions_1(char **s, t_env **env)
 	return (0);
 }
 
-int	put_doll_conversions(t_list **l, t_env **env)
+int	put_doll_conversions(t_cmds **l, t_env **env)
 {
-	t_list	*cmd;
+	t_cmds	*cmd;
 	int		i;
 
 	cmd = *l;
@@ -142,30 +128,6 @@ int	put_doll_conversions(t_list **l, t_env **env)
 // 	return (1);
 // }
 
-// int	check(t_cmd *cmd, int count, int result)
-// {
-// 	char	*str;
-// 	if (result == 0)
-// 	{
-// 		if (count != 1)
-// 			return (1);
-// 		if (!cmd->params)
-// 			return (1);
-// 		if (cmd->params && ft_is_builtin(cmd->params) != 1)
-// 			return (1);
-// 		else if (cmd->params && ft_is_builtin(cmd->params) == 1)
-// 		{
-// 			str = (char *)cmd->params->content;
-// 			if (ft_strcmp(str, "cd") == 0 || ft_strcmp(str, "exit") == 0)
-// 				return (0);
-// 			else if (ft_strcmp(str, "export") == 0 || !ft_strcmp(str, "unset"))
-// 				return (0);
-// 			else
-// 				return (1);
-// 		}
-// 	}
-// 	return (0);
-// }
 
 //////////////////////////////////////////////
 

@@ -1,8 +1,8 @@
 #include "headers.h"
 
-int	init_new_cmd(t_list **new)
+int	init_new_cmd(t_cmds **new)
 {
-	*new = (t_list *)malloc(sizeof(t_list));
+	*new = (t_cmds *)malloc(sizeof(t_cmds));
 	if (*new == NULL)
 		return (-1);
 	(*new)->nxt = NULL;
@@ -15,7 +15,7 @@ int	init_new_cmd(t_list **new)
 	return (0);
 }
 
-void print_cmd(t_list *cmd)
+void print_cmd(t_cmds *cmd)
 {
 	int	i;
 
@@ -33,9 +33,9 @@ void print_cmd(t_list *cmd)
 	(void)i;
 }
 
-void print_list(t_list **l)
+void print_list(t_cmds **l)
 {
-	t_list	*cur;
+	t_cmds	*cur;
 
 	printf("LIST %14p:\n", l);
 	if (l == NULL || *l == NULL)
@@ -50,3 +50,30 @@ void print_list(t_list **l)
 		cur = cur->nxt;
 	}
 }
+
+int len_list(t_env **env)
+{
+	t_env	*var;
+	int		len;
+
+	len = 0;
+	var = *env;
+	while (var != NULL)
+		len ++;
+	return (len);
+}
+
+char	*get_value_from_env(char *key, t_env **env)
+{
+	t_env	*var;
+
+	var = *env;
+	while (var != NULL)
+	{
+		if (ft_strcmp(key_(var->var), key) == 0)
+			return (val_(var->var));
+		var = var->nxt;
+	}
+	return (NULL);
+}
+

@@ -1,108 +1,95 @@
 #include "headers.h"
 
-// static void	ft_wait_child_processes(int *is_success, int size, int pid)
+void	exec_echo(t_cmds *cmd)
+{
+	int	option_n;
+	int	i;
+
+	option_n = 0;
+	i = -1;
+	while (++i < cmd->nb_args)
+	{
+		if (ft_strcmp(cmd->args[i], "-n") == 0)
+			option_n = 1;
+		else if (i == cmd->nb_args - 1)
+			printf("%s", cmd->args[i]);
+		else
+			printf("%s ", cmd->args[i]);
+	}
+	if (option_n == 0)
+		printf("\n");
+}
+
+void	exec_pwd(void)
+{
+	char	*s;
+
+	s = getcwd(NULL, 0);
+	printf("%s\n", s);
+	free(s);
+}
+
+int	exec_cd(t_cmds *cmd, t_env **env)
+{
+	char	*home_dir;
+
+	if (cmd->nb_args > 1)
+		return (-1); // "bash: cd: Too many arguments\n" 
+	if (cmd->nb_args == 0)
+	{
+		home_dir = get_value_from_env("HOME", env);
+		if (home_dir == NULL)
+			return (-1); // "bash: cd: HOME not set\n"
+		if (chdir(home_dir) == -1)
+			return (-1); // "bash: cd: HOME not set properly%s\n", home_dir);
+	}
+	else if (chdir(cmd->args[0]) == -1)
+		return (-1);
+	return (0);
+}
+
+// int	exec_exit(t_data *d, t_node *n, t_cmd *cmd)
 // {
-// 	int	i;
-// 	int	status;
-// 	i = 0;
-// 	while (i < size)
+// 	char	*str;
+
+// 	if (!cmd)
+// 		return (exit(d->exit_code), 0);
+// 	if (ft_isnum(cmd->cmd) != 1)
 // 	{
-// 		if (wait(&status) == pid)
-// 		{
-// 			if (WIFEXITED(status))
-// 				*is_success = WEXITSTATUS(status);
-// 			if (WIFSIGNALED(status))
-// 			{
-// 				*is_success = WTERMSIG(status) + 128;
-// 				if (*is_success == 130)
-// 					exit_(-1, "\n", NULL, NULL, NULL, NULL);
-// 				if (*is_success == 131)
-// 					exit_(-1, "Quit (core dumped)\n", NULL, NULL, NULL, NULL);
-// 			}
-// 		}
-// 		i++;
+// 		exit_(-1, "bash: exit: %s: numeric argument required");
+// 		return (exit(2), 0);
 // 	}
+// 	if (ft_lstsize(cmd) > 1)
+// 		return (exit_(-1, "bash: exit: too many arguments\n"), 1);
+// 	return (exit(ft_atoi(str)), 0); // ft_abs(ft_atoi(str) % 256)
 // }
 
-// // Add a moment when there can be only one command and it is builtin
-// int	ft_execute(t_cmd *cmd, t_data *d, t_node *n)
-// {
-// 	int	pid;
-// 	int	exit_c;
+int	exec_cmds(t_cmds **l, t_env **env)
+{
+	t_cmds *cmd;
+	int	result;
 
-// 	pid = fork();
-// 	exit_c = 0;
-// 	if (pid < -1)
-// 		exit_(-1, NULL, NULL, NULL, NULL, NULL);
-// 	if (pid == 0)
-// 	{
-// 		signal(SIGINT, &sig_handler_fork);
-// 		signal(SIGQUIT, &sig_handler_fork);
-// 		if (dup2(cmd->in_fd, STDIN_FILENO) == -1)
-// 			exit_(-1, NULL, NULL, NULL, NULL, NULL);
-// 		if (dup2(cmd->out_fd, STDOUT_FILENO) == -1)
-// 			exit_(-1, NULL, NULL, NULL, NULL, NULL);
-// 		ft_clean_fds(cmd);
-// 		if (cmd->params && ft_is_builtin(cmd->params) == 1)
-// 			exit_c = ft_execute_builtin(cmd, d, n);
-// 		else if (cmd->params)
-// 			exit_c = ft_execute_program(cmd, d->env, n);
-// 		return (ft_clean_tree(n), free_redirections(*(&(d->env))), exit(exit_c), 0);
-// 	}
-// 	else if (cmd->in_fd != 0)
-// 		close(cmd->in_fd);
-// 	return (signal(SIGINT, SIG_IGN), pid);
-// }
-
-// int	ft_exec_command(t_node *n, t_data *d)
-// {
-// 	int	i_cmd;
-// 	int	num;
-// 	int	pid;
-// 	int	result;
-
-// 	num = 0;
-// 	result = -1;
-// 	i_cmd = 0;
-// 	pid = 0;
-// 	while (i_cmd < n->count_cmd)
-// 	{
-// 		result = ft_prepare_pipe(n, i_cmd);
-// 		if (check(&(n->cmds[i_cmd]), n->count_cmd, result) && num++ >= 0)
-// 			pid = ft_execute(&n->cmds[i_cmd], d, n);
-// 		else if (result == 0 && n->count_cmd == 1)
-// 			result = ft_execute_builtin(&n->cmds[i_cmd], d, n);
-// 		i_cmd++;
-// 	}
-// 	ft_wait_child_processes(&result, num, pid);
-// 	signal(SIGINT, &sig_handler_fork); // mb sig_handler_mai n
-// 	return (result);
-// }
-
-////////////////////////////////////////////////////////////////
-
-// //  I have to think of exit and free strategy
-// int	ft_execute_program(t_cmd *cmd, t_list *env, t_node *n)
-// {
-// 	char	*path;
-// 	char	**params;
-// 	int		code;
-// 	path = NULL;
-// 	if (!ft_strcmp((char *)cmd->params->content, "."))
-// 		return (exit_(-1, "bash: .: filename arg required\n", NULL, NULL, NULL, NULL), -1);
-// 	code = ft_find_path(cmd->params->content, env, &path);
-// 	if (!path)
-// 		return (code);
-// 	params = ft_construct_command(cmd->params);
-// 	if (!params)
-// 		return (free(path), 255);
-// 	execve(path, params, ft_construct_command(env));
-// 	free(params);
-// 	free(path);
-// 	path = (char *)cmd->params->content;
-// 	if (ft_strchr(path, '/'))
-// 		exit_(-1, "bash: %s: no such file or directory\n", path, NULL, NULL, NULL);
-// 	else
-// 		exit_(-1, "bash: %s: command not found\n", path, NULL, NULL, NULL);
-// 	return (code);
-// }
+	cmd = *l;
+	while (cmd != NULL)
+	{
+		result = 0;
+		if (ft_strcmp(cmd->cmd, "echo") == 0)
+			exec_echo(cmd);
+		else if (ft_strcmp(cmd->cmd, "env") == 0 && env != NULL)
+			exec_env(env);
+		else if (ft_strcmp(cmd->cmd, "pwd") == 0)
+			exec_pwd();
+		else if (ft_strcmp(cmd->cmd, "cd") == 0)
+			result = exec_cd(cmd, env);
+		else if (ft_strcmp(cmd->cmd, "export") == 0)
+			result = exec_export(cmd, &env);
+		else if (ft_strcmp(cmd->cmd, "unset") == 0)
+			exec_unset(cmd, &env);
+		// else if (ft_strcmp(cmd->cmd, "exit") == 0)
+		// 	result = exec_exit(d, n, cmd->params->next);
+		// else
+		// 	ft_execute_program(cmd, env, t_node *n);
+		cmd = cmd->nxt;
+	}
+	return (result);
+}

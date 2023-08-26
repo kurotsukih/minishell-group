@@ -24,51 +24,17 @@ cd : Quand on change de répertoire, le bash voit sa variable $PWD changer autom
 
 si on met pas les waitpid juste apres l'execution de la commande et qu'on les met a la fin dans une boucle il y a beaucoup de commandes avec des pipes qui ne fonctionnent plus correctement, par exemple ls|wc fait une boucle infini 
 
-ft_execution
-ft_exec_recursion
-ft_exec_command
-ft_execute
-ft_execute_builtin ft_execute_program
 */
 
 #include "headers.h"
 
 int g_signal = 0;
 
-static int init_env(char **env_main, t_env ***env_list)
-{
-	int		i;
-	t_env	*new;
-
-	*env_list = NULL;
-	*env_list = (t_env **)malloc(sizeof(t_env *)); ///
-	if (*env_list == NULL)
-		return (-1);
-	**env_list = NULL;
-	i = -1;
-	while (env_main[++i])
-	{
-		new = NULL;
-		new = (t_env *)malloc(sizeof(t_env));
-		if (new == NULL)
-			return (-1);
-		new->val = part_after_sign_equal(env_main[i]);
-		if (new->val == NULL)
-			return (-1);
-		new->key = part_before_sign_equal(env_main[i]);
-		if (new->key == NULL)
-			return (-1);
-		new->nxt = **env_list;
-		**env_list = new;
-	}
-	return (0);
-};
-
 static int	treat_cmd_line(char *cmd_line, t_env **env)
 {
-	t_list	**l;
+	t_cmds	**l;
 
-	l = (t_list **)malloc(sizeof(t_list *));
+	l = (t_cmds **)malloc(sizeof(t_cmds *));
 	if (l == NULL)
 		return (-1);
 	*l = NULL;
@@ -87,7 +53,7 @@ static int	treat_cmd_line(char *cmd_line, t_env **env)
 	return (0);
 }
 
-int	main(int argc, char **argv, char **env_main)
+int	main(int argc, char **argv, char **env_array)
 {
 	char	*cmd_line;
 	t_env	**env;
@@ -95,7 +61,7 @@ int	main(int argc, char **argv, char **env_main)
 	(void)argc;
 	(void)argv;
 	env = NULL;
-	if(init_env(env_main, &env) == -1)
+	if(env_to_list(env_array, &env) == -1)
 		return (-1);
 	// signal(SIGQUIT, SIG_IGN);
 	// signal(SIGINT, &sig_handler_main);
