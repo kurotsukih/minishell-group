@@ -7,7 +7,7 @@ printf write access open read close
 fork wait waitpid wait3 wait4 
 signa l sigaction sigemptyset sigaddset kill
 exit
-getcwd chdir stat lstat fstat unlink execve dup dup2 pipe
+getcwd chdir stat lstat fstat unlink execv e dup dup2 pipe
 opendir readdir closedir
 strerror perror
 isatty ttyname ttyslot ioctl

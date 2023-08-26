@@ -33,7 +33,6 @@ int	exec_cd(t_cmds *cmd, t_env **env)
 {
 	char	*home_dir;
 
-	// printf("exec cd %s %s %s\n", cmd->args[0], )
 	if (cmd->nb_args >= 3)
 		return (-1); // "bash: cd: Too many arguments\n" 
 	if (cmd->nb_args == 1)
@@ -90,8 +89,8 @@ int	exec_cmds(t_cmds **l, t_env **env)
 			exec_unset(cmd, &env);
 		// else if (ft_strcmp(cmd->args[0], "exit") == 0)
 		// 	result = exec_exit(d, n, cmd->params->next);
-		// else
-		// 	exec_external_cmd(cmd, env);
+		else
+			exec_external_cmd(cmd, env);
 		cmd = cmd->nxt;
 	}
 	return (result);

@@ -72,17 +72,16 @@ char	**env_to_array(t_env **env_list)
 	char	**env_array;
 	t_env	*var;
 
-	env_array = (char **)malloc((len_list(env_list) + 1) *sizeof(char *));
-	if (*env_array == NULL)
+	env_array = (char **)malloc(len_list(env_list) + 1 *sizeof(char *));
+	if (env_array == NULL)
 		return (NULL);
 	i = -1;
 	var = *env_list;
-	while (1)
+	while (var != NULL)
 	{
 		env_array[++i] = var->var;
-		if (var == NULL)
-			break ;
 		var = var->nxt;
 	}
+	env_array[++i] = NULL;
 	return (env_array);
 }

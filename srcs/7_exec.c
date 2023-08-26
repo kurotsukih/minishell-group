@@ -1,25 +1,25 @@
 #include "headers.h"
 
 // exec_command = exec		/ exec_builtin
-// exec         = execve	/ exec_builtin
+// exec         = execv e	/ exec_builtin
 
 // Add a moment when there can be only one command and it is builtin
 //  exit and free strategy
-// int	exec_external_cmd(t_cmds *cmd, t_env **env)
-// {
-// 	// char	*path;
-// 	char	**args;
-// 	int		exit_c;
+int	exec_external_cmd(t_cmds *cmd, t_env **env)
+{
+	// char	*path;
+	int		exit_c;
+	char **env_array;
 
-// 	exit_c = 0;
-// 	args = cmd->args;
-// 	if (!args)
-// 		exit_c = 255;
-// 	execve("./", args, env_to_array(env));
-// 	free(args);
-// 	(exit(exit_c), 0);
-// 	return (res);
-// }
+	exit_c = 0;
+	if (!cmd->args)
+		exit_c = 255;
+	env_array = env_to_array(env);
+	execve("/usr/bin/ls", cmd->args, env_array); //env_to_array(env));
+	// free(args);
+	printf("execv ok\n");
+	return (exit_c);
+}
 
 // static void	ft_wait_child_processes(int *is_success, int size, int pid)
 // {

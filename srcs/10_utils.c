@@ -60,7 +60,10 @@ int len_list(t_env **env)
 	len = 0;
 	var = *env;
 	while (var != NULL)
+	{
 		len ++;
+		var = var->nxt;
+	}
 	return (len);
 }
 
