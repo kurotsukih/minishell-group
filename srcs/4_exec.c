@@ -92,23 +92,27 @@ static char	*path_(t_cmds *cmd, t_data **d)
 	return (printf("command not found"), (*d)->exit_c = 127, NULL);
 }
 
-void free_(t_cmds **cmd)
+void delete_cmd(t_cmds **cmd, t_data **d)
 {
-	int	i;
+	int		i;
+	t_cmds	**to_free;
 
 	if (*cmd == NULL)
 		return ;
-	i = 0;
-	while(i < (*cmd)->nb_args)
+	to_free = cmd;
+	i = -1;
+	while(++i < (*cmd)->nb_args)
 		free((*cmd)->args[i]);
 	free((*cmd)->args);
-	free(*cmd);
+	if ((*cmd)->prv == NULL)
+		*((*d)->cmds) = (*cmd)->nxt;
+	else
+		(*cmd)->prv->nxt = (*cmd)->nxt;
+	free(*to_free);
 }
 
-void	treat_redirect_in(t_cmds **cmd)
+void	treat_redirect_in(t_cmds **cmd, t_data **d)
 {
-	t_cmds	**to_free;
-
 	if ((*cmd)->nxt != NULL && (*cmd)->redirect[0] == '<')
 	{
 		(*cmd)->fd_in = open((*cmd)->nxt->args[0], O_RDONLY); 
@@ -119,9 +123,7 @@ void	treat_redirect_in(t_cmds **cmd)
 		// if !dup2
 			// d->exit_c = 
 			// return
-		to_free = &((*cmd)->nxt); 
-		(*cmd)->nxt = (*cmd)->nxt->nxt;
-		free_(to_free);
+		delete_cmd(cmd, d);
 	}
 }
 
@@ -158,7 +160,7 @@ void	exec_cmds(t_data **d)
 	{
 		if (!args_are_correct(cmd, d))
 			continue; //?
-		treat_redirect_in(&cmd);
+		treat_redirect_in(&cmd, d);
 		if (ft_strcmp(cmd->args[0], "echo") == 0)
 			exec_echo(cmd);
 		else if (ft_strcmp(cmd->args[0], "env") == 0 && (*d)->env != NULL)
@@ -177,6 +179,7 @@ void	exec_cmds(t_data **d)
 			exec_extern_cmd(cmd, d);
 		//if (d->exit-c == ...)
 			//exit
+		delete_cmd(&cmd, d);
 		cmd = cmd->nxt;
 	}
 }

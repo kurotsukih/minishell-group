@@ -45,6 +45,7 @@ typedef struct 		s_cmds
 	int				fd_out;
 	char			**to_free;
 	struct s_cmds	*nxt;
+	struct s_cmds	*prv;
 }					t_cmds;
 
 typedef struct		s_env
