@@ -4,7 +4,6 @@ void	init_cmd(t_cmds **new, char *redirect, t_data **d)
 {
 	*new = (t_cmds *)malloc_(sizeof(t_cmds), d);
 	(*new)->nxt = NULL;
-	(*new)->prv = NULL;
 	(*new)->nb_args = 0;
 	(*new)->args = NULL;
 	(*new)->redirect = redirect;
@@ -69,6 +68,7 @@ void print_cmds(t_data **d)
 		return ;
 	}
 	cmd = *((*d)->cmds);
+	(void)cmd;
 	while (cmd != NULL)
 	{
 		printf("  %p [%s] %d agrs : ", cmd, cmd->args[0], cmd->nb_args);

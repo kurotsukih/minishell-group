@@ -23,7 +23,6 @@ static void	put_1_cmd_and_redirect(char *cmd_txt, int len, char *redirect, t_dat
 		while (last != NULL && last->nxt != NULL)
 			last = last->nxt;
 		last->nxt = new;
-		new->prv = last;
 	}
 }
 

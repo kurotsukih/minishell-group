@@ -35,19 +35,15 @@
 
 extern int g_signal;
 
-// args[0] progname, argd[n] mixed args and options 
 typedef struct 		s_cmds
 {
-	char			*cmd;
-	char			**args;
+	char			**args; // args[0] = prog name, argd[n] mixed args and options 
 	int				nb_args;
-	char			*redirect;
+	char			*redirect; // ">>" ">" "<" "<<" "|"
 	int				is_filename;
 	int				in_fd;
 	int				out_fd;
-	int				exit_code;
 	struct s_cmds	*nxt;
-	struct s_cmds	*prv;
 }					t_cmds;
 
 typedef struct		s_env
