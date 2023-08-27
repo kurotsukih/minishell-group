@@ -9,7 +9,7 @@ minishell : ${OBJS}
 	cc $(OBJS) -o minishell -L /usr/local/opt/readline/lib -lreadline -Llibft -lft
 
 ./.build/%.o : ./srcs/%.c ./libft/libft.a
-	@mkdir ./build/ 2> /dev/null || true
+	@mkdir ./.build/ 2> /dev/null || true
 	cc -g3 -Wall -Werror -Wextra -I ./srcs -I ./libft -I /usr/local/opt/readline/include -c $< -o $@
 
 ./libft/libft.a	:

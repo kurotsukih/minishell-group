@@ -5,6 +5,7 @@ void	exec_echo(t_cmds *cmd)
 	int	option_n;
 	int	i;
 
+	printf("exec echo 1\n");
 	option_n = 0;
 	i = 0;
 	while (++i < cmd->nb_args)
@@ -18,6 +19,7 @@ void	exec_echo(t_cmds *cmd)
 	}
 	if (option_n == 0)
 		printf("\n");
+	printf("exec echo 2\n");
 }
 
 void	exec_pwd(void)

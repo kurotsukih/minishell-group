@@ -6,7 +6,6 @@ static void	put_cmd_and_redirect(char *cmd_txt, int len, char *redirect, t_data 
 	t_cmds	*last;
 	int		i;
 
-	// printf("put_cmd_and_redirect [%s] %d\n", cmd_txt, len);
 	init_cmd(&new, redirect, d);
 	new->nb_args = nb_args_(cmd_txt, len);
 	new->args = (char **)malloc_((new->nb_args + 1)* sizeof(char *), d);
@@ -62,7 +61,6 @@ static void	calc_args_1(t_cmds *cmd, t_data **d)
 	int		len;
 	int		to_put_EOL;
 
-	// printf("calc_args [%s]\n", cmd->args[0]);
 	if (cmd->nb_args <= 1)
 		return ;
 	mod_(REINIT_QUOTES);
@@ -76,16 +74,10 @@ static void	calc_args_1(t_cmds *cmd, t_data **d)
 			if (k == 0)
 				to_put_EOL = i + 1;
 			else
-			{
 				strdup_and_trim(&(cmd->args[0][i_beg]), &(cmd->args[k]), i - i_beg + 1, d);
-				// printf("arg[%d] = %s\n", k, cmd->args[k]);
-			}
 			i_beg = i + 1;
 			k++;
 		}
-	// i = -1;
-	// while (++i < cmd->nb_args)
-	// 	printf("calc_args end args[%d] = [%s]\n", i, cmd->args[i]);
 	cmd->args[0][to_put_EOL] = '\0';
 }
 

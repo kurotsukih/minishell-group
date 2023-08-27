@@ -94,11 +94,11 @@ int	main(int argc, char **argv, char **env_array)
 		// }
 		add_history(cmd_line);
 		put_cmds_and_redirects(cmd_line, d);
-		print_cmds("after put_cmds_and_redirects", d);
-		// calc_args(d);
-		// calc_dollar_conversions(d);
-		// exec_cmds(d);
-		delete_cmds(d);
+		calc_args(d);
+		calc_dollar_conversions(d);
+		exec_cmds(d);
+		print_cmds("after exec", d);
+		// delete_cmds(d);
 		// free(cmd_line)
 	}
 	return 0; //(d->exit_code);

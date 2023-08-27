@@ -94,34 +94,31 @@ void print_cmds(char *msg, t_data **d)
 	}
 }
 
-void delete_cmd(t_cmds **cmd, t_data **d)
+void delete_cmd(t_cmds *cmd, t_data **d)
 {
-	int		i;
-	t_cmds	**to_free;
+	// int		i;
 
-	if (*cmd == NULL)
+	printf("delete cmd %s\n", cmd->args[0]);
+	if (cmd == NULL)
 		return ;
-	to_free = cmd;
-	i = -1;
-	while(++i < (*cmd)->nb_args)
-		free((*cmd)->args[i]);
-	free((*cmd)->args);
-	if ((*cmd)->prv == NULL)
-		*((*d)->cmds) = (*cmd)->nxt;
+	// i = -1;
+	// while(++i < cmd->nb_args)
+	// 	free(cmd->args[i]);
+	// free(cmd->args);
+	if (cmd->prv == NULL)
+		*((*d)->cmds) = cmd->nxt;
 	else
-		(*cmd)->prv->nxt = (*cmd)->nxt;
-	free(*to_free);
-	
+		cmd->prv->nxt = cmd->nxt;
 }
 
 void	delete_cmds(t_data **d)
 {
-	t_cmds	**to_free;
+	t_cmds	*cmd_to_del;
 
 	while(*((*d)->cmds) != NULL)
 	{
-		to_free = (*d)->cmds;
+		cmd_to_del = *((*d)->cmds);
 		*((*d)->cmds) = (*((*d)->cmds))->nxt;
-		delete_cmd(to_free, d);
+		delete_cmd(cmd_to_del, d);
 	}
 }

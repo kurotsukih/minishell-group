@@ -92,22 +92,6 @@ static char	*path_(t_cmds *cmd, t_data **d)
 	return (printf("command not found"), (*d)->exit_c = 127, NULL);
 }
 
-void	treat_redirect_in(t_cmds **cmd, t_data **d)
-{
-	if ((*cmd)->nxt != NULL && (*cmd)->redirect[0] == '<')
-	{
-		(*cmd)->fd_in = open((*cmd)->nxt->args[0], O_RDONLY); 
-		// if !open
-			// d->exit_c = 
-			// return 
-		dup2((*cmd)->fd_in, STDIN_FILENO);
-		// if !dup2
-			// d->exit_c = 
-			// return
-		delete_cmd(cmd, d);
-	}
-}
-
 void	exec_extern_cmd(t_cmds *cmd, t_data **d)
 {
 	char	*path;
@@ -132,18 +116,48 @@ void	exec_extern_cmd(t_cmds *cmd, t_data **d)
 		wait(&status);
 }
 
+// wc -l < infile
+// dupliquer STDIN dans l'infile
+
+void	treat_redirect(t_cmds **cmd, t_data **d)
+{
+	if ((*cmd)->nxt != NULL && (*cmd)->redirect[0] == '<')
+	{
+		(*cmd)->fd_in = open((*cmd)->nxt->args[0], O_RDONLY); 
+		// if (isatty((*cmd)->fd_in) == 1)
+		// 	return (close(return_fd), fd);
+		// if ((*cmd)->fd_in != 1)
+		// 	close((*cmd)->fd_in);
+			// d->exit_c = 
+			// return 
+		dup2((*cmd)->fd_in, STDIN_FILENO);
+		// if !dup2
+			// d->exit_c = 
+			// return
+		//delete_cmd(&(*cmd)->nxt, d);
+		(void)d;
+	}
+}
+
 void	exec_cmds(t_data **d)
 {
 	t_cmds *cmd;
+	t_cmds *copy;
 
 	cmd = *((*d)->cmds);
 	while (cmd != NULL)
 	{
+		printf("exec_cmd %s\n", cmd->args[0]);
 		if (!args_are_correct(cmd, d))
 			continue; //?
-		treat_redirect_in(&cmd, d);
+		treat_redirect(&cmd, d);
+		printf("treat_redirect %s done\n", cmd->args[0]);
 		if (ft_strcmp(cmd->args[0], "echo") == 0)
+		{
+			printf("call exec_echo %s\n", cmd->args[0]);
 			exec_echo(cmd);
+			printf("exec_echo %s done\n", cmd->args[0]);
+		}
 		else if (ft_strcmp(cmd->args[0], "env") == 0 && (*d)->env != NULL)
 			exec_env(d);
 		else if (ft_strcmp(cmd->args[0], "pwd") == 0)
@@ -160,7 +174,11 @@ void	exec_cmds(t_data **d)
 			exec_extern_cmd(cmd, d);
 		//if (d->exit-c == ...)
 			//exit
-		delete_cmd(&cmd, d);
-		cmd = cmd->nxt;
+		copy = cmd;
+		// printf("call delete_cmd %s\n", cmd->args[0]);
+		printf("call delete_cmd\n");
+		delete_cmd(cmd, d);
+		printf("retr delete_cmd \n\n");
+		cmd = copy->nxt;
 	}
 }
