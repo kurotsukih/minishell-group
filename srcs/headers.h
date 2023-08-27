@@ -76,12 +76,6 @@ void	exec_pwd(void);
 void	exec_echo(t_cmds *cmd);
 
 // utils
-void	sig_handler_main(int signal);
-void	sig_handler_fork(int signal);
-void	*malloc_(size_t size, t_data **d);
-void	free_all_and_exit(char *msg, t_data **d); /// ***d
-void	free_all_and_go_to_next_cmd(char *msg, t_data **d);
-
 void	init_cmd(t_cmds **new, char *redirect, t_data **d);
 char	*redirect_(char *s);
 int		mod_(char c);	
@@ -96,6 +90,12 @@ char	*get_value_from_env(char *key, t_data **d);
 
 char	*alphanum_(char *s, t_data **d);
 void	strdup_and_trim(char *srs, char **dest, int len, t_data **d);
+void	free_charchar(char **s, int len);
 
+void	sig_handler_main(int signal);
+void	sig_handler_fork(int signal);
+void	*malloc_(size_t size, t_data **d);
+void	free_all_and_exit(char *msg, t_data **d); /// ***d
+void	free_all_and_go_to_next_cmd(char *msg, t_data **d);
 
 #endif

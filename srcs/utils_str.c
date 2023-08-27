@@ -41,3 +41,13 @@ void strdup_and_trim(char *src, char **dest0, int len, t_data **d)
 	dest[i] = '\0';
 	*dest0 = dest;
 }
+
+void	free_charchar(char **s, int len)
+{
+	int	i;
+
+	i = 0;
+	while (i < len)
+		free(s[i]);
+	free(s);
+}
