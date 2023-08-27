@@ -1,15 +1,5 @@
 #include "headers.h"
 
-void	*memset_(void *b, int c, int len)
-{
-	int	i;
-
-	i = 0;
-	while (i < len)
-		((unsigned char *)b)[i++] = c;
-	return (b);
-}
-
 char *alphanum_(char *s, t_data **d)
 {
 	int		i;
