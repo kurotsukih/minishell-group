@@ -130,24 +130,23 @@ void	exec_extern_cmd(t_cmds *cmd, t_data **d)
 	char	*path;
 	int		pid;
 	int		status;
+	char	**env_array;
 
-	printf("fork\n");
 	pid = fork();
 	if (pid < -1)
 		free_all_and_exit("fork error", d);
 	if (pid == 0)
 	{
-		printf("I am child proc, i call execve\n");
 		(*d)->exit_c = 0;
 		path = path_(cmd, d);
+		env_array = env_to_array(d);
 		if (path != NULL)
-			execve(path, cmd->args, env_to_array(d));
+			execve(path, cmd->args, env_array);
+		free(path);
+		free_charchar(env_array, len_env(d));
 	}
 	else
-	{
-		printf("I am parent proc, i wait\n");
 		wait(&status);
-	}
 }
 
 void	exec_cmds(t_data **d)
