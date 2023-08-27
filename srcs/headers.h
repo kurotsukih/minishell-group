@@ -41,8 +41,8 @@ typedef struct 		s_cmds
 	int				nb_args;
 	char			*redirect; // ">>" ">" "<" "<<" "|"
 	int				is_filename;
-	int				in_fd;
-	int				out_fd;
+	int				fd_in;
+	int				fd_out;
 	struct s_cmds	*nxt;
 }					t_cmds;
 

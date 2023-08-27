@@ -7,6 +7,8 @@ void	init_cmd(t_cmds **new, char *redirect, t_data **d)
 	(*new)->nb_args = 0;
 	(*new)->args = NULL;
 	(*new)->redirect = redirect;
+	(*new)->fd_in = STDIN_FILENO;
+	(*new)->fd_out = STDOUT_FILENO;
 	(*new)->is_filename = 0;
 }
 

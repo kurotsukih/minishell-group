@@ -40,10 +40,7 @@ static char	*path_(t_cmds *cmd, t_data **d)
 
 	paths = get_value_from_env("PATH", d);
 	if (!paths)
-	{
-		printf("bash: command not found");
-		return ((*d)->exit_c = 127, NULL);
-	}
+		return ((printf("command not found"), *d)->exit_c = 127, NULL);
 	i = -1;
 	i_beg = 0;
 	while (++i < (int)ft_strlen(paths))
@@ -56,8 +53,7 @@ static char	*path_(t_cmds *cmd, t_data **d)
 				(*d)->exit_c = 126;
 			i_beg = i + 1;
 		}
-	printf("bash: command not found");
-	return ((*d)->exit_c = 127, NULL);
+	return (printf("command not found"), (*d)->exit_c = 127, NULL);
 }
 
 void	exec_extern_cmd(t_cmds *cmd, t_data **d)
