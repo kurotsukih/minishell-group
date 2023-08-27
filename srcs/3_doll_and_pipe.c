@@ -42,7 +42,7 @@ static void	put_doll_conversions_1(char **s, t_data **d)
 	while ((*s)[++i] != '\0' && (*s)[i + 1] != '\0')
 	{
 		// if (s[i] == '$' && s[i + 1] == '?')
-		// 	return (ft_itoa(exit_code));
+		// 	(ft_itoa(exit_code));
 		if ((*s)[i] == '$')
 		{
 			new_s = new_s_(i, *s, d);

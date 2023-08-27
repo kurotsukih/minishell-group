@@ -41,6 +41,7 @@ void	put_cmd_line_and_redirects(char *cmd_line, t_data **d)
 		redirect = redirect_(&cmd_line[i]);
 		if ((mod_(cmd_line[i]) == QUOTES0 && ft_strlen(redirect) > 0) || cmd_line[i + 1] == '\0')
 		{
+			printf("put %s\n", &cmd_line[i_beg]);
 			len_cmd = i - i_beg + (cmd_line[i + 1] == '\0');
 			put_1_cmd_and_redirect(&cmd_line[i_beg], len_cmd, redirect, d);
 			if (cmd_line[i + 1] == '\0')
@@ -88,28 +89,25 @@ void	calc_args(t_data **d)
 	{
 		calc_args_1(cmd, d);
 		cmd->args[cmd->nb_args] = NULL;
+		if (ft_strcmp(cmd->args[0], "env") == 0)
+			cmd->nb_args_max = 0;
+		if (ft_strcmp(cmd->args[0], "cd") == 0 || ft_strcmp(cmd->args[0], "exit") == 0)
+			cmd->nb_args_max = 1;
 		cmd = cmd->nxt;
 	}
 }
 
-int	there_are_unclosed_quotes(t_data **d)
+int	there_are_unclosed_quotes(t_cmds *cmd)
 {
 	int		mod;
-	t_cmds	*cmd;
 	int		i;
 
-	cmd = *((*d)->cmds);
-	while(cmd != NULL)
-	{
-		mod_(REINIT_QUOTES);
-		i = -1;
-		while (cmd->args[0][++i] != '\0')
-			mod = mod_(cmd->args[0][i]);
-		if (mod != QUOTES0)
-			return ((*d)->err = "unclodes quotes", 1);
-		cmd = cmd->nxt;
-	}
+	mod_(REINIT_QUOTES);
+	i = -1;
+	while (cmd->args[0][++i] != '\0')
+		mod = mod_(cmd->args[0][i]);
+	if (mod != QUOTES0)
+		return (printf("unclodes quotes\n"), 1);
 	return (0);
 }
-
 

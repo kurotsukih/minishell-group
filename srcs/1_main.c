@@ -83,14 +83,12 @@ int	main(int argc, char **argv, char **env_array)
 		// 	continue;
 		// }
 		add_history(cmd_line);
+		print_cmds(d);
 		put_cmd_line_and_redirects(cmd_line, d);
 		calc_args(d);
-		if (there_are_unclosed_quotes(d) == 1)
-			continue;
 		calc_doll_conversions(d);
-		print_cmds(d);
 		exec_cmds(d);
 		// free_cmd_line
 	}
-	return 0; //(exit_code);
+	return 0; //(d->exit_code);
 }

@@ -1,5 +1,33 @@
 #include "headers.h"
 
+int	args_are_correct(t_cmds *cmd, t_data **d)
+{
+	if (!cmd->args)
+	{
+		(*d)->exit_c = 255;
+		return (0);
+	}
+	if (cmd->nb_args > cmd->nb_args_max)
+	{
+		printf("%s: Too many arguments", cmd->args[0]);
+		// d->exit_code = 
+		return (0);
+	}
+	if (ft_strcmp(cmd->args[0], "exit") == 0 && !ft_atoi(cmd->args[1])) ////
+	{
+		printf("exit: numeric argument required");
+		(*d)->exit_c =2;
+		return (0);
+	}
+	if (there_are_unclosed_quotes(cmd))
+	{
+		printf("%s: unclosed quotes", cmd->args[0]);
+		// d->exit_code = 
+		return (0);
+	}
+	return (1);
+}
+
 void	exec_echo(t_cmds *cmd)
 {
 	int	option_n;
@@ -29,40 +57,36 @@ void	exec_pwd(void)
 	free(s);
 }
 
-int	exec_cd(t_cmds *cmd, t_data **d)
+void	exec_cd(t_cmds *cmd, t_data **d)
 {
-	char	*home_dir;
+	char	*dir;
 
-	if (cmd->nb_args >= 3)
-		return ((*d)->err = "bash: cd: Too many arguments", -1);
 	if (cmd->nb_args == 1)
 	{
-		home_dir = get_value_from_env("HOME", d);
-		if (home_dir == NULL)
-			return ((*d)->err = "bash: cd: HOME not set", -1);
-		if (chdir(home_dir) == -1)
-			return ((*d)->err = "bash: cd: HOME not set properly", -1);
+		dir = get_value_from_env("HOME", d);
+		if (dir == NULL)
+		{
+			printf("cd: ...\n");
+			//(*d)->exit_c = ;
+			return ;
+		}
 	}
-	else if (chdir(cmd->args[1]) == -1)
-		return ((*d)->err = "...", -1);
-	return (0);
+	else
+		dir = cmd->args[1];
+	if (chdir(dir) == -1)
+	{
+		printf("cd: ...");
+		//(*d)->exit_c = ;
+	}
+	if(dir != NULL)
+		free(dir);
 }
 
-// int	exec_exit(t_node *n, t_cmd *cmd, t_data **d)
-// {
-// 	char	*str;
-
-// 	if (!cmd)
-// 		return (exit(d->exit_code), 0);
-// 	if (ft_isnum(cmd->cmd) != 1)
-// 	{
-// 		exit_(-1, "bash: exit: %s: numeric argument required");
-// 		return (exit(2), 0);
-// 	}
-// 	if (ft_lstsize(cmd) > 1)
-// 		return (exit_(-1, "bash: exit: too many arguments\n"), 1);
-// 	return (exit(ft_atoi(str)), 0); // ft_abs(ft_atoi(str) % 256)
-// }
+void	exec_exit(t_data **d)
+{
+	//(*d)->exit_c = 
+	exit_(d);
+}
 
 int	exec_cmds(t_data **d)
 {
@@ -72,23 +96,23 @@ int	exec_cmds(t_data **d)
 	cmd = *((*d)->cmds);
 	while (cmd != NULL)
 	{
+		if (!args_are_correct(cmd, d))
+			continue; //?
 		result = 0;
-		if (dup2(cmd->in_fd, STDIN_FILENO) == -1 || dup2(cmd->out_fd, STDOUT_FILENO) == -1)
-			exit_(d);
-		if (ft_strcmp(cmd->args[0], "echo") == 0) /// func name as variable
+		if (ft_strcmp(cmd->args[0], "echo") == 0)
 			exec_echo(cmd);
 		else if (ft_strcmp(cmd->args[0], "env") == 0 && (*d)->env != NULL)
 			exec_env(d);
 		else if (ft_strcmp(cmd->args[0], "pwd") == 0)
 			exec_pwd();
 		else if (ft_strcmp(cmd->args[0], "cd") == 0)
-			result = exec_cd(cmd, d);
+			exec_cd(cmd, d);
 		else if (ft_strcmp(cmd->args[0], "export") == 0)
 			result = exec_export(cmd, d);
 		else if (ft_strcmp(cmd->args[0], "unset") == 0 && (*d)->env != NULL)
 			exec_unset(cmd, d);
-		// else if (ft_strcmp(cmd->args[0], "exit") == 0)
-		// 	result = exec_exit(d, n, cmd->params->next);
+		else if (ft_strcmp(cmd->args[0], "exit") == 0)
+			exec_exit(d);
 		else
 			exec_extern_cmd(cmd, d);
 		cmd = cmd->nxt;

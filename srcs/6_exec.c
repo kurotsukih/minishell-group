@@ -61,11 +61,6 @@ void	exec_extern_cmd(t_cmds *cmd, t_data **d)
 	char	*path;
 
 	(*d)->exit_c = 0;
-	if (!cmd->args)
-	{
-		(*d)->exit_c = 255;
-		return ;
-	}
 	path = path_(cmd, d);	
 	if (path != NULL)
 		execve(path, cmd->args, env_to_array(d));

@@ -41,13 +41,13 @@ void	exec_unset(t_cmds *cmd, t_data **d)
 	}
 }
 
-int	exec_export(t_cmds *cmd, t_data **d)
+void	exec_export(t_cmds *cmd, t_data **d)
 {
 	t_env	*new_var;
 	int		i;
 
 	if (cmd->nb_args == 0)
-		return (exec_env(d), 0);
+		exec_env(d);
 	exec_unset(cmd, d);
 	i = 0;
 	while (++i < cmd->nb_args)
@@ -57,5 +57,4 @@ int	exec_export(t_cmds *cmd, t_data **d)
 		new_var->nxt = *((*d)->env);
 		*((*d)->env) = new_var;
 	}
-	return (0);
 }

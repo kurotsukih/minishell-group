@@ -4,11 +4,13 @@ void	init_cmd(t_cmds **new, char *redirect, t_data **d)
 {
 	*new = (t_cmds *)malloc_(sizeof(t_cmds), d);
 	(*new)->nxt = NULL;
-	(*new)->nb_args = 0;
+	(*new)->nb_args_max = INT_MAX;
 	(*new)->args = NULL;
 	(*new)->redirect = redirect;
-	(*new)->fd_in = STDIN_FILENO;
-	(*new)->fd_out = STDOUT_FILENO;
+	if (dup2((*new)->fd_in, STDIN_FILENO) == -1)
+		exit_(d);
+	if (dup2((*new)->fd_out, STDOUT_FILENO) == -1)
+		exit_(d);
 	(*new)->is_filename = 0;
 }
 
