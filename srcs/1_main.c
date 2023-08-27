@@ -2,7 +2,7 @@
 после "cat файл", "cat файл | cat -e" : free(): double free detected in tcache 2
 
 readline rl_clear_history, rl_on_new_line rl_replace_line rl_redisplay, add_history,
-malloc free
+mallo c free
 printf write access open read close
 fork wait waitpid wait3 wait4 
 signa l sigaction sigemptyset sigaddset kill
@@ -38,10 +38,7 @@ static void	put_env(char **env_array, t_data **d)
 	t_env	*new;
 	// t_env	*cur;
 
-	(*d)->env = NULL;
-	(*d)->env = (t_env **)malloc(sizeof(t_env *));
-	if ((*d)->env == NULL)
-		exit_(d);
+	(*d)->env = (t_env **)malloc_(sizeof(t_env *), d);
 	*((*d)->env) = NULL;
 	i = -1;
 	while (1)

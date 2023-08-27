@@ -78,6 +78,7 @@ void	exec_extern_cmd(t_cmds *cmd, t_data **d);
 // utils
 void	sig_handler_main(int signal);
 void	sig_handler_fork(int signal);
+void	*malloc_(size_t size, t_data **d);
 void	exit_(t_data **d); /// ***d
 
 int		init_cmd(t_cmds **new, char *redirect);

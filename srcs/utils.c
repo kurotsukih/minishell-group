@@ -35,8 +35,6 @@ void	sig_handler_fork(int signal)
 void	exit_(t_data **d)
 {
 	(void)d;
-}
-// {
 // 	if (msg == NULL)
 // 		printf("%s\n", strerror(errno));
 // 	else if (msg != NULL && msg_param == NULL)
@@ -49,4 +47,15 @@ void	exit_(t_data **d)
 // 		free(*str_to_free);
 // 	if (exit_code != -1)
 // 		exit(exit_code);
-// }
+}
+
+void	*malloc_(size_t size, t_data **d)
+{
+	void	*mem;
+
+	mem = NULL;
+	mem = malloc(size);
+	if (mem == NULL)
+		exit_(d);
+	return (mem);
+}

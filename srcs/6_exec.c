@@ -39,21 +39,16 @@ static char	*path_(t_cmds *cmd, t_data **d)
 	char	*path;
 	int		i;
 	int		i_beg;
-	int		len;
 
 	paths = get_value_from_env("PATH", d);
-	printf("paths = %s\n", paths);
 	if (!paths)
 	{
 		printf("bash: command not found");
-		(*d)->exit_c = 127;
-		return (NULL);
+		return ((*d)->exit_c = 127, NULL);
 	}
-	len = (int)ft_strlen(paths);
 	i = -1;
 	i_beg = 0;
-	while (++i < len)
-	{
+	while (++i < (int)ft_strlen(paths))
 		if (paths[i] == '\0' || paths[i] == ':')
 		{
 			path = path_and_cmd(&(paths[i_beg]), i - i_beg, cmd, d);
@@ -63,10 +58,8 @@ static char	*path_(t_cmds *cmd, t_data **d)
 				(*d)->exit_c = 126;
 			i_beg = i + 1;
 		}
-	}
 	printf("bash: command not found");
-	(*d)->exit_c = 127;
-	return (NULL);
+	return ((*d)->exit_c = 127, NULL);
 }
 
 void	exec_extern_cmd(t_cmds *cmd, t_data **d)
@@ -80,7 +73,6 @@ void	exec_extern_cmd(t_cmds *cmd, t_data **d)
 		return ;
 	}
 	path = path_(cmd, d);	
-	//path = "/usr/bin/ls";
 	if (path != NULL)
 		execve(path, cmd->args, env_to_array(d));
 }
