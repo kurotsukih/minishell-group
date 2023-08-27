@@ -88,17 +88,15 @@ void	exec_exit(t_data **d)
 	exit_(d);
 }
 
-int	exec_cmds(t_data **d)
+void	exec_cmds(t_data **d)
 {
 	t_cmds *cmd;
-	int	result;
 
 	cmd = *((*d)->cmds);
 	while (cmd != NULL)
 	{
 		if (!args_are_correct(cmd, d))
 			continue; //?
-		result = 0;
 		if (ft_strcmp(cmd->args[0], "echo") == 0)
 			exec_echo(cmd);
 		else if (ft_strcmp(cmd->args[0], "env") == 0 && (*d)->env != NULL)
@@ -108,14 +106,15 @@ int	exec_cmds(t_data **d)
 		else if (ft_strcmp(cmd->args[0], "cd") == 0)
 			exec_cd(cmd, d);
 		else if (ft_strcmp(cmd->args[0], "export") == 0)
-			result = exec_export(cmd, d);
+			exec_export(cmd, d);
 		else if (ft_strcmp(cmd->args[0], "unset") == 0 && (*d)->env != NULL)
 			exec_unset(cmd, d);
 		else if (ft_strcmp(cmd->args[0], "exit") == 0)
 			exec_exit(d);
 		else
 			exec_extern_cmd(cmd, d);
+		//if (d->exit-c == ...)
+			//exit
 		cmd = cmd->nxt;
 	}
-	return (result);
 }

@@ -3,12 +3,12 @@
 
 readline rl_clear_history, rl_on_new_line rl_replace_line rl_redisplay, add_history,
 mallo c free
-printf write access open read close
+printf write access ope n read close
 fork wait waitpid wait3 wait4 
 signa l sigaction sigemptyset sigaddset kill
 exit
 getcwd chdir stat lstat fstat unlink execv e dup dup2 pipe
-opendir readdir closedir
+ope ndir readdir closedir
 strerror perror
 isatty ttyname ttyslot ioctl
 geten v 
@@ -26,6 +26,16 @@ si on met pas les waitpid juste apres l'execution de la commande et qu'on les me
 
 double quotes insdide simple ones ?
 
+" $ " is ok ?
+
+should we treat this : (?)
+a="s -la"   > l$a -> ls -la
+$a=" "      > ls$a-la$a"Makefile" -> ls -la Makefile 
+
+wc -l < infile
+tu dupliques l'entrée standard dans l'infile puis tu lances la cmd avec execve 
+
+wc -l < infile > outfile
 */
 
 #include "headers.h"
@@ -86,7 +96,7 @@ int	main(int argc, char **argv, char **env_array)
 		print_cmds(d);
 		put_cmd_line_and_redirects(cmd_line, d);
 		calc_args(d);
-		calc_doll_conversions(d);
+		calc_dollar_conversions(d);
 		exec_cmds(d);
 		// free_cmd_line
 	}

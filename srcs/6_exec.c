@@ -6,7 +6,7 @@
 // 127 команда не найдена, дочерний процесс, созданный для ее выполнения, возвращает 127
 // 126 команда найдена, но не может быть выполнена
 
-static char	*path_and_cmd(char *s1, int len_s1, t_cmds *cmd, t_data **d)
+static char	*path2_(char *s1, int len_s1, t_cmds *cmd, t_data **d)
 {
 	int		i;
 	int		j;
@@ -40,13 +40,13 @@ static char	*path_(t_cmds *cmd, t_data **d)
 
 	paths = get_value_from_env("PATH", d);
 	if (!paths)
-		return ((printf("command not found"), *d)->exit_c = 127, NULL);
+		return ((printf("no var env PATh"), *d)->exit_c = 127, NULL);
 	i = -1;
 	i_beg = 0;
 	while (++i < (int)ft_strlen(paths))
 		if (paths[i] == '\0' || paths[i] == ':')
 		{
-			path = path_and_cmd(&(paths[i_beg]), i - i_beg, cmd, d);
+			path = path2_(&(paths[i_beg]), i - i_beg, cmd, d);
 			if (access(path, X_OK) == 0)
 				return (path);
 			if (errno != 2)

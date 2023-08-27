@@ -66,12 +66,12 @@ void	put_cmd_line_and_redirects(char *cmd_line, t_data **d);
 void	calc_args(t_data **d);
 int		args_are_correct(t_cmds *cmd, t_data **d);
 int		there_are_unclosed_quotes(t_cmds *cmd);
-void	calc_doll_conversions(t_data **d);
+void	calc_dollar_conversions(t_data **d);
 void	exec_env(t_data **d); 
 void	exec_export(t_cmds *cmd, t_data **d);
 void	exec_unset(t_cmds *cmd, t_data **d);
 void	exec_extern_cmd(t_cmds *cmd, t_data **d);
-int		exec_cmds(t_data **d);
+void	exec_cmds(t_data **d);
 
 // utils
 void	sig_handler_main(int signal);

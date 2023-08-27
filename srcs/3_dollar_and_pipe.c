@@ -1,11 +1,5 @@
 #include "headers.h"
 
-// " $ " is ok ?
-
-// should we treat this ?
-// a="s -la"   > l$a -> ls -la
-// $a=" "      > ls$a-la$a"Makefile" -> ls -la Makefile 
-
 static char	*new_s_(int i, char *old_s, t_data **d)
 {
 	int		j;
@@ -33,29 +27,12 @@ static char	*new_s_(int i, char *old_s, t_data **d)
 	return (new_s);
 }
 
-static void	put_doll_conversions_1(char **s, t_data **d)
-{
-	int		i;
-	char	*new_s;
-
-	i = -1;
-	while ((*s)[++i] != '\0' && (*s)[i + 1] != '\0')
-	{
-		// if (s[i] == '$' && s[i + 1] == '?')
-		// 	(ft_itoa(exit_code));
-		if ((*s)[i] == '$')
-		{
-			new_s = new_s_(i, *s, d);
-			free(*s);
-			*s = new_s;
-		}
-	}
-}
-
-void	calc_doll_conversions(t_data **d)
+void	calc_dollar_conversions(t_data **d)
 {
 	t_cmds	*cmd;
+	char	*new_s;
 	int		i;
+	int		j;
 
 	cmd = *((*d)->cmds);
 	while(cmd != NULL)
@@ -63,10 +40,45 @@ void	calc_doll_conversions(t_data **d)
 		i = 0;
 		while(++i < cmd->nb_args)
 			if (cmd->args[i][0] != '\'')
-				put_doll_conversions_1(&(cmd->args[i]), d);
+			{
+				j = -1;
+				while (cmd->args[i][++j] != '\0' && cmd->args[i][j + 1] != '\0')
+				{
+					// if (cmd->args[i][j] == '$' && cmd->args[i][j + 1] == '?')
+					// 	(ft_itoa(exit_code));
+					if (cmd->args[i][j] == '$')
+					{
+						new_s = new_s_(j, cmd->args[i], d);
+						free(cmd->args[i]);
+						cmd->args[i] = new_s;
+					}
+				}
+
+			}
 		cmd = cmd->nxt;
 	}
 }
+
+// void	redirects(t_data **d)
+// {
+// 	t_cmds	*cmd;
+// 	int		i;
+
+// 	cmd = *((*d)->cmds);
+// 	while(cmd != NULL)
+// 	{
+// 		if (ft_strcmp(cmd->redirect, "<") == 0 && cmd->nxt != NULL)
+// 			cmd->fd_in = open(cmd->nxt->args[0], O_RDONLY); 
+//         // dup2(fd_in, STDIN_FILENO);
+	
+// 		// if pb open
+// 		// if the last cmd
+// 		i = 0;
+// 		while(++i < cmd->nb_args)
+// 			put_doll_conversions_1(&(cmd->args[i]), d);
+// 		cmd = cmd->nxt;
+// 	}
+// }
 
 // static char	*ft_open_all_files(t_list *arg, t_cmd *cmd)
 // {
@@ -97,12 +109,11 @@ void	calc_doll_conversions(t_data **d)
 // 	return (NULL);
 // }
 
-// static int	ft_prepare_pipe(t_node *n, int i_cmd)
+// static void	pipe_(int i_cmd, t_data **d)
 // {
 // 	int		fd[2];
-// 	char	*err;
 
-// 	if (i_cmd != 0 && ns[i_cmd - 1].out_fd != 1)
+// 	if (i_cmd != 0 && cmds[i_cmd - 1].out_fd != 1)
 // 		close(n->cmds[i_cmd - 1].out_fd);
 // 	if (i_cmd < n->count_cmd - 1)
 // 	{
@@ -112,10 +123,9 @@ void	calc_doll_conversions(t_data **d)
 // 		n->cmds[i_cmd].out_pipe_fd = fd[0];
 // 		n->cmds[i_cmd + 1].in_fd = fd[0];
 // 	}
-// 	err = ft_open_all_files(n->cmds[i_cmd].redir, n->cmds + i_cmd);
-// 	if (err)
+// 	if (ft_open_all_files(n->cmds[i_cmd].redir, n->cmds + i_cmd))
 // 	{
-// 		exit_(-1, err);
+// 		exit_();
 // 		if (n->cmds[i_cmd].in_fd != -1 && n->cmds[i_cmd].in_fd != 0)
 // 			close(n->cmds[i_cmd].in_fd);
 // 		if (n->cmds[i_cmd].out_fd != -1 && n->cmds[i_cmd].out_fd != 1)
