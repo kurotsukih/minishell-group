@@ -1,17 +1,14 @@
 #include "headers.h"
 
-int	init_cmd(t_cmds **new, char *redirect)
+void	init_cmd(t_cmds **new, char *redirect, t_data **d)
 {
-	*new = (t_cmds *)malloc(sizeof(t_cmds));
-	if (*new == NULL)
-		return (-1);
+	*new = (t_cmds *)malloc_(sizeof(t_cmds), d);
 	(*new)->nxt = NULL;
 	(*new)->prv = NULL;
 	(*new)->nb_args = 0;
 	(*new)->args = NULL;
 	(*new)->redirect = redirect;
 	(*new)->is_filename = 0;
-	return (0);
 }
 
 int	mod_(char c)

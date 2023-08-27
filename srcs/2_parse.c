@@ -6,16 +6,12 @@ static void	put_1_cmd_and_redirect(char *cmd_txt, int len, char *redirect, t_dat
 	t_cmds	*last;
 	int		i;
 
-	init_cmd(&new, redirect);
+	init_cmd(&new, redirect, d);
 	mod_(REINIT_QUOTES);
 	new->nb_args = nb_args_(cmd_txt, len);
-	new->args = (char **)malloc((new->nb_args + 1)* sizeof(char *));
-	if (new->args == NULL)
-		exit_(d);
+	new->args = (char **)malloc_((new->nb_args + 1)* sizeof(char *), d);
 	// ft_memset(new->args, NULL, new->nb_args + 1); ///
-	new->args[0] = (char *)malloc(len + 1);
-	if (new->args[0] == NULL)
-		exit_(d);
+	new->args[0] = (char *)malloc_(len + 1, d);
 	i = -1;
 	while (++i < len)
 		new->args[0][i] = cmd_txt[i];

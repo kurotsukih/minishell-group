@@ -43,10 +43,7 @@ static void	put_env(char **env_array, t_data **d)
 	i = -1;
 	while (1)
 	{
-		new = NULL;
-		new = (t_env *)malloc(sizeof(t_env));
-		if (new == NULL)
-			exit_(d);
+		new = (t_env *)malloc_(sizeof(t_env), d);
 		new->var = env_array[++i];
 		if (new->var == NULL)
 			break ; 
@@ -60,15 +57,9 @@ static void	put_env(char **env_array, t_data **d)
 
 static void	init(t_data ***d, char **env_array)
 {
-	*d = (t_data **)malloc(sizeof(t_data *));
-	if (*d == NULL)
-		exit_(*d);
-	**d = (t_data *)malloc(sizeof(t_data));
-	if (**d == NULL)
-		exit_(*d);
-	(**d)->cmds = (t_cmds **)malloc(sizeof(t_cmds *));
-	if ((**d)->cmds == NULL)
-		exit_(*d);
+	*d = (t_data **)malloc_(sizeof(t_data *), *d);
+	**d = (t_data *)malloc_(sizeof(t_data), *d);
+	(**d)->cmds = (t_cmds **)malloc_(sizeof(t_cmds *), *d);
 	*((**d)->cmds) = NULL;
 	put_env(env_array, *d);
 	// signal(SIGQUIT, SIG_IGN);

@@ -10,7 +10,7 @@ void	*memset_(void *b, int c, int len)
 	return (b);
 }
 
-char *alphanum_(char *s)
+char *alphanum_(char *s, t_data **d)
 {
 	int		i;
 	char	*alphanum;
@@ -21,9 +21,7 @@ char *alphanum_(char *s)
 	while ((s[++i] >= '0' && s[i] < '9') || (s[i] >= 'a' && s[i] < 'z') || (s[i] >= 'A' && s[i] < 'Z') || s[i] == '_')
 		;
 	alphanum = NULL;
-	alphanum = (char *)malloc(i + 1);
-	if (alphanum == NULL)
-		return (NULL);
+	alphanum = (char *)malloc_(i + 1, d);
 	i = -1;
 	while ((s[++i] >= '0' && s[i] < '9') || (s[i] >= 'a' && s[i] < 'z') || (s[i] >= 'A' && s[i] < 'Z') || s[i] == '_')
 		alphanum[i] = s[i];
@@ -47,10 +45,7 @@ void strdup_and_trim(char *src, char **dest0, int len, t_data **d)
 		src[i] = '\0';
 		len--;
 	}
-	dest = NULL;
-	dest = (char *)malloc(len + 1);
-	if (dest == NULL)
-		exit_(d);
+	dest = (char *)malloc_(len + 1, d);
 	i = -1;
 	while (++i < len)
 		dest[i] = src[i];

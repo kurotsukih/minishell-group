@@ -1,11 +1,11 @@
 #include "headers.h"
 
-char *key_(char *s)
+char *key_(char *s, t_data **d)
 {
 	int		i;
 	char	*s_copy;
 
-	s_copy = (char *)malloc(ft_strlen(s));
+	s_copy = (char *)malloc_(ft_strlen(s), d);
 	if (s_copy == NULL)
 		return (NULL);
 	i = -1;
@@ -46,9 +46,7 @@ char	**env_to_array(t_data **d)
 	char	**env_array;
 	t_env	*var;
 
-	env_array = (char **)malloc(len_env(d) + 1 *sizeof(char *));
-	if (env_array == NULL)
-		return (NULL);
+	env_array = (char **)malloc_(len_env(d) + 1 *sizeof(char *), d);
 	i = -1;
 	var = *((*d)->env);
 	while (var != NULL)
@@ -82,7 +80,7 @@ char	*get_value_from_env(char *key, t_data **d)
 	var = *((*d)->env);
 	while (var != NULL)
 	{
-		if (ft_strcmp(key_(var->var), key) == 0)
+		if (ft_strcmp(key_(var->var, d), key) == 0)
 			return (val_(var->var));
 		var = var->nxt;
 	}

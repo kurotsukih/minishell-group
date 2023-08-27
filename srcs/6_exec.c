@@ -12,9 +12,7 @@ static char	*path_and_cmd(char *s1, int len_s1, t_cmds *cmd, t_data **d)
 	int		j;
 	char	*dest;
 
-	dest = (char *) malloc(len_s1 + ft_strlen(cmd->args[0]) + 1);
-	if (dest == NULL)
-		exit_(d);
+	dest = (char *) malloc_(len_s1 + ft_strlen(cmd->args[0]) + 1, d);
 	i = 0;
 	while (i < len_s1)
 	{

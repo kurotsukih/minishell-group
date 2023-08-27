@@ -81,19 +81,19 @@ void	sig_handler_fork(int signal);
 void	*malloc_(size_t size, t_data **d);
 void	exit_(t_data **d); /// ***d
 
-int		init_cmd(t_cmds **new, char *redirect);
+void	init_cmd(t_cmds **new, char *redirect, t_data **d);
 char	*redirect_(char *s);
 int		mod_(char c);	
 int		nb_args_(char *s, int len);
 void	print_cmds(t_data **d);
 
 char	*val_(char *s);
-char	*key_(char *s);
+char	*key_(char *s, t_data **d);
 char	**env_to_array(t_data **d);
 int		len_env(t_data **d);
 char	*get_value_from_env(char *key, t_data **d);
 
-char	*alphanum_(char *s);
+char	*alphanum_(char *s, t_data **d);
 void	strdup_and_trim(char *srs, char **dest, int len, t_data **d);
 
 

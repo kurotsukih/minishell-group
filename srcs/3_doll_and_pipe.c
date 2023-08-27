@@ -22,15 +22,13 @@ static int	put_doll_conversions_1(char **s, t_data **d)
 		// 	return (ft_itoa(exit_code));
 		if ((*s)[i] == '$')
 		{
-			key = alphanum_(&((*s)[i + 1]));
+			key = alphanum_(&((*s)[i + 1]), d);
 			if (key == NULL)
 				return (-1);
 			val = get_value_from_env(key, d);
 			new_size = ft_strlen(*s) - ft_strlen(key) + ft_strlen(val);
 			new_s = NULL;
-			new_s = (char*)malloc(new_size + 1);
-			if (new_s == NULL)
-				exit_(d);
+			new_s = (char*)malloc_(new_size + 1, d);
 			ft_memset(new_s, '\0', new_size + 1);
 			j = 0;
 			while (j < i)
