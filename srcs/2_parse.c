@@ -6,7 +6,7 @@ static void	put_cmd_and_redirect(char *cmd_txt, int len, char *redirect, t_data 
 	t_cmds	*last;
 	int		i;
 
-	printf("put_cmd_and_redirect [%s] %d\n", cmd_txt, len);
+	// printf("put_cmd_and_redirect [%s] %d\n", cmd_txt, len);
 	init_cmd(&new, redirect, d);
 	new->nb_args = nb_args_(cmd_txt, len);
 	new->args = (char **)malloc_((new->nb_args + 1)* sizeof(char *), d);
@@ -18,23 +18,16 @@ static void	put_cmd_and_redirect(char *cmd_txt, int len, char *redirect, t_data 
 	while (++i < len)
 		new->args[0][i] = cmd_txt[i];
 	new->args[0][i] = '\0';
-	// print_cmds("put ", d);
 	if (*((*d)->cmds) == NULL)
 		*((*d)->cmds) = new;
 	else
 	{
 		last = *((*d)->cmds);
-		//printf("last = %s\n", last->args[0]);
 		while (last != NULL && last->nxt != NULL)
-		{
-			// printf("while\n");
 			last = last->nxt;
-		}
 		last->nxt = new;
 		new->prv = last;
 	}
-	print_cmds("", d);
-	printf("\n");
 }
 
 void	put_cmds_and_redirects(char *cmd_line, t_data **d)
@@ -42,37 +35,23 @@ void	put_cmds_and_redirects(char *cmd_line, t_data **d)
 	int		i_beg;
 	int 	i;
 	char	*redirect;
-	int		len_cmd;
 
-	printf("put_cmds_and_redirects [%s]\n", cmd_line);
 	i_beg = 0;
 	i = 0;
 	mod_(REINIT_QUOTES);
-	// while (cmd_line[i] != '\0') 
 	while (1)
 	{
 		redirect = redirect_(&cmd_line[i + 1]);
-		printf("i = %d, i_beg = %d, len_redir = %d\n", i, i_beg, (int)ft_strlen(redirect));
-		// printf("")
 		if ((mod_(cmd_line[i]) == QUOTES0 && ft_strlen(redirect) > 0) || cmd_line[i + 1] == '\0')
 		{
-			// printf("i = %d\n", i);
-			len_cmd = i - i_beg + 1;
-			printf("len_cmd = %d - %d + 1 = %d\n", i, i_beg, len_cmd);
-			put_cmd_and_redirect(&cmd_line[i_beg], len_cmd, redirect, d);
-			if (cmd_line[i + 1] == '\0')
+			put_cmd_and_redirect(&cmd_line[i_beg], i - i_beg + 1, redirect, d);
+			if (cmd_line[i + ft_strlen(redirect) + 1] == '\0')
 				break;
-			if (ft_strlen(redirect) == 1 && cmd_line[i + 2] == '\0')
-				break ;
-			if (ft_strlen(redirect) == 2 && cmd_line[i + 3] == '\0')
-				break ;
-			i += ft_strlen(redirect) + 1;
-			i_beg = i;
+			i += ft_strlen(redirect);
+			i_beg = i + 1;
 		}
-		else
-			i++;
+		i++;
 	}
-	printf("put_cmds_and_redirects [%s] finished\n", cmd_line);
 }
 
 static void	calc_args_1(t_cmds *cmd, t_data **d) 

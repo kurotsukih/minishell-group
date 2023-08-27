@@ -58,11 +58,9 @@ int	nb_args_(char *s, int len)
 	mod_(REINIT_QUOTES);
 	nb_args = 0;
 	i = -1;
-	printf("nb_args_ [%s] %d", s, len);
 	while (++i < len)
 		if (mod_(s[i]) == QUOTES0 && s[i] != ' ' && (s[i + 1] == ' ' || s[i + 1] == '\0' || s[i + 1] == '\'' || s[i + 1] == '\"' || i == len - 1))
 			nb_args++;
-	printf(" = %d\n", nb_args);
 	return (nb_args);
 }
 
