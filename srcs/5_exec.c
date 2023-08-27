@@ -52,7 +52,6 @@ int	exec_export(t_cmds *cmd, t_data **d)
 	i = 0;
 	while (++i < cmd->nb_args)
 	{
-		new_var = NULL;
 		new_var = (t_env *)malloc_(sizeof(t_env), d);
 		new_var->var = ft_strdup(cmd->args[i]); ////
 		new_var->nxt = *((*d)->env);

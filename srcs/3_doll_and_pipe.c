@@ -6,13 +6,36 @@
 // a="s -la"   > l$a -> ls -la
 // $a=" "      > ls$a-la$a"Makefile" -> ls -la Makefile 
 
-static int	put_doll_conversions_1(char **s, t_data **d)
+static char	*new_s_(int i, char *old_s, t_data **d)
 {
-	int		i;
 	int		j;
 	char	*key;
 	char	*val;
-	int		new_size;
+	char	*new_s;
+	int		len_new_s;
+
+	key = alphanum_(&(old_s[i + 1]), d);
+	val = get_value_from_env(key, d);
+	len_new_s = ft_strlen(old_s) - ft_strlen(key) + ft_strlen(val);
+	new_s = (char*)malloc_(len_new_s + 1, d);
+	j = -1;
+	while (++j < i)
+		new_s[j] = old_s[j];
+	j--;
+	while (++j < i + (int)ft_strlen(val))
+		new_s[j] = val[j - i];
+	j--;
+	while(++j < len_new_s)
+		new_s[j] = old_s[j + (int)ft_strlen(key) - (int)ft_strlen(val) + 1];
+	new_s[j] = '\0';
+	free(key);
+	free(val);
+	return (new_s);
+}
+
+static void	put_doll_conversions_1(char **s, t_data **d)
+{
+	int		i;
 	char	*new_s;
 
 	i = -1;
@@ -22,40 +45,14 @@ static int	put_doll_conversions_1(char **s, t_data **d)
 		// 	return (ft_itoa(exit_code));
 		if ((*s)[i] == '$')
 		{
-			key = alphanum_(&((*s)[i + 1]), d);
-			if (key == NULL)
-				return (-1);
-			val = get_value_from_env(key, d);
-			new_size = ft_strlen(*s) - ft_strlen(key) + ft_strlen(val);
-			new_s = NULL;
-			new_s = (char*)malloc_(new_size + 1, d);
-			ft_memset(new_s, '\0', new_size + 1);
-			j = 0;
-			while (j < i)
-			{
-				new_s[j] = (*s)[j];
-				j++;
-			}
-			while (j < i + (int)ft_strlen(val))
-			{
-				new_s[j] = val[j - i];
-				j++;
-			}
-			while(j < new_size)
-			{
-				new_s[j] = (*s)[j + (int)ft_strlen(key) - (int)ft_strlen(val) + 1];
-				j++;
-			}
-			new_s[j] = '\0';
+			new_s = new_s_(i, *s, d);
 			free(*s);
-			free(key);
 			*s = new_s;
 		}
 	}
-	return (0);
 }
 
-int	calc_doll_conversions(t_data **d)
+void	calc_doll_conversions(t_data **d)
 {
 	t_cmds	*cmd;
 	int		i;
@@ -66,11 +63,9 @@ int	calc_doll_conversions(t_data **d)
 		i = 0;
 		while(++i < cmd->nb_args)
 			if (cmd->args[i][0] != '\'')
-				if (put_doll_conversions_1(&(cmd->args[i]), d) == -1)
-					return (-1);
+				put_doll_conversions_1(&(cmd->args[i]), d);
 		cmd = cmd->nxt;
 	}
-	return (0);
 }
 
 // static char	*ft_open_all_files(t_list *arg, t_cmd *cmd)

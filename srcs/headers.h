@@ -68,7 +68,7 @@ typedef struct 		s_data
 void	put_cmd_line_and_redirects(char *cmd_line, t_data **d);
 void	calc_args(t_data **d);
 int		there_are_unclosed_quotes(t_data **d);
-int		calc_doll_conversions(t_data **d);
+void	calc_doll_conversions(t_data **d);
 int		exec_cmds(t_data **d);
 void	exec_env(t_data **d); 
 int		exec_export(t_cmds *cmd, t_data **d);

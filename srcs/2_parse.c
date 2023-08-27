@@ -10,7 +10,6 @@ static void	put_1_cmd_and_redirect(char *cmd_txt, int len, char *redirect, t_dat
 	mod_(REINIT_QUOTES);
 	new->nb_args = nb_args_(cmd_txt, len);
 	new->args = (char **)malloc_((new->nb_args + 1)* sizeof(char *), d);
-	// ft_memset(new->args, NULL, new->nb_args + 1); ///
 	new->args[0] = (char *)malloc_(len + 1, d);
 	i = -1;
 	while (++i < len)
@@ -70,7 +69,6 @@ static void	calc_args_1(t_cmds *cmd, t_data **d)
 	len = (int)ft_strlen(cmd->args[0]);
 	i = -1;
 	while (++i < len)
-	{
 		if (mod_(cmd->args[0][i]) == QUOTES0 && cmd->args[0][i] != ' ' && (cmd->args[0][i + 1] == ' ' || cmd->args[0][i + 1] == '\0' || cmd->args[0][i + 1] == '\'' || cmd->args[0][i + 1] == '\"'))
 		{
 			if (k == 0)
@@ -79,7 +77,6 @@ static void	calc_args_1(t_cmds *cmd, t_data **d)
 			i_beg = i + 1;
 			k++;
 		}
-	}
 	cmd->args[0][to_put_EOL] = '\0';
 }
 

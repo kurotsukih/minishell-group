@@ -36,7 +36,6 @@ static void	put_env(char **env_array, t_data **d)
 {
 	int		i;
 	t_env	*new;
-	// t_env	*cur;
 
 	(*d)->env = (t_env **)malloc_(sizeof(t_env *), d);
 	*((*d)->env) = NULL;
@@ -49,10 +48,7 @@ static void	put_env(char **env_array, t_data **d)
 			break ; 
 		new->nxt = *((*d)->env);
 		*((*d)->env) = new;
-		// printf("new = %s\nENV = %s\n\n", new->var, (*((*d)->env))->var);
 	}
-	// i = 0;
-	// cur = *((*d)->env);
 }
 
 static void	init(t_data ***d, char **env_array)

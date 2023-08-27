@@ -20,7 +20,6 @@ char *alphanum_(char *s, t_data **d)
 	i = -1;
 	while ((s[++i] >= '0' && s[i] < '9') || (s[i] >= 'a' && s[i] < 'z') || (s[i] >= 'A' && s[i] < 'Z') || s[i] == '_')
 		;
-	alphanum = NULL;
 	alphanum = (char *)malloc_(i + 1, d);
 	i = -1;
 	while ((s[++i] >= '0' && s[i] < '9') || (s[i] >= 'a' && s[i] < 'z') || (s[i] >= 'A' && s[i] < 'Z') || s[i] == '_')
