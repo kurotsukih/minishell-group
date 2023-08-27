@@ -1,5 +1,19 @@
 #include "headers.h"
 
+static int	there_are_unclosed_quotes(t_cmds *cmd)
+{
+	int		mod;
+	int		i;
+
+	mod_(REINIT_QUOTES);
+	i = -1;
+	while (cmd->args[0][++i] != '\0')
+		mod = mod_(cmd->args[0][i]);
+	if (mod != QUOTES0)
+		return (printf("unclodes quotes\n"), 1);
+	return (0);
+}
+
 int	args_are_correct(t_cmds *cmd, t_data **d)
 {
 	if (!cmd->args)
@@ -28,64 +42,112 @@ int	args_are_correct(t_cmds *cmd, t_data **d)
 	return (1);
 }
 
-void	exec_echo(t_cmds *cmd)
+static char	*path2_(char *s1, int len_s1, t_cmds *cmd, t_data **d)
 {
-	int	option_n;
+	int		i;
+	int		j;
+	char	*dest;
+
+	dest = (char *) malloc_(len_s1 + ft_strlen(cmd->args[0]) + 1, d);
+	i = 0;
+	while (i < len_s1)
+	{
+		dest[i] = s1[i];
+		i++;
+	}
+	dest[i++] = '/';
+	j = 0;
+	while (cmd->args[0][j] != '\0')
+	{
+		dest[i] = cmd->args[0][j];
+		i++;
+		j++;
+	}
+	dest[i] = '\0';
+	return (dest);
+}
+
+static char	*path_(t_cmds *cmd, t_data **d)
+{
+	char	*paths;
+	char	*path;
+	int		i;
+	int		i_beg;
+
+	paths = get_value_from_env("PATH", d);
+	if (!paths)
+		return ((printf("no var env PATh"), *d)->exit_c = 127, NULL);
+	i = -1;
+	i_beg = 0;
+	while (++i < (int)ft_strlen(paths))
+		if (paths[i] == '\0' || paths[i] == ':')
+		{
+			path = path2_(&(paths[i_beg]), i - i_beg, cmd, d);
+			if (access(path, X_OK) == 0)
+				return (path);
+			if (errno != 2)
+				(*d)->exit_c = 126;
+			i_beg = i + 1;
+		}
+	return (printf("command not found"), (*d)->exit_c = 127, NULL);
+}
+
+void free_(t_cmds **cmd)
+{
 	int	i;
 
-	option_n = 0;
+	if (*cmd == NULL)
+		return ;
 	i = 0;
-	while (++i < cmd->nb_args)
+	while(i < (*cmd)->nb_args)
+		free((*cmd)->args[i]);
+	free((*cmd)->args);
+	free(*cmd);
+}
+
+void	treat_redirect_in(t_cmds **cmd)
+{
+	t_cmds	**to_free;
+
+	if ((*cmd)->nxt != NULL && (*cmd)->redirect[0] == '<')
 	{
-		if (ft_strcmp(cmd->args[i], "-n") == 0)
-			option_n = 1;
-		else if (i == cmd->nb_args - 1)
-			printf("%s", cmd->args[i]);
-		else
-			printf("%s ", cmd->args[i]);
+		(*cmd)->fd_in = open((*cmd)->nxt->args[0], O_RDONLY); 
+		// if !open
+			// d->exit_c = 
+			// return 
+		dup2((*cmd)->fd_in, STDIN_FILENO);
+		// if !dup2
+			// d->exit_c = 
+			// return
+		to_free = &((*cmd)->nxt); 
+		(*cmd)->nxt = (*cmd)->nxt->nxt;
+		free_(to_free);
 	}
-	if (option_n == 0)
-		printf("\n");
 }
 
-void	exec_pwd(void)
+void	exec_extern_cmd(t_cmds *cmd, t_data **d)
 {
-	char	*s;
+	char	*path;
+	int		pid;
+	int		status;
 
-	s = getcwd(NULL, 0);
-	printf("%s\n", s);
-	free(s);
-}
-
-void	exec_cd(t_cmds *cmd, t_data **d)
-{
-	char	*dir;
-
-	if (cmd->nb_args == 1)
+	printf("fork\n");
+	pid = fork();
+	if (pid < -1)
+		free_all_and_exit("fork error", d);
+	if (pid == 0)
 	{
-		dir = get_value_from_env("HOME", d);
-		if (dir == NULL)
-		{
-			printf("cd: ...\n");
-			//(*d)->exit_c = ;
-			return ;
-		}
+		printf("I am child proc, i call execve\n");
+		(*d)->exit_c = 0;
+		path = path_(cmd, d);
+		if (path != NULL)
+			execve(path, cmd->args, env_to_array(d));
 	}
 	else
-		dir = cmd->args[1];
-	if (chdir(dir) == -1)
 	{
-		printf("cd: ...");
-		//(*d)->exit_c = ;
+		printf("I am parent proc, i wait\n");
+		wait(&status);
 	}
-	if(dir != NULL)
-		free(dir);
-}
-
-void	exec_exit(t_data **d)
-{
-	//(*d)->exit_c = 
-	exit_(d);
 }
 
 void	exec_cmds(t_data **d)
@@ -97,6 +159,7 @@ void	exec_cmds(t_data **d)
 	{
 		if (!args_are_correct(cmd, d))
 			continue; //?
+		treat_redirect_in(&cmd);
 		if (ft_strcmp(cmd->args[0], "echo") == 0)
 			exec_echo(cmd);
 		else if (ft_strcmp(cmd->args[0], "env") == 0 && (*d)->env != NULL)

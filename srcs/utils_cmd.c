@@ -7,11 +7,13 @@ void	init_cmd(t_cmds **new, char *redirect, t_data **d)
 	(*new)->nb_args_max = INT_MAX;
 	(*new)->args = NULL;
 	(*new)->redirect = redirect;
-	if (dup2((*new)->fd_in, STDIN_FILENO) == -1)
-		exit_(d);
-	if (dup2((*new)->fd_out, STDOUT_FILENO) == -1)
-		exit_(d);
-	(*new)->is_filename = 0;
+	(*new)->to_free = NULL;
+	(*new)->fd_in = STDIN_FILENO; /// ?
+	(*new)->fd_out = STDOUT_FILENO;
+	// if (dup2((*new)->fd_in, STDIN_FILENO) == -1)
+	// 	free_all_and_exit("", d);
+	// if (dup2((*new)->fd_out, STDOUT_FILENO) == -1)
+	// 	free_all_and_exit("", d);
 }
 
 int	mod_(char c)

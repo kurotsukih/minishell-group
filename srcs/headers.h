@@ -41,9 +41,9 @@ typedef struct 		s_cmds
 	int				nb_args;
 	int				nb_args_max;
 	char			*redirect; // ">>" ">" "<" "<<" "|"
-	int				is_filename;
 	int				fd_in;
 	int				fd_out;
+	char			**to_free;
 	struct s_cmds	*nxt;
 }					t_cmds;
 
@@ -62,22 +62,25 @@ typedef struct 		s_data
 	char			*to_free;
 }					t_data;
 
-void	put_cmd_line_and_redirects(char *cmd_line, t_data **d);
+void	put_cmds_and_redirects(char *cmd_line, t_data **d);
 void	calc_args(t_data **d);
 int		args_are_correct(t_cmds *cmd, t_data **d);
-int		there_are_unclosed_quotes(t_cmds *cmd);
 void	calc_dollar_conversions(t_data **d);
 void	exec_env(t_data **d); 
 void	exec_export(t_cmds *cmd, t_data **d);
 void	exec_unset(t_cmds *cmd, t_data **d);
-void	exec_extern_cmd(t_cmds *cmd, t_data **d);
 void	exec_cmds(t_data **d);
+void	exec_exit(t_data **d);
+void	exec_cd(t_cmds *cmd, t_data **d);
+void	exec_pwd(void);
+void	exec_echo(t_cmds *cmd);
 
 // utils
 void	sig_handler_main(int signal);
 void	sig_handler_fork(int signal);
 void	*malloc_(size_t size, t_data **d);
-void	exit_(t_data **d); /// ***d
+void	free_all_and_exit(char *msg, t_data **d); /// ***d
+void	free_all_and_go_to_next_cmd(char *msg, t_data **d);
 
 void	init_cmd(t_cmds **new, char *redirect, t_data **d);
 char	*redirect_(char *s);

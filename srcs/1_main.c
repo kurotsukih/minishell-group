@@ -94,7 +94,8 @@ int	main(int argc, char **argv, char **env_array)
 		// }
 		add_history(cmd_line);
 		print_cmds(d);
-		put_cmd_line_and_redirects(cmd_line, d);
+		put_cmds_and_redirects(cmd_line, d);
+		print_cmds(d);
 		calc_args(d);
 		calc_dollar_conversions(d);
 		exec_cmds(d);

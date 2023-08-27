@@ -32,23 +32,6 @@ void	sig_handler_fork(int signal)
 		exit(131);
 }
 
-void	exit_(t_data **d)
-{
-	(void)d;
-// 	if (msg == NULL)
-// 		printf("%s\n", strerror(errno));
-// 	else if (msg != NULL && msg_param == NULL)
-// 		printf("bash: %s\n", msg);
-// 	else if (msg != NULL && msg_param != NULL)
-// 		printf(msg, msg_param);
-// 	if (lst_to_clear != NULL)
-// 	// ft_lstclear(lst_to_clear);
-// 	if (str_to_free != NULL)
-// 		free(*str_to_free);
-// 	if (exit_code != -1)
-// 		exit(exit_code);
-}
-
 void	*malloc_(size_t size, t_data **d)
 {
 	void	*mem;
@@ -56,6 +39,23 @@ void	*malloc_(size_t size, t_data **d)
 	mem = NULL;
 	mem = malloc(size);
 	if (mem == NULL)
-		exit_(d);
+		free_all_and_exit("malloc problem", d);
 	return (mem);
+}
+
+void	free_all_and_exit(char *msg, t_data **d)
+{
+	if (msg == NULL)
+		printf("%s %s\n", msg, strerror(errno));
+	if ((*d)->to_free != NULL)
+		free((*d)->to_free); ///
+	exit((*d)->exit_c);
+}
+
+void	free_all_and_go_to_next_cmd(char *msg, t_data **d)
+{
+	if (msg == NULL)
+		printf("%s %s\n", msg, strerror(errno));
+	if ((*d)->to_free != NULL)
+		free((*d)->to_free); ///
 }

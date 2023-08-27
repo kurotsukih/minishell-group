@@ -59,27 +59,6 @@ void	calc_dollar_conversions(t_data **d)
 	}
 }
 
-// void	redirects(t_data **d)
-// {
-// 	t_cmds	*cmd;
-// 	int		i;
-
-// 	cmd = *((*d)->cmds);
-// 	while(cmd != NULL)
-// 	{
-// 		if (ft_strcmp(cmd->redirect, "<") == 0 && cmd->nxt != NULL)
-// 			cmd->fd_in = open(cmd->nxt->args[0], O_RDONLY); 
-//         // dup2(fd_in, STDIN_FILENO);
-	
-// 		// if pb open
-// 		// if the last cmd
-// 		i = 0;
-// 		while(++i < cmd->nb_args)
-// 			put_doll_conversions_1(&(cmd->args[i]), d);
-// 		cmd = cmd->nxt;
-// 	}
-// }
-
 // static char	*ft_open_all_files(t_list *arg, t_cmd *cmd)
 // {
 // 	while (arg)

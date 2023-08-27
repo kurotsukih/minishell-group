@@ -6,66 +6,6 @@
 // 127 команда не найдена, дочерний процесс, созданный для ее выполнения, возвращает 127
 // 126 команда найдена, но не может быть выполнена
 
-static char	*path2_(char *s1, int len_s1, t_cmds *cmd, t_data **d)
-{
-	int		i;
-	int		j;
-	char	*dest;
-
-	dest = (char *) malloc_(len_s1 + ft_strlen(cmd->args[0]) + 1, d);
-	i = 0;
-	while (i < len_s1)
-	{
-		dest[i] = s1[i];
-		i++;
-	}
-	dest[i++] = '/';
-	j = 0;
-	while (cmd->args[0][j] != '\0')
-	{
-		dest[i] = cmd->args[0][j];
-		i++;
-		j++;
-	}
-	dest[i] = '\0';
-	return (dest);
-}
-
-static char	*path_(t_cmds *cmd, t_data **d)
-{
-	char	*paths;
-	char	*path;
-	int		i;
-	int		i_beg;
-
-	paths = get_value_from_env("PATH", d);
-	if (!paths)
-		return ((printf("no var env PATh"), *d)->exit_c = 127, NULL);
-	i = -1;
-	i_beg = 0;
-	while (++i < (int)ft_strlen(paths))
-		if (paths[i] == '\0' || paths[i] == ':')
-		{
-			path = path2_(&(paths[i_beg]), i - i_beg, cmd, d);
-			if (access(path, X_OK) == 0)
-				return (path);
-			if (errno != 2)
-				(*d)->exit_c = 126;
-			i_beg = i + 1;
-		}
-	return (printf("command not found"), (*d)->exit_c = 127, NULL);
-}
-
-void	exec_extern_cmd(t_cmds *cmd, t_data **d)
-{
-	char	*path;
-
-	(*d)->exit_c = 0;
-	path = path_(cmd, d);	
-	if (path != NULL)
-		execve(path, cmd->args, env_to_array(d));
-}
-
 // static void	ft_wait_child_processes(int *is_success, int size, int pid)
 // {
 // 	int	i;

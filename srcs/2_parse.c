@@ -1,6 +1,6 @@
 #include "headers.h"
 
-static void	put_1_cmd_and_redirect(char *cmd_txt, int len, char *redirect, t_data **d)
+static void	put_cmd_and_redirect(char *cmd_txt, int len, char *redirect, t_data **d)
 {
 	t_cmds	*new;
 	t_cmds	*last;
@@ -26,12 +26,13 @@ static void	put_1_cmd_and_redirect(char *cmd_txt, int len, char *redirect, t_dat
 	}
 }
 
-void	put_cmd_line_and_redirects(char *cmd_line, t_data **d)
+void	put_cmds_and_redirects(char *cmd_line, t_data **d)
 {
 	int		i_beg;
 	int 	i;
 	char	*redirect;
 	int		len_cmd;
+
 
 	i_beg = 0;
 	i = 0;
@@ -41,9 +42,8 @@ void	put_cmd_line_and_redirects(char *cmd_line, t_data **d)
 		redirect = redirect_(&cmd_line[i]);
 		if ((mod_(cmd_line[i]) == QUOTES0 && ft_strlen(redirect) > 0) || cmd_line[i + 1] == '\0')
 		{
-			printf("put %s\n", &cmd_line[i_beg]);
 			len_cmd = i - i_beg + (cmd_line[i + 1] == '\0');
-			put_1_cmd_and_redirect(&cmd_line[i_beg], len_cmd, redirect, d);
+			put_cmd_and_redirect(&cmd_line[i_beg], len_cmd, redirect, d);
 			if (cmd_line[i + 1] == '\0')
 				break;
 			i += ft_strlen(redirect) + 1;
@@ -95,19 +95,5 @@ void	calc_args(t_data **d)
 			cmd->nb_args_max = 1;
 		cmd = cmd->nxt;
 	}
-}
-
-int	there_are_unclosed_quotes(t_cmds *cmd)
-{
-	int		mod;
-	int		i;
-
-	mod_(REINIT_QUOTES);
-	i = -1;
-	while (cmd->args[0][++i] != '\0')
-		mod = mod_(cmd->args[0][i]);
-	if (mod != QUOTES0)
-		return (printf("unclodes quotes\n"), 1);
-	return (0);
 }
 
