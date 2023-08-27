@@ -1,12 +1,112 @@
 #include "headers.h"
 
-int	verify_unclosed_quotes(t_cmds **l)
+static void	put_1_cmd_and_redirect(char *cmd_txt, int len, char *redirect, t_data **d)
 {
-	int		mod;
+	t_cmds	*new;
+	t_cmds	*last;
 	int		i;
+
+	init_cmd(&new, redirect);
+	mod_(REINIT_QUOTES);
+	new->nb_args = nb_args_(cmd_txt, len);
+	new->args = (char **)malloc((new->nb_args + 1)* sizeof(char *));
+	if (new->args == NULL)
+		exit_(d);
+	// ft_memset(new->args, NULL, new->nb_args + 1); ///
+	new->args[0] = (char *)malloc(len + 1);
+	if (new->args[0] == NULL)
+		exit_(d);
+	i = -1;
+	while (++i < len)
+		new->args[0][i] = cmd_txt[i];
+	new->args[0][i] = '\0';
+	if (*((*d)->cmds) == NULL)
+		*((*d)->cmds) = new;
+	else
+	{
+		last = *((*d)->cmds);
+		while (last != NULL && last->nxt != NULL)
+			last = last->nxt;
+		last->nxt = new;
+		new->prv = last;
+	}
+}
+
+void	put_cmd_line_and_redirects(char *cmd_line, t_data **d)
+{
+	int		i_beg;
+	int 	i;
+	char	*redirect;
+	int		len_cmd;
+
+	i_beg = 0;
+	i = 0;
+	mod_(REINIT_QUOTES);
+	while (cmd_line[i] != '\0') // while 1
+	{
+		redirect = redirect_(&cmd_line[i]);
+		if ((mod_(cmd_line[i]) == QUOTES0 && ft_strlen(redirect) > 0) || cmd_line[i + 1] == '\0')
+		{
+			len_cmd = i - i_beg + (cmd_line[i + 1] == '\0');
+			put_1_cmd_and_redirect(&cmd_line[i_beg], len_cmd, redirect, d);
+			if (cmd_line[i + 1] == '\0')
+				break;
+			i += ft_strlen(redirect) + 1;
+			i_beg = i;
+		}
+		i++;
+	}
+}
+
+static void	calc_args_1(t_cmds *cmd, t_data **d)
+{
+	int		i;
+	int		i_beg;
+	int		k;
+	int		len;
+	int		to_put_EOL;
+
+	if (cmd->nb_args <= 1)
+		return ;
+	mod_(REINIT_QUOTES);
+	i_beg = 0;
+	k = 0;
+	len = (int)ft_strlen(cmd->args[0]);
+	i = -1;
+	while (++i < len)
+	{
+		if (mod_(cmd->args[0][i]) == QUOTES0 && cmd->args[0][i] != ' ' && (cmd->args[0][i + 1] == ' ' || cmd->args[0][i + 1] == '\0' || cmd->args[0][i + 1] == '\'' || cmd->args[0][i + 1] == '\"'))
+		{
+			if (k == 0)
+				to_put_EOL = i + 1;
+			else strdup_and_trim(&(cmd->args[0][i_beg]), &(cmd->args[k]), i - i_beg + 1, d);
+			i_beg = i + 1;
+			k++;
+		}
+	}
+	cmd->args[0][to_put_EOL] = '\0';
+}
+
+void	calc_args(t_data **d)
+{
 	t_cmds	*cmd;
 
-	cmd = *l;
+	cmd = *((*d)->cmds);
+	while(cmd != NULL)
+	{
+		calc_args_1(cmd, d);
+		cmd->args[cmd->nb_args] = NULL;
+		cmd = cmd->nxt;
+	}
+}
+
+int	there_are_unclosed_quotes(t_data **d)
+{
+	int		mod;
+	t_cmds	*cmd;
+	int		i;
+
+	cmd = *((*d)->cmds);
 	while(cmd != NULL)
 	{
 		mod_(REINIT_QUOTES);
@@ -14,154 +114,10 @@ int	verify_unclosed_quotes(t_cmds **l)
 		while (cmd->args[0][++i] != '\0')
 			mod = mod_(cmd->args[0][i]);
 		if (mod != QUOTES0)
-			return (-1);
+			return ((*d)->err = "unclodes quotes", 1);
 		cmd = cmd->nxt;
 	}
 	return (0);
 }
 
-// " $ " is ok ?
-static int	put_doll_conversions_1(char **s, t_env **env)
-{
-	int		i;
-	int		j;
-	char	*key;
-	char	*val;
-	int		new_size;
-	char	*new_s;
 
-	i = -1;
-	while ((*s)[++i] != '\0' && (*s)[i + 1] != '\0')
-	{
-		// if (s[i] == '$' && s[i + 1] == '?')
-		// 	return (ft_itoa(exit_code));
-		if ((*s)[i] == '$')
-		{
-			key = alphanum_(&((*s)[i + 1]));
-			if (key == NULL)
-				return (-1);
-			val = get_value_from_env(key, env);
-			new_size = ft_strlen(*s) - ft_strlen(key) + ft_strlen(val);
-			new_s = NULL;
-			new_s = (char*)malloc(new_size + 1);
-			if (new_s == NULL)
-				return (-1);
-			ft_memset(new_s, '\0', new_size + 1);
-			j = 0;
-			while (j < i)
-			{
-				new_s[j] = (*s)[j];
-				j++;
-			}
-			while (j < i + (int)ft_strlen(val))
-			{
-				new_s[j] = val[j - i];
-				j++;
-			}
-			while(j < new_size)
-			{
-				new_s[j] = (*s)[j + (int)ft_strlen(key) - (int)ft_strlen(val) + 1];
-				j++;
-			}
-			new_s[j] = '\0';
-			free(*s);
-			free(key);
-			*s = new_s;
-		}
-	}
-	return (0);
-}
-
-int	put_doll_conversions(t_cmds **l, t_env **env)
-{
-	t_cmds	*cmd;
-	int		i;
-
-	cmd = *l;
-	while(cmd != NULL)
-	{
-		i = 0;
-		while(++i < cmd->nb_args)
-			if (cmd->args[i][0] != '\'')
-				if (put_doll_conversions_1(&(cmd->args[i]), env) == -1)
-					return (-1);
-		cmd = cmd->nxt;
-	}
-	return (0);
-}
-
-//////////////////////////////////////////////////////////
-
-// static char	*ft_check_operator(t_lis t *n)
-// {
-// 	if (n->prev == NULL)
-// 		return ((char *)n->content);
-// 	if (n->next == NULL)
-// 		return ("newline");
-// 	if (n->next->type == PIPE || n->next->type == OR || n->next->type == AND)
-// 		return ((char *)n->next->content);
-// 	return (NULL);
-// }
-
-// static char	*ft_check_redirection(t_lis t *n)
-// {
-// 	if (!n->next)
-// 		return ("newline");
-// 	if (n->next->type != FILENAME)
-// 		return ((char *)n->next->content);
-// 	return (NULL);
-// }
-
-// int	check_tokens(t_lis t *n)
-// {
-// 	char	*error;
-// 	error = NULL;
-// 	while (n)
-// 	{
-// 		if (n->type == PIPE || n->type == OR || n->type == AND )
-// 			error = ft_check_operator(n);
-// 		else if (n->type == REDIR_IN || n->type == REDIR_OUT ||  n->type == HEREDOC || n->type == REDIR_OUT2)
-// 			error = ft_check_redirection(n);
-// 		if (error)
-// 			return (exit_(-1, "bash: syntax err unexpected token `%s'\n", error, NULL, NULL, NULL), 0);
-// 		n = n->next;
-// 	}
-// 	return (1);
-// }
-
-
-//////////////////////////////////////////////
-
-// Expands (env var expansion) the string and create tokens. 
-// All key words were already tokenized, except if token contain 
-// env var and env var contains a space,
-// a="s -la"   > l$a -> ls -la
-// $a=" "      > ls$a-la$a"Makefile" -> ls -la Makefile 
-
-// t_lis t	*expand_token(char *str, t_lis t *env, t_data *d)
-// {
-// 	t_lis t	*head;
-// 	t_lis t	*token;
-// 	char	*exp_string;
-// 	char	**words;
-// 	int		i;
-// 	exp_string = expand_string(str, env, d);
-// 	if (!exp_string)
-// 		return (NULL);
-// 	if (find_n_word4(exp_string, ' ') <= 1)
-// 		return (ft_lstnew(exp_string, 0));
-// 	words = split_alt(exp_string, ' ');
-// 	if (!words)
-// 		return (NULL);
-// 	i = 0;
-// 	head = NULL;
-// 	while (words[i])
-// 	{
-// 		token = ft_lstnew(words[i], 11);
-// 		if (!token)
-// 			return (free_expand_token(words, &head));
-// 		ft_lstadd_back(&head, token);
-// 		i++;
-// 	}
-// 	return (free(words), head);
-// }

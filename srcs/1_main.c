@@ -24,45 +24,64 @@ cd : Quand on change de répertoire, le bash voit sa variable $PWD changer autom
 
 si on met pas les waitpid juste apres l'execution de la commande et qu'on les met a la fin dans une boucle il y a beaucoup de commandes avec des pipes qui ne fonctionnent plus correctement, par exemple ls|wc fait une boucle infini 
 
+double quotes insdide simple ones ?
+
 */
 
 #include "headers.h"
 
 int g_signal = 0;
 
-static int	treat_cmd_line(char *cmd_line, t_env **env)
+static void	put_env(char **env_array, t_data **d)
 {
-	t_cmds	**cmds;
+	int		i;
+	t_env	*new;
 
-	cmds = (t_cmds **)malloc(sizeof(t_cmds *));
-	if (cmds == NULL)
-		return (-1);
-	*cmds = NULL;
-	if (put_cmd_and_redirect(cmd_line, cmds) == -1)
-		return (-1);
-	if (put_args(cmds) == -1)
-		return (-1);
-	if (verify_unclosed_quotes(cmds) == -1)
-		return (-1);
-	put_doll_conversions(cmds, env);
-	print_list(cmds);
-	exec_cmds(cmds, env);
-	// if (exit_code == 0)
-	return (0);
+	(*d)->env = NULL;
+	(*d)->env = (t_env **)malloc(sizeof(t_env *));
+	if ((*d)->env == NULL)
+		exit_(d);
+	*((*d)->env) = NULL;
+	i = -1;
+	while (1)
+	{
+		new = NULL;
+		new = (t_env *)malloc(sizeof(t_env));
+		if (new == NULL)
+			exit_(d);
+		new->var = env_array[i];
+		if (new->var == NULL)
+			break ; 
+		new->nxt = *((*d)->env);
+		*((*d)->env) = new;
+	}
+}
+
+static void	init(t_data ***d, char **env_array)
+{
+	*d = (t_data **)malloc(sizeof(t_data *));
+	if (*d == NULL)
+		exit_(*d);
+	**d = (t_data *)malloc(sizeof(t_data));
+	if (**d == NULL)
+		exit_(*d);
+	(**d)->cmds = (t_cmds **)malloc(sizeof(t_cmds *));
+	if ((**d)->cmds == NULL)
+		exit_(*d);
+	*((**d)->cmds) = NULL;
+	put_env(env_array, *d);
+	// signal(SIGQUIT, SIG_IGN);
+	// signal(SIGINT, &sig_handler_main);
 }
 
 int	main(int argc, char **argv, char **env_array)
 {
 	char	*cmd_line;
-	t_env	**env;
+	t_data	**d;
 
 	(void)argc;
 	(void)argv;
-	env = NULL;
-	if(env_to_list(env_array, &env) == -1)
-		return (-1);
-	// signal(SIGQUIT, SIG_IGN);
-	// signal(SIGINT, &sig_handler_main);
+	init(&d, env_array);
 	cmd_line = NULL;
 	while (1)
 	{
@@ -72,11 +91,18 @@ int	main(int argc, char **argv, char **env_array)
 		// if (g_signal == 1)
 		// {
 		// 	g_signal = 0;
-		// 	d.exit_code = 130;
+		// 	d->exit_code = 130;
 		// 	continue;
 		// }
 		add_history(cmd_line);
-		treat_cmd_line(cmd_line, env);
+		put_cmd_line_and_redirects(cmd_line, d);
+		calc_args(d);
+		if (there_are_unclosed_quotes(d) == 1)
+			continue;
+		calc_doll_conversions(d);
+		print_cmds(d);
+		exec_cmds(d);
+		// free_cmd_line
 	}
 	return 0; //(exit_code);
 }

@@ -56,39 +56,43 @@ typedef struct		s_env
 	struct s_env	*nxt;
 }					t_env;
 
-// treat_cmd_line
-int 	put_cmd_and_redirect(char *cmd_line, t_cmds **l);
-int		nb_args_(char *s, int len);
-int		put_args(t_cmds **l);
-int		verify_unclosed_quotes(t_cmds **l);
-int		put_doll_conversions(t_cmds **l, t_env **env);
-int		exec_cmds(t_cmds **l, t_env **env);
-void	exec_env(t_env **env); 
-int		exec_export(t_cmds *cmd, t_env ***env);
-void	exec_unset(t_cmds *cmd, t_env ***env);
-int		exec_external_cmd(t_cmds *cmd, t_env **env);
+typedef struct 		s_data
+{
+	t_cmds			**cmds;
+	t_env			**env;
+	int				exit_c;
+	char			*err;
+	char			*to_free;
+}					t_data;
+
+void	put_cmd_line_and_redirects(char *cmd_line, t_data **d);
+void	calc_args(t_data **d);
+int		there_are_unclosed_quotes(t_data **d);
+int		calc_doll_conversions(t_data **d);
+int		exec_cmds(t_data **d);
+void	exec_env(t_data **d); 
+int		exec_export(t_cmds *cmd, t_data **d);
+void	exec_unset(t_cmds *cmd, t_data **d);
+int		exec_extern_cmd(t_cmds *cmd, t_data **d);
 
 // utils
-char	*alphanum_(char *s);
 void	sig_handler_main(int signal);
 void	sig_handler_fork(int signal);
-void	sig_handler_heredoc(int signal);
-// int		ft_isnum(char *str);
-int		strdup_and_trim(char *srs, char **dest, int len);
-int		mod_(char c);	
-char	*redirect_(char *s);
-int		init_new_cmd(t_cmds **new, char *redirect);
-void	print_list(t_cmds **cmd);
-int		put_cmd_and_redirect_1(t_cmds **l, char *cmd, int len_cmd, char *redirect);
+void	exit_(t_data **d); /// ***d
 
-// utils env
+int		init_cmd(t_cmds **new, char *redirect);
+char	*redirect_(char *s);
+int		mod_(char c);	
+int		nb_args_(char *s, int len);
+void	print_cmds(t_data **d);
+
 char	*val_(char *s);
 char	*key_(char *s);
-int		env_to_list(char **env_main, t_env ***env_list);
-char	**env_to_array(t_env **env_list);
-int		len_list(t_env **env);
-char	*get_value_from_env(char *key, t_env **env);
+char	**env_to_array(t_data **d);
+int		len_env(t_data **d);
+char	*get_value_from_env(char *key, t_data **d);
 
-//void	exit_(int exit_code, char *msg, char *msg_param, t_cmds **lst_to_clear, char **str_to_sree);
+char	*alphanum_(char *s);
+void	strdup_and_trim(char *srs, char **dest, int len, t_data **d);
 
 #endif

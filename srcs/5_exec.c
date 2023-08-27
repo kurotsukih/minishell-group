@@ -1,97 +1,67 @@
 #include "headers.h"
 
-void	exec_echo(t_cmds *cmd)
+void	exec_env(t_data **d)
 {
-	int	option_n;
-	int	i;
+	t_env	*var;
 
-	option_n = 0;
+	var = *((*d)->env);
+	while (var != NULL)
+	{
+		printf("%s\n", var->var);
+		var = var->nxt;
+	}
+}
+
+void	exec_unset(t_cmds *cmd, t_data **d)
+{
+	t_env	*var;
+	t_env	*prv;
+	int		i;
+
 	i = 0;
 	while (++i < cmd->nb_args)
 	{
-		if (ft_strcmp(cmd->args[i], "-n") == 0)
-			option_n = 1;
-		else if (i == cmd->nb_args - 1)
-			printf("%s", cmd->args[i]);
-		else
-			printf("%s ", cmd->args[i]);
+		prv = NULL;
+		var = *((*d)->env);
+		while (var != NULL)
+		{
+			// printf("unset %s if equal to %s\n", var->var, cmd->args[i]);
+			if (ft_strcmp(key_(var->var), cmd->args[i]) == 0)
+			{
+				// printf("found %s\n", cmd->args[i]);
+				// printf("found %s\n", key_(var->var));
+				free(var->var);
+				if (prv != NULL)
+					prv->nxt = var->nxt;
+				else if (*((*d)->env) == var)
+					*((*d)->env) = var->nxt;
+				free(var);
+				return ;
+			}
+			prv = var;
+			var = var->nxt;
+		}
 	}
-	if (option_n == 0)
-		printf("\n");
 }
 
-void	exec_pwd(void)
+int	exec_export(t_cmds *cmd, t_data **d)
 {
-	char	*s;
+	t_env	*new_var;
+	int		i;
 
-	s = getcwd(NULL, 0);
-	printf("%s\n", s);
-	free(s);
-}
-
-int	exec_cd(t_cmds *cmd, t_env **env)
-{
-	char	*home_dir;
-
-	if (cmd->nb_args >= 3)
-		return (-1); // "bash: cd: Too many arguments\n" 
-	if (cmd->nb_args == 1)
+	if (cmd->nb_args == 0)
+		return (exec_env(d), 0);
+	exec_unset(cmd, d);
+	i = 0;
+	while (++i < cmd->nb_args)
 	{
-		home_dir = get_value_from_env("HOME", env);
-		if (home_dir == NULL)
-			return (-1); // "bash: cd: HOME not set\n"
-		if (chdir(home_dir) == -1)
-			return (-1); // "bash: cd: HOME not set properly%s\n", home_dir);
+		new_var = NULL;
+		new_var = (t_env *)malloc(sizeof(t_env));
+		if (new_var == NULL)
+			exit_(d);
+		new_var->var = ft_strdup(cmd->args[i]); ////
+		new_var->nxt = *((*d)->env);
+		*((*d)->env) = new_var;
 	}
-	else if (chdir(cmd->args[1]) == -1)
-		return (-1);
 	return (0);
-}
-
-// int	exec_exit(t_data *d, t_node *n, t_cmd *cmd)
-// {
-// 	char	*str;
-
-// 	if (!cmd)
-// 		return (exit(d->exit_code), 0);
-// 	if (ft_isnum(cmd->cmd) != 1)
-// 	{
-// 		exit_(-1, "bash: exit: %s: numeric argument required");
-// 		return (exit(2), 0);
-// 	}
-// 	if (ft_lstsize(cmd) > 1)
-// 		return (exit_(-1, "bash: exit: too many arguments\n"), 1);
-// 	return (exit(ft_atoi(str)), 0); // ft_abs(ft_atoi(str) % 256)
-// }
-
-int	exec_cmds(t_cmds **l, t_env **env)
-{
-	t_cmds *cmd;
-	int	result;
-
-	cmd = *l;
-	while (cmd != NULL)
-	{
-		result = 0;
-		if (dup2(cmd->in_fd, STDIN_FILENO) == -1 || dup2(cmd->out_fd, STDOUT_FILENO) == -1)
-			{} //exit_();
-		if (ft_strcmp(cmd->args[0], "echo") == 0)
-			exec_echo(cmd);
-		else if (ft_strcmp(cmd->args[0], "env") == 0 && env != NULL)
-			exec_env(env);
-		else if (ft_strcmp(cmd->args[0], "pwd") == 0)
-			exec_pwd();
-		else if (ft_strcmp(cmd->args[0], "cd") == 0)
-			result = exec_cd(cmd, env);
-		else if (ft_strcmp(cmd->args[0], "export") == 0)
-			result = exec_export(cmd, &env);
-		else if (ft_strcmp(cmd->args[0], "unset") == 0)
-			exec_unset(cmd, &env);
-		// else if (ft_strcmp(cmd->args[0], "exit") == 0)
-		// 	result = exec_exit(d, n, cmd->params->next);
-		else
-			exec_external_cmd(cmd, env);
-		cmd = cmd->nxt;
-	}
-	return (result);
 }

@@ -1,6 +1,6 @@
 #include "headers.h"
 
-char *key_(char *s) // uses extra bytes
+char *key_(char *s)
 {
 	int		i;
 	char	*s_copy;
@@ -40,43 +40,17 @@ char *val_(char *s)
 	return (NULL);
 }
 
-int env_to_list(char **env_main, t_env ***env_list)
-{
-	int		i;
-	t_env	*new;
-
-	*env_list = NULL;
-	*env_list = (t_env **)malloc(sizeof(t_env *));
-	if (*env_list == NULL)
-		return (-1);
-	**env_list = NULL;
-	i = -1;
-	while (env_main[++i])
-	{
-		new = NULL;
-		new = (t_env *)malloc(sizeof(t_env));
-		if (new == NULL)
-			return (-1);
-		new->var = env_main[i];
-		if (new->var == NULL)
-			return (-1);
-		new->nxt = **env_list;
-		**env_list = new;
-	}
-	return (0);
-}
-
-char	**env_to_array(t_env **env_list)
+char	**env_to_array(t_data **d)
 {
 	int		i;
 	char	**env_array;
 	t_env	*var;
 
-	env_array = (char **)malloc(len_list(env_list) + 1 *sizeof(char *));
+	env_array = (char **)malloc(len_env(d) + 1 *sizeof(char *));
 	if (env_array == NULL)
 		return (NULL);
 	i = -1;
-	var = *env_list;
+	var = *((*d)->env);
 	while (var != NULL)
 	{
 		env_array[++i] = var->var;
@@ -84,4 +58,33 @@ char	**env_to_array(t_env **env_list)
 	}
 	env_array[++i] = NULL;
 	return (env_array);
+}
+
+int len_env(t_data **d)
+{
+	t_env	*var;
+	int		len;
+
+	len = 0;
+	var = *((*d)->env);
+	while (var != NULL)
+	{
+		len ++;
+		var = var->nxt;
+	}
+	return (len);
+}
+
+char	*get_value_from_env(char *key, t_data **d)
+{
+	t_env	*var;
+
+	var = *((*d)->env);
+	while (var != NULL)
+	{
+		if (ft_strcmp(key_(var->var), key) == 0)
+			return (val_(var->var));
+		var = var->nxt;
+	}
+	return (NULL);
 }
