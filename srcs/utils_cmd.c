@@ -40,11 +40,11 @@ char	*redirect_(char *s)
 		return (">>");
 	else if (s[0] == '<' && s[1] == '<')
 		return ("<<");
-	else if (s[1] == '>' && s[1] != '\0' && s[2] != '>')
+	else if (s[0] == '>' && s[1] != '\0' && s[2] != '>')
 		return (">");
-	else if (s[1] == '<' && s[1] != '\0' && s[2] != '<')
+	else if (s[0] == '<' && s[1] != '\0' && s[2] != '<')
 		return ("<");
-	else if (s[1] == '|')
+	else if (s[0] == '|')
 		return ("|");
 	else
 		return ("");
@@ -55,37 +55,75 @@ int	nb_args_(char *s, int len)
 	int	nb_args;
 	int	i;
 
+	mod_(REINIT_QUOTES);
 	nb_args = 0;
 	i = -1;
+	printf("nb_args_ [%s] %d", s, len);
 	while (++i < len)
-		if (mod_(s[i]) == QUOTES0 && s[i] != ' ' && (s[i + 1] == ' ' || s[i + 1] == '\0' || s[i + 1] == '\'' || s[i + 1] == '\"'))
+		if (mod_(s[i]) == QUOTES0 && s[i] != ' ' && (s[i + 1] == ' ' || s[i + 1] == '\0' || s[i + 1] == '\'' || s[i + 1] == '\"' || i == len - 1))
 			nb_args++;
+	printf(" = %d\n", nb_args);
 	return (nb_args);
 }
 
-void print_cmds(t_data **d)
+void print_cmds(char *msg, t_data **d)
 {
-	int	i;
+	int		j;
 	t_cmds	*cmd;
 
-	printf("LIST %14p:\n", (*d)->cmds);
+	printf("LIST %s %14p:\n", msg, (*d)->cmds);
 	if ((*d)->cmds == NULL || *((*d)->cmds) == NULL)
 	{
 		printf("  empty\n");
 		return ;
 	}
 	cmd = *((*d)->cmds);
-	(void)cmd;
+	// int i = -1;
+	// while (cmd != NULL && ++i < cmd->nb_args)
 	while (cmd != NULL)
 	{
 		printf("  %p [%s] %d agrs : ", cmd, cmd->args[0], cmd->nb_args);
 		if (cmd->args != NULL)
 		{
-			i = -1;
-			while (++i < cmd->nb_args)
-				printf("[%s] ", cmd->args[i]);
+			j = -1;
+			while (++j < cmd->nb_args)
+				printf("[%s] ", cmd->args[j]);
 		}
 		printf(": [%s]\n", cmd->redirect);
+		if (cmd == NULL)
+			break ; ////
 		cmd = cmd->nxt;
+	}
+}
+
+void delete_cmd(t_cmds **cmd, t_data **d)
+{
+	int		i;
+	t_cmds	**to_free;
+
+	if (*cmd == NULL)
+		return ;
+	to_free = cmd;
+	i = -1;
+	while(++i < (*cmd)->nb_args)
+		free((*cmd)->args[i]);
+	free((*cmd)->args);
+	if ((*cmd)->prv == NULL)
+		*((*d)->cmds) = (*cmd)->nxt;
+	else
+		(*cmd)->prv->nxt = (*cmd)->nxt;
+	free(*to_free);
+	
+}
+
+void	delete_cmds(t_data **d)
+{
+	t_cmds	**to_free;
+
+	while(*((*d)->cmds) != NULL)
+	{
+		to_free = (*d)->cmds;
+		*((*d)->cmds) = (*((*d)->cmds))->nxt;
+		delete_cmd(to_free, d);
 	}
 }

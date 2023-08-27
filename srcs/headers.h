@@ -81,7 +81,7 @@ void	init_cmd(t_cmds **new, char *redirect, t_data **d);
 char	*redirect_(char *s);
 int		mod_(char c);	
 int		nb_args_(char *s, int len);
-void	print_cmds(t_data **d);
+void	print_cmds(char *msg, t_data **d);
 
 char	*val_(char *s);
 char	*key_(char *s, t_data **d);
@@ -98,5 +98,7 @@ void	sig_handler_fork(int signal);
 void	*malloc_(size_t size, t_data **d);
 void	free_all_and_exit(char *msg, t_data **d); /// ***d
 void	free_all_and_go_to_next_cmd(char *msg, t_data **d);
+void	delete_cmd(t_cmds **cmd, t_data **d);
+void	delete_cmds(t_data **d);
 
 #endif

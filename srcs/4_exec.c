@@ -92,25 +92,6 @@ static char	*path_(t_cmds *cmd, t_data **d)
 	return (printf("command not found"), (*d)->exit_c = 127, NULL);
 }
 
-void delete_cmd(t_cmds **cmd, t_data **d)
-{
-	int		i;
-	t_cmds	**to_free;
-
-	if (*cmd == NULL)
-		return ;
-	to_free = cmd;
-	i = -1;
-	while(++i < (*cmd)->nb_args)
-		free((*cmd)->args[i]);
-	free((*cmd)->args);
-	if ((*cmd)->prv == NULL)
-		*((*d)->cmds) = (*cmd)->nxt;
-	else
-		(*cmd)->prv->nxt = (*cmd)->nxt;
-	free(*to_free);
-}
-
 void	treat_redirect_in(t_cmds **cmd, t_data **d)
 {
 	if ((*cmd)->nxt != NULL && (*cmd)->redirect[0] == '<')
