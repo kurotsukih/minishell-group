@@ -73,7 +73,7 @@ int		exec_cmds(t_data **d);
 void	exec_env(t_data **d); 
 int		exec_export(t_cmds *cmd, t_data **d);
 void	exec_unset(t_cmds *cmd, t_data **d);
-int		exec_extern_cmd(t_cmds *cmd, t_data **d);
+void	exec_extern_cmd(t_cmds *cmd, t_data **d);
 
 // utils
 void	sig_handler_main(int signal);
@@ -94,5 +94,6 @@ char	*get_value_from_env(char *key, t_data **d);
 
 char	*alphanum_(char *s);
 void	strdup_and_trim(char *srs, char **dest, int len, t_data **d);
+
 
 #endif

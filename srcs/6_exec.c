@@ -6,32 +6,68 @@
 // 127 команда не найдена, дочерний процесс, созданный для ее выполнения, возвращает 127
 // 126 команда найдена, но не может быть выполнена
 
-// static int	path_(char *cmd, t_data **d)
-// {
-// 	char	*str_paths;
-// 	char	**paths;
-// 	int		i;
+static char	*path_and_cmd(char *s1, int len_s1, t_cmds *cmd, t_data **d)
+{
+	int		i;
+	int		j;
+	char	*dest;
 
-// 	str_paths = get_value_from_env("PATH", d);
-// 	if (!str_paths)
-// 		return ((*d)->err "bash: command not found", = 127);
-// 	paths = ft_split_alt2(str_paths, ':');
-// 	if (!paths)
-// 		return (255);
-// 	i = -1;
-// 	while (paths[++i])
-// 	{
-// 		str = ft_strjoin(paths[i], cmd);
-// 		if (!str)
-// 			return (255);
-// 		if (access(str, X_OK) == 0)
-// 			return (0);
-// 		free(str);
-// 		if (errno != 2)
-// 			return (126);
-// 	}
-// 	return (127);
-// }
+	dest = (char *) malloc(len_s1 + ft_strlen(cmd->args[0]) + 1);
+	if (dest == NULL)
+		exit_(d);
+	i = 0;
+	while (i < len_s1)
+	{
+		dest[i] = s1[i];
+		i++;
+	}
+	dest[i++] = '/';
+	j = 0;
+	while (cmd->args[0][j] != '\0')
+	{
+		dest[i] = cmd->args[0][j];
+		i++;
+		j++;
+	}
+	dest[i] = '\0';
+	return (dest);
+}
+
+static char	*path_(t_cmds *cmd, t_data **d)
+{
+	char	*paths;
+	char	*path;
+	int		i;
+	int		i_beg;
+	int		len;
+
+	paths = get_value_from_env("PATH", d);
+	printf("paths = %s\n", paths);
+	if (!paths)
+	{
+		printf("bash: command not found");
+		(*d)->exit_c = 127;
+		return (NULL);
+	}
+	len = (int)ft_strlen(paths);
+	i = -1;
+	i_beg = 0;
+	while (++i < len)
+	{
+		if (paths[i] == '\0' || paths[i] == ':')
+		{
+			path = path_and_cmd(&(paths[i_beg]), i - i_beg, cmd, d);
+			if (access(path, X_OK) == 0)
+				return (path);
+			if (errno != 2)
+				(*d)->exit_c = 126;
+			i_beg = i + 1;
+		}
+	}
+	printf("bash: command not found");
+	(*d)->exit_c = 127;
+	return (NULL);
+}
 
 void	exec_extern_cmd(t_cmds *cmd, t_data **d)
 {
@@ -43,9 +79,10 @@ void	exec_extern_cmd(t_cmds *cmd, t_data **d)
 		(*d)->exit_c = 255;
 		return ;
 	}
-	// path = path_(cmd->args[0], env_to_array(env));	
-	path = "/usr/bin/ls";
-	execve(path, cmd->args, env_to_array(d));
+	path = path_(cmd, d);	
+	//path = "/usr/bin/ls";
+	if (path != NULL)
+		execve(path, cmd->args, env_to_array(d));
 }
 
 // static void	ft_wait_child_processes(int *is_success, int size, int pid)
