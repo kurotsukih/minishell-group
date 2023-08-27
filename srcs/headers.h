@@ -98,7 +98,7 @@ void	sig_handler_fork(int signal);
 void	*malloc_(size_t size, t_data **d);
 void	free_all_and_exit(char *msg, t_data **d); /// ***d
 void	free_all_and_go_to_next_cmd(char *msg, t_data **d);
-void	delete_cmd(t_cmds *cmd, t_data **d);
+void	delete_cmd_from_list(t_cmds *cmd, t_data **d);
 void	delete_cmds(t_data **d);
 
 #endif

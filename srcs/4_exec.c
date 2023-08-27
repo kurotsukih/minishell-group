@@ -9,34 +9,29 @@ static int	there_are_unclosed_quotes(t_cmds *cmd)
 	i = -1;
 	while (cmd->args[0][++i] != '\0')
 		mod = mod_(cmd->args[0][i]);
-	if (mod != QUOTES0)
-		return (printf("unclodes quotes\n"), 1);
-	return (0);
+	return (mod != QUOTES0);
 }
 
 int	args_are_correct(t_cmds *cmd, t_data **d)
 {
 	if (!cmd->args)
 	{
-		(*d)->exit_c = 255;
+		//free_all_and_go_to_next_cmd("Too many arguments" , exit_code = 255)
 		return (0);
 	}
 	if (cmd->nb_args > cmd->nb_args_max)
 	{
-		printf("%s: Too many arguments", cmd->args[0]);
-		// d->exit_code = 
+		//free_all_and_go_to_next_cmd("Too many arguments" , exit_code )
 		return (0);
 	}
 	if (ft_strcmp(cmd->args[0], "exit") == 0 && !ft_atoi(cmd->args[1])) ////
 	{
-		printf("exit: numeric argument required");
-		(*d)->exit_c =2;
+		//free_all_and_go_to_next_cmd("exit: numeric argument required" , exit_code = 2)
 		return (0);
 	}
 	if (there_are_unclosed_quotes(cmd))
 	{
-		printf("%s: unclosed quotes", cmd->args[0]);
-		// d->exit_code = 
+		//free_all_and_go_to_next_cmd("unclosed quotes" , exit_code )
 		return (0);
 	}
 	return (1);
@@ -76,7 +71,10 @@ static char	*path_(t_cmds *cmd, t_data **d)
 
 	paths = get_value_from_env("PATH", d);
 	if (!paths)
-		return ((printf("no var env PATh"), *d)->exit_c = 127, NULL);
+	{
+		//free_all_and_go_to_next_cmd("no var env PATH" , exit_code = 127)
+		return (NULL);
+	}
 	i = -1;
 	i_beg = 0;
 	while (++i < (int)ft_strlen(paths))
@@ -89,7 +87,8 @@ static char	*path_(t_cmds *cmd, t_data **d)
 				(*d)->exit_c = 126;
 			i_beg = i + 1;
 		}
-	return (printf("command not found"), (*d)->exit_c = 127, NULL);
+	//free_all_and_go_to_next_cmd("command not found" , exit_code = 127)
+	return (NULL);
 }
 
 void	exec_extern_cmd(t_cmds *cmd, t_data **d)
@@ -118,24 +117,25 @@ void	exec_extern_cmd(t_cmds *cmd, t_data **d)
 
 // wc -l < infile
 // dupliquer STDIN dans l'infile
-
 void	treat_redirect(t_cmds **cmd, t_data **d)
 {
+	(void)d; ///
+
 	if ((*cmd)->nxt != NULL && (*cmd)->redirect[0] == '<')
 	{
 		(*cmd)->fd_in = open((*cmd)->nxt->args[0], O_RDONLY); 
 		// if (isatty((*cmd)->fd_in) == 1)
-		// 	return (close(return_fd), fd);
+		//  free_all_and_go_to_next_cmd(" " , exit_code = )
+		// close
+		// 	return (fd); //?
 		// if ((*cmd)->fd_in != 1)
 		// 	close((*cmd)->fd_in);
-			// d->exit_c = 
+		//  free_all_and_go_to_next_cmd(" " , exit_code = )
 			// return 
 		dup2((*cmd)->fd_in, STDIN_FILENO);
 		// if !dup2
-			// d->exit_c = 
-			// return
+		//  free_all_and_go_to_next_cmd(" " , exit_code = )
 		//delete_cmd(&(*cmd)->nxt, d);
-		(void)d;
 	}
 }
 
@@ -147,16 +147,16 @@ void	exec_cmds(t_data **d)
 	cmd = *((*d)->cmds);
 	while (cmd != NULL)
 	{
-		printf("exec_cmd %s\n", cmd->args[0]);
+		// printf("exec_cmd %s\n", cmd->args[0]);
 		if (!args_are_correct(cmd, d))
 			continue; //?
-		treat_redirect(&cmd, d);
-		printf("treat_redirect %s done\n", cmd->args[0]);
+		//treat_redirect(&cmd, d);
+		// printf("treat_redirect %s done\n", cmd->args[0]);
 		if (ft_strcmp(cmd->args[0], "echo") == 0)
 		{
-			printf("call exec_echo %s\n", cmd->args[0]);
+			// printf("call exec_echo %s\n", cmd->args[0]);
 			exec_echo(cmd);
-			printf("exec_echo %s done\n", cmd->args[0]);
+			// printf("exec_echo %s done\n", cmd->args[0]);
 		}
 		else if (ft_strcmp(cmd->args[0], "env") == 0 && (*d)->env != NULL)
 			exec_env(d);
@@ -176,9 +176,9 @@ void	exec_cmds(t_data **d)
 			//exit
 		copy = cmd;
 		// printf("call delete_cmd %s\n", cmd->args[0]);
-		printf("call delete_cmd\n");
-		delete_cmd(cmd, d);
-		printf("retr delete_cmd \n\n");
+		// printf("call delete_cmd\n");
+		delete_cmd_from_list(cmd, d);
+		// printf("retr delete_cmd \n\n");
 		cmd = copy->nxt;
 	}
 }

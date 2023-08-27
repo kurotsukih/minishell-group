@@ -7,14 +7,10 @@ void	init_cmd(t_cmds **new, char *redirect, t_data **d)
 	(*new)->args = NULL;
 	(*new)->redirect = redirect;
 	(*new)->to_free = NULL;
-	(*new)->fd_in = STDIN_FILENO; /// ?
+	(*new)->fd_in = STDIN_FILENO;
 	(*new)->fd_out = STDOUT_FILENO;
 	(*new)->nxt = NULL;
 	(*new)->prv = NULL;
-	// if (dup2((*new)->fd_in, STDIN_FILENO) == -1)
-	// 	free_all_and_exit("", d);
-	// if (dup2((*new)->fd_out, STDOUT_FILENO) == -1)
-	// 	free_all_and_exit("", d);
 }
 
 int	mod_(char c)
@@ -94,11 +90,11 @@ void print_cmds(char *msg, t_data **d)
 	}
 }
 
-void delete_cmd(t_cmds *cmd, t_data **d)
+void delete_cmd_from_list(t_cmds *cmd, t_data **d)
 {
 	// int		i;
 
-	printf("delete cmd %s\n", cmd->args[0]);
+	// printf("delete cmd %s\n", cmd->args[0]);
 	if (cmd == NULL)
 		return ;
 	// i = -1;
@@ -119,6 +115,6 @@ void	delete_cmds(t_data **d)
 	{
 		cmd_to_del = *((*d)->cmds);
 		*((*d)->cmds) = (*((*d)->cmds))->nxt;
-		delete_cmd(cmd_to_del, d);
+		delete_cmd_from_list(cmd_to_del, d);
 	}
 }

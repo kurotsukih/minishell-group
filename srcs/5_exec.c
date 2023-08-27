@@ -5,7 +5,7 @@ void	exec_echo(t_cmds *cmd)
 	int	option_n;
 	int	i;
 
-	printf("exec echo 1\n");
+	// printf("exec echo 1\n");
 	option_n = 0;
 	i = 0;
 	while (++i < cmd->nb_args)
@@ -19,7 +19,7 @@ void	exec_echo(t_cmds *cmd)
 	}
 	if (option_n == 0)
 		printf("\n");
-	printf("exec echo 2\n");
+	// printf("exec echo 2\n");
 }
 
 void	exec_pwd(void)
@@ -40,8 +40,7 @@ void	exec_cd(t_cmds *cmd, t_data **d)
 		dir = get_value_from_env("HOME", d);
 		if (dir == NULL)
 		{
-			printf("cd: ...\n");
-			//(*d)->exit_c = ;
+		//  free_all_and_go_to_next_cmd("cd " , exit_code = )
 			return ;
 		}
 	}
@@ -49,8 +48,7 @@ void	exec_cd(t_cmds *cmd, t_data **d)
 		dir = cmd->args[1];
 	if (chdir(dir) == -1)
 	{
-		printf("cd: ...");
-		//(*d)->exit_c = ;
+		//  free_all_and_go_to_next_cmd("cd " , exit_code = )
 	}
 	if(dir != NULL)
 		free(dir);
@@ -115,7 +113,7 @@ void	exec_export(t_cmds *cmd, t_data **d)
 	while (++i < cmd->nb_args)
 	{
 		new_var = (t_env *)malloc_(sizeof(t_env), d);
-		new_var->var = ft_strdup(cmd->args[i]); ////
+		new_var->var = ft_strdup(cmd->args[i]);
 		new_var->nxt = *((*d)->env);
 		*((*d)->env) = new_var;
 	}
