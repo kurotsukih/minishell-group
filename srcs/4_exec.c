@@ -14,6 +14,7 @@ static int	there_are_unclosed_quotes(t_cmds *cmd)
 
 int	args_are_correct(t_cmds *cmd, t_data **d)
 {
+	(void)d; ///
 	if (!cmd->args)
 	{
 		//free_all_and_go_to_next_cmd("Too many arguments" , exit_code = 255)
@@ -91,12 +92,18 @@ static char	*path_(t_cmds *cmd, t_data **d)
 	return (NULL);
 }
 
-void	exec_extern_cmd(t_cmds *cmd, t_data **d)
+void exec_extern_cmd(t_cmds *cmd, t_data **d)
 {
 	char	*path;
 	int		pid;
 	int		status;
 	char	**env_array;
+	char	*args[4];
+
+	args[0] = "ls";
+	args[1] = ">";
+	args[2] = "t.txt";
+	args[0] = NULL;
 
 	pid = fork();
 	if (pid < -1)
@@ -106,8 +113,9 @@ void	exec_extern_cmd(t_cmds *cmd, t_data **d)
 		(*d)->exit_c = 0;
 		path = path_(cmd, d);
 		env_array = env_to_array(d);
-		if (path != NULL)
-			execve(path, cmd->args, env_array);
+		if (path != NULL && env_array != NULL)
+			execve(path, args, env_array);
+//			execve(path, cmd->args, env_array);
 		free(path);
 		free_charchar(env_array, len_env(d));
 	}
@@ -115,49 +123,29 @@ void	exec_extern_cmd(t_cmds *cmd, t_data **d)
 		wait(&status);
 }
 
-// wc -l < infile
-// dupliquer STDIN dans l'infile
-void	treat_redirect(t_cmds **cmd, t_data **d)
-{
-	(void)d; ///
-
-	if ((*cmd)->nxt != NULL && (*cmd)->redirect[0] == '<')
-	{
-		(*cmd)->fd_in = open((*cmd)->nxt->args[0], O_RDONLY); 
-		// if (isatty((*cmd)->fd_in) == 1)
-		//  free_all_and_go_to_next_cmd(" " , exit_code = )
-		// close
-		// 	return (fd); //?
-		// if ((*cmd)->fd_in != 1)
-		// 	close((*cmd)->fd_in);
-		//  free_all_and_go_to_next_cmd(" " , exit_code = )
-			// return 
-		dup2((*cmd)->fd_in, STDIN_FILENO);
-		// if !dup2
-		//  free_all_and_go_to_next_cmd(" " , exit_code = )
-		//delete_cmd(&(*cmd)->nxt, d);
-	}
-}
-
 void	exec_cmds(t_data **d)
 {
 	t_cmds *cmd;
-	t_cmds *copy;
+	t_cmds *nxt;
+	int		saved_stdout;
 
 	cmd = *((*d)->cmds);
 	while (cmd != NULL)
 	{
-		// printf("exec_cmd %s\n", cmd->args[0]);
 		if (!args_are_correct(cmd, d))
 			continue; //?
-		//treat_redirect(&cmd, d);
-		// printf("treat_redirect %s done\n", cmd->args[0]);
-		if (ft_strcmp(cmd->args[0], "echo") == 0)
+		if (cmd->nxt != NULL && ft_strcmp(cmd->redirect, ">") == 0)
 		{
-			// printf("call exec_echo %s\n", cmd->args[0]);
-			exec_echo(cmd);
-			// printf("exec_echo %s done\n", cmd->args[0]);
+			cmd->fd_out = open(cmd->nxt->args[0], O_WRONLY | O_CREAT | O_TRUNC, 0666);
+			// if(!(cmd->fd_out))
+			// 	{}
+			saved_stdout = dup(STDOUT_FILENO); // создать дополнительный дескриптор для stdout
+			if (dup2(cmd->fd_out, STDOUT_FILENO) == -1) // stdout в файл, дублированием дескриптора */
+				{}
+			close(cmd->fd_out); // закрыть файл 
 		}
+		if (ft_strcmp(cmd->args[0], "echo") == 0)
+			exec_echo(cmd);
 		else if (ft_strcmp(cmd->args[0], "env") == 0 && (*d)->env != NULL)
 			exec_env(d);
 		else if (ft_strcmp(cmd->args[0], "pwd") == 0)
@@ -172,13 +160,15 @@ void	exec_cmds(t_data **d)
 			exec_exit(d);
 		else
 			exec_extern_cmd(cmd, d);
-		//if (d->exit-c == ...)
-			//exit
-		copy = cmd;
-		// printf("call delete_cmd %s\n", cmd->args[0]);
-		// printf("call delete_cmd\n");
-		delete_cmd_from_list(cmd, d);
-		// printf("retr delete_cmd \n\n");
-		cmd = copy->nxt;
+		if (cmd->nxt != NULL && ft_strcmp(cmd->redirect, ">") == 0)
+		{
+			dup2(saved_stdout, STDOUT_FILENO); // восстановить исходный stdout
+			close(saved_stdout);
+		}
+		printf("call delete_cmd_from_list %s\n", cmd->args[0]);
+		delete_cmd_from_list(cmd->nxt, d);
+		nxt = cmd->nxt;
+		cmd = nxt;
+		(void)saved_stdout;
 	}
 }

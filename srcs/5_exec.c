@@ -5,7 +5,7 @@ void	exec_echo(t_cmds *cmd)
 	int	option_n;
 	int	i;
 
-	// printf("exec echo 1\n");
+	write(STDOUT_FILENO, "write echo\n", 12);
 	option_n = 0;
 	i = 0;
 	while (++i < cmd->nb_args)
@@ -19,13 +19,13 @@ void	exec_echo(t_cmds *cmd)
 	}
 	if (option_n == 0)
 		printf("\n");
-	// printf("exec echo 2\n");
 }
 
 void	exec_pwd(void)
 {
 	char	*s;
 
+	write(STDOUT_FILENO, "write pwd\n", 11);
 	s = getcwd(NULL, 0);
 	printf("%s\n", s);
 	free(s);
@@ -35,6 +35,8 @@ void	exec_cd(t_cmds *cmd, t_data **d)
 {
 	char	*dir;
 
+	if (cmd->nb_args == 0)
+		return;
 	if (cmd->nb_args == 1)
 	{
 		dir = get_value_from_env("HOME", d);
@@ -44,7 +46,7 @@ void	exec_cd(t_cmds *cmd, t_data **d)
 			return ;
 		}
 	}
-	else
+	if (cmd->nb_args > 1)
 		dir = cmd->args[1];
 	if (chdir(dir) == -1)
 	{
