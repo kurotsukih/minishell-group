@@ -5,21 +5,20 @@ static void	put_full_cmd_to_arg0_1(char *full_cmd, int len, t_data **d)
 {
 	t_cmds	*new;
 	t_cmds	*last;
-	// int		i;
+	int		i;
 
 	init_cmd(&new, d);
 	new->nb_args = nb_args_(full_cmd, len);
 	printf("%s : %d args\n", full_cmd, new->nb_args);
-
-	// new->args = (char **)malloc_((new->nb_args + 1)* sizeof(char *), d);
-	// new->args[0] = (char *)malloc_(len + 1, d);
-	// i = 0;
-	// while (++i < new->nb_args + 1)
-	// 	new->args[i] = NULL;
-	// i = -1;
-	// while (++i < len)
-	// 	new->args[0][i] = full_cmd[i];
-	// new->args[0][i] = '\0';
+	new->args = (char **)malloc_((new->nb_args + 1)* sizeof(char *), d);
+	new->args[0] = (char *)malloc_(len + 1, d);
+	i = 0;
+	while (++i < new->nb_args + 1)
+		new->args[i] = NULL;
+	i = -1;
+	while (++i < len)
+		new->args[0][i] = full_cmd[i];
+	new->args[0][i] = '\0';
 	if (*((*d)->cmds) == NULL)
 		*((*d)->cmds) = new;
 	else

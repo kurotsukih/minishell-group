@@ -46,9 +46,8 @@ char	*redir_(char *s)
 		return ("");
 }
 
-int	nb_args_(char *s0, int len)
+char	*strdup_and_erase_redirs(char *s0, int len) // enlever len
 {
-	int		nb_args;
 	int		i;
 	char	*s;
 
@@ -70,12 +69,23 @@ int	nb_args_(char *s0, int len)
 		else
 			i++;
 	}
+	return (s);
+}
+
+int	nb_args_(char *s0, int len)
+{
+	int		nb_args;
+	int		i;
+	char	*s;
+
+	s = strdup_and_erase_redirs(s0, len);
 	mod_(REINIT_QUOTES);
 	nb_args = 0;
 	i = -1;
 	while (++i < len)
 		if (mod_(s[i]) == QUOTES0 && s[i] != ' ' && (s[i + 1] == ' ' || s[i + 1] == '\0' || s[i + 1] == '\'' || s[i + 1] == '\"' || i == len - 1))
 				nb_args++;
+	free(s);
 	return (nb_args);
 }
 
