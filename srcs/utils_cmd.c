@@ -38,38 +38,44 @@ char	*redir_(char *s)
 		return (">>");
 	else if (s[0] == '<' && s[1] == '<')
 		return ("<<");
-	else if (s[0] == '>' && s[1] != '\0' && s[2] != '>')
+	else if (s[0] == '>')
 		return (">");
-	else if (s[0] == '<' && s[1] != '\0' && s[2] != '<')
+	else if (s[0] == '<')
 		return ("<");
-	else if (s[0] == '|')
-		return ("|");
 	else
 		return ("");
 }
 
-int	nb_args_(char *s, int len)
+int	nb_args_(char *s0, int len)
 {
-	int	nb_args;
-	int	i;
+	int		nb_args;
+	int		i;
+	char	*s;
 
+	i = 0;
+	mod_(REINIT_QUOTES);
+	s = ft_strdup(s0);
+	while (i < len) // erase redirections
+	{
+		if (mod_(s[i]) == QUOTES0 && ft_strlen(redir_(&s[i])) > 0)
+		{
+			s[i++] = ' ';
+			if (s[i] == '>' || s[i] == '<')
+				s[i++] = ' ';
+			while(s[i] == ' ')
+				i++;
+			while(mod_(s[i]) == QUOTES0 && (s[i] != ' ' && s[i] != '>' && s[i] != '<' && s[i] != '\0'))
+				s[i++] = ' ';
+		}
+		else
+			i++;
+	}
 	mod_(REINIT_QUOTES);
 	nb_args = 0;
 	i = -1;
 	while (++i < len)
 		if (mod_(s[i]) == QUOTES0 && s[i] != ' ' && (s[i + 1] == ' ' || s[i + 1] == '\0' || s[i + 1] == '\'' || s[i + 1] == '\"' || i == len - 1))
-		{
-			if (s[i] == '>' || s[i] == '<')
-			{
-				i++;
-				while(s[i] == ' ')
-					i++;
-				while(s[i] != ' ' && s[i] != '>' && s[i] != '<' && s[i] != '\0')
-					i++;
-			}
-			else
 				nb_args++;
-		}
 	return (nb_args);
 }
 
@@ -78,7 +84,7 @@ void print_cmds(char *msg, t_data **d)
 	int		i;
 	t_cmds	*cmd;
 
-	printf("LIST %s %14p->%14p:\n", msg, (*d)->cmds, *((*d)->cmds));
+	printf("LIST %s %14p->%14p:\n", msg, (*d)->cmds, (*d)->cmds == NULL ? 0 : *((*d)->cmds));
 	if ((*d)->cmds == NULL || *((*d)->cmds) == NULL)
 	{
 		printf("  empty\n");
@@ -87,14 +93,14 @@ void print_cmds(char *msg, t_data **d)
 	cmd = *((*d)->cmds);
 	while (cmd != NULL)
 	{
-		printf("  %p [%s] %d args : ", cmd, cmd->args[0], cmd->nb_args);
+		printf("  %p [%s]\n%d args :\n", cmd, cmd->args[0], cmd->nb_args);
 		if (cmd->args != NULL)
 		{
 			i = -1;
 			while (++i < cmd->nb_args)
-				printf("[%s] ", cmd->args[i]);
+				printf("%s : ", cmd->args[i]);
 		}
-		printf(": [%s %s %s]\n", cmd->redir_out, cmd->redir_out2, cmd->redir_in);
+		printf("\n  redirs [%s %s %s]\n", cmd->redir_out, cmd->redir_out2, cmd->redir_in);
 		if (cmd == NULL)
 			break ; ////
 		cmd = cmd->nxt;
@@ -111,19 +117,27 @@ void del_cmd_from_list(t_cmds *cmd, t_data **d)
 		return ;
 	i = -1;
 	while(++i < cmd->nb_args)
+	{
 		free(cmd->args[i]);
+		cmd->args[i] = NULL;
+	}
 	free(cmd->args);
+	cmd->args = NULL;
+	printf("del %s\n", cmd == NULL ? "NULL" : cmd->args[0]);
 	if (cmd->prv == NULL)
 	{
 		to_free = *((*d)->cmds);
+		printf("del 1st elt %s\n", to_free->args[0]);
 		*((*d)->cmds) = cmd->nxt;
 	}
 	else
 	{
 		to_free = cmd->prv->nxt;
+		printf("del elt %s\n", to_free->args[0]);
 		cmd->prv->nxt = cmd->nxt;
 	}
 	free(to_free); // & ?
+	to_free = NULL;
 }
 
 // void	delete_cmds(t_data **d)
