@@ -9,7 +9,7 @@ static void	put_full_cmd_to_arg0_1(char *full_cmd, int len, t_data **d)
 
 	init_cmd(&new, d);
 	new->nb_args = nb_args_(full_cmd, len);
-	printf("%s : %d args\n", full_cmd, new->nb_args);
+	// printf("%s : %d args\n", full_cmd, new->nb_args);
 	new->args = (char **)malloc_((new->nb_args + 1)* sizeof(char *), d);
 	new->args[0] = (char *)malloc_(len + 1, d);
 	i = 0;
@@ -153,7 +153,8 @@ static void	put_args_1(t_cmds *cmd, t_data **d)
 	int		i_beg;
 	int		k;
 	int		len;
-	int		to_put_EOL;
+	int		here_put_EOL;
+	char	*s;
 
 	if (cmd->nb_args <= 1)
 		return ;
@@ -162,17 +163,19 @@ static void	put_args_1(t_cmds *cmd, t_data **d)
 	k = 0;
 	len = (int)ft_strlen(cmd->args[0]);
 	i = -1;
+	s = strdup_and_erase_redirs(cmd->args[0], len);
 	while (++i < len)
-		if (mod_(cmd->args[0][i]) == QUOTES0 && cmd->args[0][i] != ' ' && (cmd->args[0][i + 1] == ' ' || cmd->args[0][i + 1] == '\0' || cmd->args[0][i + 1] == '\'' || cmd->args[0][i + 1] == '\"'))
+		if (mod_(s[i]) == QUOTES0 && s[i] != ' ' && (s[i + 1] == ' ' || s[i + 1] == '\0' || s[i + 1] == '\'' || s[i + 1] == '\"'))
 		{
 			if (k == 0)
-				to_put_EOL = i + 1;
+				here_put_EOL = i + 1;
 			else
-				strdup_and_trim(&(cmd->args[0][i_beg]), &(cmd->args[k]), i - i_beg + 1, d);
+				strdup_and_trim(&s[i_beg], &(cmd->args[k]), i - i_beg + 1, d);
 			i_beg = i + 1;
 			k++;
 		}
-	cmd->args[0][to_put_EOL] = '\0';
+	cmd->args[0][here_put_EOL] = '\0';
+	free(s);
 }
 
 void	put_args(t_data **d)

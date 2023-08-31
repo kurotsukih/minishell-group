@@ -94,6 +94,7 @@ char	*get_value_from_env(char *key, t_data **d);
 
 char	*alphanum_(char *s, t_data **d);
 void	strdup_and_trim(char *srs, char **dest, int len, t_data **d);
+char	*strdup_and_erase_redirs(char *s0, int len);
 void	free_charchar(char **s, int len);
 
 void	sig_handler_main(int signal);
