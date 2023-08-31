@@ -94,12 +94,12 @@ int	main(int argc, char **argv, char **env_array)
 		// }
 		add_history(cmd_line);
 		put_full_cmd_to_arg0(cmd_line, d);
-		put_args(d);
-		put_redirs(d);
+		put_redirs_and_args(d);
 		print_cmds("", d);
 		// calc_dollar_conversions(d);
 		// exec_cmds(d);
 		del_cmds(d);
+		print_cmds("", d);
 		// free(cmd_line)
 	}
 	return 0; //(d->exit_code);

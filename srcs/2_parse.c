@@ -103,55 +103,6 @@ void	put_full_cmd_to_arg0(char *cmd_line, t_data **d)
 // 	}
 // }
 
-static void	put_args_1(t_cmds *cmd, t_data **d) 
-{
-	int		i;
-	int		i_beg;
-	int		k;
-	int		len;
-	int		here_put_EOL;
-	char	*s;
-
-	if (cmd->nb_args <= 1)
-		return ;
-	mod_(REINIT_QUOTES);
-	i_beg = 0;
-	k = 0;
-	len = (int)ft_strlen(cmd->args[0]); // delete len
-	i = -1;
-	s = strdup_and_erase_redirs(cmd->args[0], len, d);
-	while (++i < len)
-		if (mod_(s[i]) == QUOTES0 && s[i] != ' ' && (s[i + 1] == ' ' || s[i + 1] == '\0' || s[i + 1] == '\'' || s[i + 1] == '\"'))
-		{
-			if (k == 0)
-				here_put_EOL = i + 1;
-			else
-				cmd->args[k] = strndup_and_trim(&s[i_beg], i - i_beg + 1, d);
-			i_beg = i + 1;
-			k++;
-		}
-	cmd->args[0][here_put_EOL] = '\0';
-	free(s);
-}
-
-void	put_args(t_data **d)
-{
-	t_cmds	*cmd;
-
-	cmd = *((*d)->cmds);
-	while(cmd != NULL)
-	{
-		put_args_1(cmd, d);
-		cmd->args[cmd->nb_args] = NULL;
-		if (ft_strcmp(cmd->args[0], "env") == 0)
-			cmd->nb_max_args = 0;
-		else if (ft_strcmp(cmd->args[0], "cd") == 0 || ft_strcmp(cmd->args[0], "exit") == 0)
-			cmd->nb_max_args = 1;
-		cmd = cmd->nxt;
-	}
-}
-
-
 void	put_redirs_1(t_cmds *cmd, t_data **d)
 {
 	char	*s;
@@ -188,14 +139,43 @@ void	put_redirs_1(t_cmds *cmd, t_data **d)
 				cmd->redir_out2 = redir_file;
 			else if (ft_strcmp(redir, "<") == 0)
 				cmd->redir_in = redir_file;
-			// i = i_beg;
-			// while(i < i_beg + len)
-			// 	s[i++] = ' ';
 		}
 	}
 }
 
-void	put_redirs(t_data **d)
+static void	put_args_1(t_cmds *cmd, t_data **d) 
+{
+	int		i;
+	int		i_beg;
+	int		k;
+	int		len;
+	int		here_put_EOL;
+	char	*s;
+
+	if (cmd->nb_args <= 1)
+		return ;
+	mod_(REINIT_QUOTES);
+	i_beg = 0;
+	k = 0;
+	len = (int)ft_strlen(cmd->args[0]); // len useless
+	i = -1;
+	s = strdup_and_erase_redirs(cmd->args[0], d);
+	while (++i < len)
+		if (mod_(s[i]) == QUOTES0 && s[i] != ' ' && (s[i + 1] == ' ' || s[i + 1] == '\0' || s[i + 1] == '\'' || s[i + 1] == '\"'))
+		{
+			if (k == 0)
+				here_put_EOL = i + 1;
+			else
+				cmd->args[k] = strndup_and_trim(&s[i_beg], i - i_beg + 1, d);
+			i_beg = i + 1;
+			k++;
+		}
+	cmd->args[0][here_put_EOL] = '\0';
+	cmd->args[cmd->nb_args] = NULL;
+	free(s);
+}
+
+void	put_redirs_and_args(t_data **d)
 {
 	t_cmds	*cmd;
 
@@ -203,6 +183,11 @@ void	put_redirs(t_data **d)
 	while(cmd != NULL)
 	{
 		put_redirs_1(cmd, d);
+		put_args_1(cmd, d);
+		if (ft_strcmp(cmd->args[0], "env") == 0)
+			cmd->nb_max_args = 0;
+		else if (ft_strcmp(cmd->args[0], "cd") == 0 || ft_strcmp(cmd->args[0], "exit") == 0)
+			cmd->nb_max_args = 1;
 		cmd = cmd->nxt;
 	}
 }

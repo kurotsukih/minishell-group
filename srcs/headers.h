@@ -66,7 +66,7 @@ typedef struct 		s_data
 }					t_data;
 
 void	put_full_cmd_to_arg0(char *cmd_line, t_data **d);
-void	put_args(t_data **d);
+void	put_redirs_and_args(t_data **d);
 void	put_redirs(t_data **d);
 void	calc_dollar_conversions(t_data **d);
 int		args_are_correct(t_cmds *cmd, t_data **d);
@@ -95,9 +95,8 @@ char	*get_value_from_env(char *key, t_data **d);
 
 char	*alphanum_(char *s, t_data **d);
 char	*strndup_and_trim(char *srs, int len, t_data **d);
-char	*strdup_and_erase_redirs(char *s0, int len, t_data **d);
+char	*strdup_and_erase_redirs(char *s0, t_data **d);
 char	*strdup_and_erase_args_except_redirs(char *s0, t_data **d);
-char	*strndup_and_erase_args_except_redirs(char *s0, int len, t_data **d);
 void	free_charchar(char **s, int len);
 
 void	sig_handler_main(int signal);

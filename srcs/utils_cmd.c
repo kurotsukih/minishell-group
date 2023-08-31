@@ -52,7 +52,7 @@ int	nb_args_(char *s0, int len, t_data **d)
 	int		i;
 	char	*s;
 
-	s = strdup_and_erase_redirs(s0, len, d);
+	s = strdup_and_erase_redirs(s0, d);
 	mod_(REINIT_QUOTES);
 	nb_args = 0;
 	i = -1;
@@ -71,7 +71,7 @@ void print_cmds(char *msg, t_data **d)
 	printf("LIST %s %14p->%14p:\n  ", msg, (*d)->cmds, (*d)->cmds == NULL ? 0 : *((*d)->cmds));
 	if ((*d)->cmds == NULL || *((*d)->cmds) == NULL)
 	{
-		printf("  empty\n");
+		printf("empty\n");
 		return ;
 	}
 	cmd = *((*d)->cmds);
@@ -83,9 +83,9 @@ void print_cmds(char *msg, t_data **d)
 			while (++i < cmd->nb_args)
 				printf("%s : ", cmd->args[i]);
 		}
+		else
+			printf("args = NULL");
 		printf("\n  redirs [%s %s %s]\n  ", cmd->redir_out, cmd->redir_out2, cmd->redir_in);
-		if (cmd == NULL)
-			break ; ////
 		cmd = cmd->nxt;
 	}
 	printf("\n");
@@ -96,7 +96,6 @@ void del_cmd_from_list(t_cmds *cmd, t_data **d)
 	int		i;
 	t_cmds	*to_free;
 
-	// printf("1) del %s\n", cmd == NULL ? "NULL" : cmd->args[0]);
 	if (cmd == NULL)
 		return ;
 	i = -1;
@@ -106,32 +105,41 @@ void del_cmd_from_list(t_cmds *cmd, t_data **d)
 		cmd->args[i] = NULL;
 	}
 	free(cmd->args);
+	free(cmd->redir_in);
+	free(cmd->redir_out);
+	free(cmd->redir_out2);
 	cmd->args = NULL;
+	cmd->redir_in = NULL;
+	cmd->redir_out = NULL;
+	cmd->redir_out2 = NULL;
+	to_free = cmd;
+	if (cmd->nxt != NULL)
+		cmd->nxt->prv = cmd->prv;
 	if (cmd->prv == NULL)
 	{
-		to_free = *((*d)->cmds);
 		*((*d)->cmds) = cmd->nxt;
+		// printf("3a) del cmd\n");
 	}
 	else
 	{
-		to_free = cmd->prv->nxt;
 		cmd->prv->nxt = cmd->nxt;
+		// printf("3b) del cmd\n");
 	}
 	free(to_free); // & ?
 	to_free = NULL;
+	// print_cmds("end free cmd", d);
 }
 
 void	del_cmds(t_data **d)
 {
-	t_cmds	*cmd_to_del;
-	t_cmds	*cur;
+	t_cmds	*cmd;
 
-	cur = *((*d)->cmds);
-	while(cur != NULL)
+	cmd = *((*d)->cmds);
+	while(cmd != NULL)
 	{
-		cmd_to_del = *((*d)->cmds);
-		*((*d)->cmds) = (*((*d)->cmds))->nxt;
-		del_cmd_from_list(cmd_to_del, d);
-		cur = cur->nxt;
+		// *((*d)->cmds) = (*((*d)->cmds))->nxt;
+		del_cmd_from_list(cmd, d);
+		cmd = cmd->nxt;
 	}
+	print_cmds("end free cmds", d);
 }
