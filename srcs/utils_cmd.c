@@ -46,13 +46,13 @@ char	*redir_(char *s)
 		return ("");
 }
 
-int	nb_args_(char *s0, int len)
+int	nb_args_(char *s0, int len, t_data **d)
 {
 	int		nb_args;
 	int		i;
 	char	*s;
 
-	s = strdup_and_erase_redirs(s0, len);
+	s = strdup_and_erase_redirs(s0, len, d);
 	mod_(REINIT_QUOTES);
 	nb_args = 0;
 	i = -1;
@@ -96,7 +96,7 @@ void del_cmd_from_list(t_cmds *cmd, t_data **d)
 	int		i;
 	t_cmds	*to_free;
 
-	printf("del %s\n", cmd == NULL ? "NULL" : cmd->args[0]);
+	// printf("1) del %s\n", cmd == NULL ? "NULL" : cmd->args[0]);
 	if (cmd == NULL)
 		return ;
 	i = -1;
@@ -107,35 +107,31 @@ void del_cmd_from_list(t_cmds *cmd, t_data **d)
 	}
 	free(cmd->args);
 	cmd->args = NULL;
-	printf("del %s\n", cmd == NULL ? "NULL" : cmd->args[0]);
 	if (cmd->prv == NULL)
 	{
 		to_free = *((*d)->cmds);
-		printf("del 1st elt %s\n", to_free->args[0]);
 		*((*d)->cmds) = cmd->nxt;
 	}
 	else
 	{
 		to_free = cmd->prv->nxt;
-		printf("del elt %s\n", to_free->args[0]);
 		cmd->prv->nxt = cmd->nxt;
 	}
 	free(to_free); // & ?
 	to_free = NULL;
 }
 
-// void	delete_cmds(t_data **d)
-// {
-// 	t_cmds	*cmd_to_del;
-// 	t_cmds	*cur;
+void	del_cmds(t_data **d)
+{
+	t_cmds	*cmd_to_del;
+	t_cmds	*cur;
 
-// 	cur = *((*d)->cmds);
-// 	while(cur != NULL)
-// 	{
-// 		cmd_to_del = *((*d)->cmds);
-// 		*((*d)->cmds) = (*((*d)->cmds))->nxt;
-// 		printf("delete %s\n", cmd_to_del->args[0]);
-// 		//delete_cmd_from_list(cmd_to_del, d);
-// 		cur = cur->nxt;
-// 	}
-// }
+	cur = *((*d)->cmds);
+	while(cur != NULL)
+	{
+		cmd_to_del = *((*d)->cmds);
+		*((*d)->cmds) = (*((*d)->cmds))->nxt;
+		del_cmd_from_list(cmd_to_del, d);
+		cur = cur->nxt;
+	}
+}

@@ -78,12 +78,13 @@ void	exec_exit(t_data **d);
 void	exec_cd(t_cmds *cmd, t_data **d);
 void	exec_pwd(void);
 void	exec_echo(t_cmds *cmd);
+void	del_cmds(t_data **d);
 
 // utils
 void	init_cmd(t_cmds **new, t_data **d);
 char	*redir_(char *s);
 int		mod_(char c);	
-int		nb_args_(char *s, int len);
+int		nb_args_(char *s, int len, t_data **d);
 void	print_cmds(char *msg, t_data **d);
 
 char	*val_(char *s);
@@ -93,8 +94,10 @@ int		len_env(t_data **d);
 char	*get_value_from_env(char *key, t_data **d);
 
 char	*alphanum_(char *s, t_data **d);
-void	strdup_and_trim(char *srs, char **dest, int len, t_data **d);
-char	*strdup_and_erase_redirs(char *s0, int len);
+char	*strndup_and_trim(char *srs, int len, t_data **d);
+char	*strdup_and_erase_redirs(char *s0, int len, t_data **d);
+char	*strdup_and_erase_args_except_redirs(char *s0, t_data **d);
+char	*strndup_and_erase_args_except_redirs(char *s0, int len, t_data **d);
 void	free_charchar(char **s, int len);
 
 void	sig_handler_main(int signal);
@@ -103,6 +106,6 @@ void	*malloc_(size_t size, t_data **d);
 void	free_all_and_exit(char *msg, t_data **d); /// ***d
 void	free_all_and_go_to_next_cmd(char *msg, t_data **d);
 void	del_cmd_from_list(t_cmds *cmd, t_data **d);
-void	delete_cmds(t_data **d);
+void	del_cmds(t_data **d);
 
 #endif

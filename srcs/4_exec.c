@@ -202,8 +202,6 @@ void	exec_cmds(t_data **d)
 		// 	dup2(saved_stdout, STDOUT_FILENO); // восстановить исходный stdout
 		// 	close(saved_stdout);
 		// }
-		// printf("call delete_cmd_from_list %s\n", cmd->args[0]);
-		del_cmd_from_list(cmd, d);
 		nxt = cmd->nxt;
 		cmd = nxt;
 		(void)saved_stdout;

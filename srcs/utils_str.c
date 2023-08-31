@@ -18,7 +18,7 @@ char *alphanum_(char *s, t_data **d)
 	return (alphanum);
 }
 
-void strdup_and_trim(char *src, char **dest0, int len, t_data **d)
+char	*strndup_and_trim(char *src, int len, t_data **d)
 {
 	int		i;
 	char	*dest;
@@ -39,18 +39,20 @@ void strdup_and_trim(char *src, char **dest0, int len, t_data **d)
 	while (++i < len)
 		dest[i] = src[i];
 	dest[i] = '\0';
-	*dest0 = dest;
+	return (dest);
 }
 
-char	*strdup_and_erase_redirs(char *s0, int len) // enlever len
+char	*strdup_and_erase_redirs(char *s0, int len, t_data **d) // len useful
 {
 	int		i;
 	char	*s;
 
 	i = 0;
 	mod_(REINIT_QUOTES);
-	s = ft_strdup(s0);
-	while (i < len) // erase redirections
+	s = ft_strdup(s0); // malloc_
+	if (s == NULL)
+		free_all_and_go_to_next_cmd("strdup", d);
+	while (i < len)
 	{
 		if (mod_(s[i]) == QUOTES0 && ft_strlen(redir_(&s[i])) > 0)
 		{
@@ -66,6 +68,38 @@ char	*strdup_and_erase_redirs(char *s0, int len) // enlever len
 			i++;
 	}
 	return (s);
+}
+
+char	*strndup_and_erase_args_except_redirs(char *s0, int len, t_data **d) // enlever len
+{
+	int		i;
+	char	*s;
+
+	i = 0;
+	mod_(REINIT_QUOTES);
+	s = ft_strdup(s0); // malloc_
+	if (s == NULL)
+		free_all_and_go_to_next_cmd("strdup", d);
+	while (i < len)
+	{
+		if (mod_(s[i]) == QUOTES0 && ft_strlen(redir_(&s[i])) > 0)
+		{
+			if (s[i] == '>' || s[i] == '<')
+				i++;
+			while(s[i] == ' ')
+				i++;
+			while(mod_(s[i]) == QUOTES0 && (s[i] != ' ' && s[i] != '>' && s[i] != '<' && s[i] != '\0'))
+				i++;
+		}
+		else
+			s[i++] = ' ';
+	}
+	return (s);
+}
+
+char	*strdup_and_erase_args_except_redirs(char *s0, t_data **d)
+{
+	return (strndup_and_erase_args_except_redirs(s0, ft_strlen(s0), d));
 }
 
 void	free_charchar(char **s, int len)
