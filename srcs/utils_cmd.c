@@ -1,11 +1,13 @@
 #include "headers.h"
 
-void	init_cmd(t_cmds **new, char *redirect, t_data **d)
+void	init_cmd(t_cmds **new, t_data **d)
 {
 	*new = (t_cmds *)malloc_(sizeof(t_cmds), d);
-	(*new)->nb_args_max = INT_MAX;
+	(*new)->nb_max_args = INT_MAX;
 	(*new)->args = NULL;
-	(*new)->redirect = redirect;
+	(*new)->redir_in = NULL;
+	(*new)->redir_out = NULL;
+	(*new)->redir_out2 = NULL;
 	(*new)->to_free = NULL;
 	(*new)->fd_in = STDIN_FILENO;
 	(*new)->fd_out = STDOUT_FILENO;
@@ -30,7 +32,7 @@ int	mod_(char c)
 	return (mod);
 }
 
-char	*redirect_(char *s)
+char	*redir_(char *s)
 {
 	if (s[0] == '>' && s[1] == '>')
 		return (">>");
@@ -56,55 +58,72 @@ int	nb_args_(char *s, int len)
 	i = -1;
 	while (++i < len)
 		if (mod_(s[i]) == QUOTES0 && s[i] != ' ' && (s[i + 1] == ' ' || s[i + 1] == '\0' || s[i + 1] == '\'' || s[i + 1] == '\"' || i == len - 1))
-			nb_args++;
+		{
+			if (s[i] == '>' || s[i] == '<')
+			{
+				i++;
+				while(s[i] == ' ')
+					i++;
+				while(s[i] != ' ' && s[i] != '>' && s[i] != '<' && s[i] != '\0')
+					i++;
+			}
+			else
+				nb_args++;
+		}
 	return (nb_args);
 }
 
 void print_cmds(char *msg, t_data **d)
 {
-	int		j;
+	int		i;
 	t_cmds	*cmd;
 
-	printf("LIST %s %14p:\n", msg, (*d)->cmds);
+	printf("LIST %s %14p->%14p:\n", msg, (*d)->cmds, *((*d)->cmds));
 	if ((*d)->cmds == NULL || *((*d)->cmds) == NULL)
 	{
 		printf("  empty\n");
 		return ;
 	}
 	cmd = *((*d)->cmds);
-	// int i = -1;
-	// while (cmd != NULL && ++i < cmd->nb_args)
 	while (cmd != NULL)
 	{
-		printf("  %p [%s] %d agrs : ", cmd, cmd->args[0], cmd->nb_args);
+		printf("  %p [%s] %d args : ", cmd, cmd->args[0], cmd->nb_args);
 		if (cmd->args != NULL)
 		{
-			j = -1;
-			while (++j < cmd->nb_args)
-				printf("[%s] ", cmd->args[j]);
+			i = -1;
+			while (++i < cmd->nb_args)
+				printf("[%s] ", cmd->args[i]);
 		}
-		printf(": [%s]\n", cmd->redirect);
+		printf(": [%s %s %s]\n", cmd->redir_out, cmd->redir_out2, cmd->redir_in);
 		if (cmd == NULL)
 			break ; ////
 		cmd = cmd->nxt;
 	}
 }
 
-void delete_cmd_from_list(t_cmds *cmd, t_data **d)
+void del_cmd_from_list(t_cmds *cmd, t_data **d)
 {
-	// int		i;
+	int		i;
+	t_cmds	*to_free;
 
+	printf("del %s\n", cmd == NULL ? "NULL" : cmd->args[0]);
 	if (cmd == NULL)
 		return ;
-	printf("delete cmd %s\n", cmd->args[0]);
-	// i = -1;
-	// while(++i < cmd->nb_args)
-	// 	free(cmd->args[i]);
-	// free(cmd->args);
+	i = -1;
+	while(++i < cmd->nb_args)
+		free(cmd->args[i]);
+	free(cmd->args);
 	if (cmd->prv == NULL)
+	{
+		to_free = *((*d)->cmds);
 		*((*d)->cmds) = cmd->nxt;
+	}
 	else
+	{
+		to_free = cmd->prv->nxt;
 		cmd->prv->nxt = cmd->nxt;
+	}
+	free(to_free); // & ?
 }
 
 // void	delete_cmds(t_data **d)

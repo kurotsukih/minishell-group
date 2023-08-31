@@ -5,7 +5,7 @@ void	exec_echo(t_cmds *cmd)
 	int	option_n;
 	int	i;
 
-	write(STDOUT_FILENO, "write echo\n", 12);
+	// write(STDOUT_FILENO, "write echo\n", 12);
 	option_n = 0;
 	i = 0;
 	while (++i < cmd->nb_args)
@@ -25,7 +25,7 @@ void	exec_pwd(void)
 {
 	char	*s;
 
-	write(STDOUT_FILENO, "write pwd\n", 11);
+	// write(STDOUT_FILENO, "write pwd\n", 11);
 	s = getcwd(NULL, 0);
 	printf("%s\n", s);
 	free(s);

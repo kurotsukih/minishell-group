@@ -3,7 +3,7 @@
 
 readline rl_clear_history, rl_on_new_line rl_replace_line rl_redisplay, add_history,
 mallo c free
-printf write access ope n read close
+printf writ e access ope n read close
 fork wait waitpid wait3 wait4 
 signa l sigaction sigemptyset sigaddset kill
 exit
@@ -93,8 +93,10 @@ int	main(int argc, char **argv, char **env_array)
 		// 	continue;
 		// }
 		add_history(cmd_line);
-		put_cmds_and_redirects(cmd_line, d);
-		calc_args(d);
+		put_full_cmd_to_arg0(cmd_line, d);
+		print_cmds("", d);
+		put_redirs(d);
+		put_args(d);
 		calc_dollar_conversions(d);
 		exec_cmds(d);
 		// print_cmds("after exec", d);

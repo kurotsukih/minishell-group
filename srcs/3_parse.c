@@ -59,3 +59,62 @@ void	calc_dollar_conversions(t_data **d)
 	}
 }
 
+// void	put_redirect_out(t_data **d)
+// {
+// 	t_cmds	*cmd;
+// 	int		i;
+
+// 	cmd = *((*d)->cmds);
+// 	while(cmd != NULL)
+// 	{
+// 		i = cmd->nb_args - 1;
+// 		while(--i > 0)
+// 		{
+// 			if (ft_strcmp(cmd->args[i], ">") == 0)
+// 				cmd->redir_out = cmd->args[i + 1];
+// 			if (ft_strcmp(cmd->args[i], ">>") == 0)
+// 				cmd->redir_out2 = cmd->args[i + 1];
+// 			if (cmd->redir_out !=NULL || cmd->redir_out2 != NULL)
+// 					break;
+// 		}
+// 		cmd = cmd->nxt;
+// 	}
+// }
+
+// void	put_redirect_in(t_data **d)
+// {
+// 	t_cmds	*cmd;
+// 	char	*cur;
+// 	int		i;
+
+// 	cmd = *((*d)->cmds);
+// 	while(cmd != NULL)
+// 	{
+// 		i = cmd->nb_args - 1;
+// 		while(--i > 0)
+// 			if (ft_strcmp(cmd->args[i], "<") == 0)
+// 			{
+// 				cmd->redir_in = cmd->args[i + 1];
+// 				break;
+// 			}
+// 		cmd = cmd->nxt;
+// 	}
+// }
+
+void	del_all_redirs_from_list_args(t_data **d)
+{
+	t_cmds	*cmd;
+	int		i;
+
+	cmd = *((*d)->cmds);
+	while(cmd != NULL)
+	{
+		i = -1;
+		while(++i < cmd->nb_args - 1)
+			if (ft_strcmp(cmd->args[i], "<") == 0 ||ft_strcmp(cmd->args[i], ">") == 0 || ft_strcmp(cmd->args[i], ">>") == 0)
+			{
+				cmd->redir_in = cmd->args[i + 1];
+			}
+		cmd = cmd->nxt;
+	}
+}

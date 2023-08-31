@@ -39,8 +39,10 @@ typedef struct 		s_cmds
 {
 	char			**args; // args[0] = prog name, argd[n] mixed args and options 
 	int				nb_args;
-	int				nb_args_max;
-	char			*redirect; // ">>" ">" "<" "<<" "|"
+	int				nb_max_args;
+	char			*redir_in;
+	char			*redir_out;
+	char			*redir_out2;
 	int				fd_in;
 	int				fd_out;
 	char			**to_free;
@@ -63,10 +65,11 @@ typedef struct 		s_data
 	char			*to_free;
 }					t_data;
 
-void	put_cmds_and_redirects(char *cmd_line, t_data **d);
-void	calc_args(t_data **d);
-int		args_are_correct(t_cmds *cmd, t_data **d);
+void	put_full_cmd_to_arg0(char *cmd_line, t_data **d);
+void	put_args(t_data **d);
+void	put_redirs(t_data **d);
 void	calc_dollar_conversions(t_data **d);
+int		args_are_correct(t_cmds *cmd, t_data **d);
 void	exec_env(t_data **d); 
 void	exec_export(t_cmds *cmd, t_data **d);
 void	exec_unset(t_cmds *cmd, t_data **d);
@@ -77,8 +80,8 @@ void	exec_pwd(void);
 void	exec_echo(t_cmds *cmd);
 
 // utils
-void	init_cmd(t_cmds **new, char *redirect, t_data **d);
-char	*redirect_(char *s);
+void	init_cmd(t_cmds **new, t_data **d);
+char	*redir_(char *s);
 int		mod_(char c);	
 int		nb_args_(char *s, int len);
 void	print_cmds(char *msg, t_data **d);
@@ -98,7 +101,7 @@ void	sig_handler_fork(int signal);
 void	*malloc_(size_t size, t_data **d);
 void	free_all_and_exit(char *msg, t_data **d); /// ***d
 void	free_all_and_go_to_next_cmd(char *msg, t_data **d);
-void	delete_cmd_from_list(t_cmds *cmd, t_data **d);
+void	del_cmd_from_list(t_cmds *cmd, t_data **d);
 void	delete_cmds(t_data **d);
 
 #endif
