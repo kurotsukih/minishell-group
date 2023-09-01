@@ -280,18 +280,30 @@ char	*path_(char *s1, char *s2, t_data **d)
 	int		s2_len;
 	char	*new_string;
 
-	s1_len = ft_strlen(s1);
+	s1_len = 0;
+	if (s1 != NULL)
+		s1_len = ft_strlen(s1);
 	s2_len = ft_strlen(s2);
 	new_string = (char *)malloc_(s1_len + s2_len + 2, d);
 	if (new_string == NULL)
 		return (NULL);
-	i = -1;
-	while (++i < s1_len)
+	i = 0;
+	while (i < s1_len)
+	{
 		new_string[i] = s1[i];
-	new_string[i] = '/';
-	i = -1;
-	while (++i < s2_len)
+		i++;
+	}
+	if(s1 != NULL)
+	{
+		new_string[i] = '/';
+		i++;
+	}
+	i = 0;
+	while (i < s2_len)
+	{
 		new_string[s1_len + 1 + i] = s2[i];
+		i++;
+	}
 	new_string[s1_len + 1 + i] = '\0';
 	return (new_string);
 }

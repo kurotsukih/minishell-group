@@ -180,11 +180,8 @@ void exec_extern_cmd(t_cmd *cmd, t_data **d)
 		(*d)->exit_c = 0; // code ?
 		env_array = env_to_array(d);
 		len_env = len_env_(d);
-		if (cmd->path != NULL && env_array != NULL) //path != NULL ? env_array != NULL ?
-		{
-			// printf("execve %s %s\n", cmd->path, cmd->arg[0]);
+		if (cmd->path != NULL) //path != NULL ? env_array != NULL ?
 			execve(cmd->path, cmd->arg, env_array);
-		}
 		free_env_array(env_array, len_env);
 	}
 	else
