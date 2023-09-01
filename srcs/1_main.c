@@ -102,13 +102,12 @@ int	main(int argc, char **argv, char **env_array)
 		add_history(cmd_line);
 		put_full_cmd_to_arg0(cmd_line, d);
 		put_redirs_and_args(d);
-		print_cmds("", d);
 		put_paths_to_cmds(d);
 		print_cmds("", d);
-		// verif_args(d);
-		// exec_cmds(d);
-		// del_cmds(d);
-		// free(cmd_line);
+		verif_args(d);
+		exec_cmds(d);
+		del_cmds(d);
+		free(cmd_line);
 	}
 	close((*d)->saved_stdout);
 	return 0; //(d->exit_code);

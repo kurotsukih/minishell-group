@@ -94,10 +94,11 @@ void print_cmds(char *msg, t_data **d)
 		}
 		else
 			printf("args = NULL");
-		printf(" fd_in = %d, fd_out = %d", cmd->fd_in, cmd->fd_out);
+		printf(" fd_in = %d, fd_out = %d\n", cmd->fd_in, cmd->fd_out);
+		if (cmd->path != NULL)
+			printf("  path = %s\n", cmd->path);
 		if (cmd->err != NULL)
-			printf(", err = %s\n", cmd->err);
-		printf("\n");
+			printf("  err = %s\n", cmd->err);
 		cmd = cmd->nxt;
 	}
 	printf("\n");
