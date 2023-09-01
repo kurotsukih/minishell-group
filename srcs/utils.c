@@ -32,6 +32,8 @@ void	sig_handler_fork(int signal)
 		exit(131);
 }
 
+// global error                      => exit
+// error concerning only one command => skip this command
 void	*malloc_(size_t size, t_data **d)
 {
 	void	*mem;
@@ -41,15 +43,13 @@ void	*malloc_(size_t size, t_data **d)
 	if (mem == NULL)
 	{
 		if ((*d)->curr_cmd == NULL)
-			free_all_and_exit("malloc problem", -1, d); // code ?
+			free_all_and_exit("malloc failure", -1, d); // code ?
 		else
 			(*d)->curr_cmd->err = "malloc failure";
 	}
 	return (mem);
 }
 
-// if there is a global error, then exit
-// if there is an error concerning only one command, then skip this command
 void	free_all_and_exit(char *msg, int exit_c, t_data **d)
 {
 	if (msg == NULL)
@@ -57,6 +57,7 @@ void	free_all_and_exit(char *msg, int exit_c, t_data **d)
 	else
 		printf("error %s %s\n", msg, strerror(errno));
 	// free all
-	(void)d;
+	// free (paths)
+	close((*d)->saved_stdout);
 	exit(exit_c);
 }

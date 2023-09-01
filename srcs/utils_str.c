@@ -97,7 +97,7 @@ char	*strdup_and_erase_args_except_redirs(char *s0, t_data **d) // enlever len
 	return (s);
 }
 
-void	free_array_env(char **env, int len)
+void	free_env_array(char **env, int len)
 {
 	int	i;
 

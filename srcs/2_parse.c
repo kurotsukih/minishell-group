@@ -1,5 +1,56 @@
 #include "headers.h"
 
+// >out1 >out1+ >> out2 < in >> out2+ < in+ <in++
+static void put_full_cmd_to_arg0_1(char *full_cmd, int len, t_data **d)
+{
+	t_cmd *cmd;
+	t_cmd *last;
+	int i;
+
+	init_cmd(&cmd, d); // deplace here
+	(*d)->curr_cmd = cmd;
+	cmd->nb_args = nb_args_(full_cmd, len, d);
+	cmd->arg = (char **)malloc_((cmd->nb_args + 1) * sizeof(char *), d);
+	cmd->arg[0] = (char *)malloc_(len + 1, d);
+	i = 0;
+	while (++i < cmd->nb_args + 1)
+		cmd->arg[i] = NULL;
+	i = -1;
+	while (++i < len)
+		cmd->arg[0][i] = full_cmd[i];
+	cmd->arg[0][i] = '\0';
+	if (*((*d)->cmds) == NULL)
+		*((*d)->cmds) = cmd;
+	else
+	{
+		last = *((*d)->cmds);
+		while (last != NULL && last->nxt != NULL)
+			last = last->nxt;
+		last->nxt = cmd;
+		cmd->prv = last;
+	}
+}
+
+void	put_full_cmd_to_arg0(char *s, t_data **d)
+{
+	int i_beg;
+	int i;
+
+	mod_(REINIT_QUOTES);
+	i_beg = 0;
+	i = -1;
+	while (1)
+		if ((mod_(s[++i]) == QUOTES0 && s[i + 1] == '|') || s[i + 1] == '\0')
+		{
+			put_full_cmd_to_arg0_1(&s[i_beg], i - i_beg + 1, d);
+			if (s[i + 1] == '\0') // ++i
+				break;
+			i++;
+			i_beg = i + 1;
+		}
+	(*d)->curr_cmd = NULL;
+}
+
 void put_redirs_1(t_cmd *cmd, t_data **d)
 {
 	char *s;
@@ -20,9 +71,9 @@ void put_redirs_1(t_cmd *cmd, t_data **d)
 			i_beg = i;
 			while (s[i] == ' ')
 				i++;
-			while (s[i] != ' ' && s[i] != '>' && s[i] != '<' && s[i] != '\0')
+			while (s[i] != ' ' && s[i] != '>' && s[i] != '<' && s[i] != '\0') // alphanum ?
 				i++;
-			redir_file = strndup_and_trim(&s[i_beg], i_beg, d);
+			redir_file = strndup_and_trim(&s[i_beg], i - i_beg + 1, d);
 			open_file(redir, redir_file, d);
 		}
 	}
@@ -33,7 +84,7 @@ static void put_args_1(t_cmd *cmd, t_data **d)
 	int i;
 	int i_beg;
 	int k;
-	int here_put_EOL;
+	int i_end_arg0;
 	char *s;
 
 	if (cmd->nb_args == 0)
@@ -46,17 +97,18 @@ static void put_args_1(t_cmd *cmd, t_data **d)
 		i = -1;
 		s = strdup_and_erase_redirs(cmd->arg[0], d);
 		while (s[++i] != '\0')
-			if (mod_(s[i]) == QUOTES0 && s[i] != ' ' && (s[i + 1] == ' ' || s[i + 1] == '\0' || s[i + 1] == '\'' || s[i + 1] == '\"'))
+			if (mod_(s[i]) == QUOTES0 && s[i] != ' ' && (s[i + 1] == ' ' \
+				|| s[i + 1] == '\0' || s[i + 1] == '\'' || s[i + 1] == '\"'))
 			{
 				if (k == 0)
-					here_put_EOL = i + 1;
+					i_end_arg0 = i + 1;
 				else
 					cmd->arg[k] = strndup_and_trim(&s[i_beg], i - i_beg + 1, d);
 				i_beg = i + 1;
 				k++;
 			}
 		free(s);
-		cmd->arg[0][here_put_EOL] = '\0';
+		cmd->arg[0][i_end_arg0] = '\0';
 	}
 	s = strndup_and_trim(cmd->arg[0], ft_strlen(cmd->arg[0]), d); // strdup_and_trim
 	free(cmd->arg[0]);
@@ -78,31 +130,32 @@ void put_redirs_and_args(t_data **d)
 	}
 }
 
-static void	verif_args_1(t_cmd *cmd)
-{
-	if (there_are_unclosed_quotes(cmd) && ft_strlen(cmd->err) == 0)
-		cmd->err = "unclosed quotes"; // exit_code ?
-	if (!cmd->arg && ft_strlen(cmd->err) == 0)
-		cmd->err = "empty commande"; // exit_code = 255
-	if (ft_strcmp(cmd->arg[0], "env") == 0 && cmd->nb_args > 1 && ft_strlen(cmd->err) == 0)
-		cmd->err = "env : Too many arguments"; // exit_code ?
-	if (ft_strcmp(cmd->arg[0], "cd") == 0 && cmd->nb_args > 2 && ft_strlen(cmd->err) == 0)
-		cmd->err = "cd : Too many arguments"; // exit_code ?
-	if (ft_strcmp(cmd->arg[0], "exit") == 0 && cmd->nb_args > 2 && ft_strlen(cmd->err) == 0)
-		cmd->err = "exit : Too many arguments"; // exit_code ?
-	if (ft_strcmp(cmd->arg[0], "exit") == 0 && !ft_atoi(cmd->arg[1]) && ft_strlen(cmd->err) == 0)
-		cmd->err = "exit: numeric argument required"; // exit_code = 2
-}
-
-void	verif_args(t_data **d)
+void put_paths_to_cmds(t_data **d)
 {
 	t_cmd	*cmd;
+	char	*path;
+	int		i;
 
 	cmd = *((*d)->cmds);
-	while(cmd != NULL)
+	while (cmd != NULL)
 	{
-		// (*d)->curr_cmd = cmd; // not used 
-		verif_args_1(cmd);
+		if (is_builtin(cmd))
+			continue ;
+		(*d)->curr_cmd = cmd;
+		i = -1;
+		while(++i < (*d)->nb_paths)
+		{
+			path = path_((*d)->paths[i], cmd->arg[0], d);
+			if (access(path, X_OK) == 0)
+				{
+					cmd->path = path;
+					printf("correct %s, break\n", path);
+					break ;
+				}
+			free(path);
+		}
+		if (cmd->path == NULL)
+			cmd->err = "command not found"; // exit_code = 127, if (errno != 2) exit_c = 126;
 		cmd = cmd->nxt;
 	}
 }

@@ -4,11 +4,12 @@ void	init_cmd(t_cmd **new, t_data **d)
 {
 	*new = (t_cmd *)malloc_(sizeof(t_cmd), d);
 	(*new)->arg = NULL;
-	(*new)->fd_in = STDIN_FILENO; // -1 ?
+	(*new)->fd_in = STDIN_FILENO;
 	(*new)->fd_out = STDOUT_FILENO;
+	(*new)->path = NULL;
 	(*new)->nxt = NULL;
 	(*new)->prv = NULL;
-	(*new)->err = "";
+	(*new)->err = NULL;
 }
 
 int	mod_(char c)
@@ -85,11 +86,6 @@ void print_cmds(char *msg, t_data **d)
 	cmd = *((*d)->cmds);
 	while (cmd != NULL)
 	{
-		if (ft_strlen(cmd->err) > 0)
-		{
-			printf("err %s\n", cmd->err);
-			continue ;
-		}
 		if (cmd->arg != NULL)
 		{
 			i = -1;
@@ -99,7 +95,7 @@ void print_cmds(char *msg, t_data **d)
 		else
 			printf("args = NULL");
 		printf(" fd_in = %d, fd_out = %d", cmd->fd_in, cmd->fd_out);
-		if (ft_strlen(cmd->err) > 0)
+		if (cmd->err != NULL)
 			printf(", err = %s\n", cmd->err);
 		printf("\n");
 		cmd = cmd->nxt;
@@ -107,7 +103,7 @@ void print_cmds(char *msg, t_data **d)
 	printf("\n");
 }
 
-void del_cmd_from_list(t_cmd *cmd, t_data **d)
+void del_cmd_from_lst(t_cmd *cmd, t_data **d)
 {
 	int		i;
 	t_cmd	*to_free;
@@ -129,7 +125,9 @@ void del_cmd_from_list(t_cmd *cmd, t_data **d)
 		*((*d)->cmds) = cmd->nxt;
 	else
 		cmd->prv->nxt = cmd->nxt;
-	free(to_free); // & ?
+	free(cmd->path);
+	free(cmd->err);
+	free(to_free); // &to_free ?
 	(*d)->curr_cmd = NULL;
 	to_free = NULL;
 }
@@ -141,64 +139,9 @@ void	del_cmds(t_data **d)
 	cmd = *((*d)->cmds);
 	while(cmd != NULL)
 	{
-		del_cmd_from_list(cmd, d);
+		del_cmd_from_lst(cmd, d);
 		cmd = cmd->nxt;
 	}
-}
-
-static char	*path2_(char *s1, int len_s1, t_cmd *cmd, t_data **d)
-{
-	int		i;
-	int		j;
-	char	*dest;
-
-	dest = (char *) malloc_(len_s1 + ft_strlen(cmd->arg[0]) + 1, d);
-	i = 0;
-	while (i < len_s1)
-	{
-		dest[i] = s1[i];
-		i++;
-	}
-	dest[i++] = '/';
-	j = 0;
-	while (cmd->arg[0][j] != '\0')
-	{
-		dest[i] = cmd->arg[0][j];
-		i++;
-		j++;
-	}
-	dest[i] = '\0';
-	return (dest);
-}
-
-char	*path_(t_cmd *cmd, t_data **d)
-{
-	char	*paths;
-	char	*path;
-	int		i;
-	int		i_beg;
-
-	printf("path_ [%s]\n", cmd->arg[0]);
-	paths = get_value_from_env("PATH", d);
-	if (!paths)
-	{
-		//free_all_and_go_to_next_cmd("no var env PATH" , exit_code = 127)
-		return (NULL);
-	}
-	i = -1;
-	i_beg = 0;
-	while (++i < (int)ft_strlen(paths))
-		if (paths[i] == '\0' || paths[i] == ':')
-		{
-			path = path2_(&(paths[i_beg]), i - i_beg, cmd, d);
-			if (access(path, X_OK) == 0)
-				return (path);
-			if (errno != 2)
-				(*d)->exit_c = 126;
-			i_beg = i + 1;
-		}
-	//free_all_and_go_to_next_cmd("command not found" , exit_code = 127)
-	return (NULL);
 }
 
 void	open_file(char *redir, char *redir_file, t_data **d)
@@ -286,4 +229,68 @@ void	calc_dollar_convers(t_cmd *cmd, t_data **d)
 				}
 			}
 		}
+}
+
+static void	verif_args_1(t_cmd *cmd)
+{
+	if (there_are_unclosed_quotes(cmd) && ft_strlen(cmd->err) == 0)
+		cmd->err = "unclosed quotes"; // exit_code ?
+	if (!cmd->arg && ft_strlen(cmd->err) == 0)
+		cmd->err = "empty commande"; // exit_code = 255
+	if (ft_strcmp(cmd->arg[0], "env") == 0 && cmd->nb_args > 1 && ft_strlen(cmd->err) == 0)
+		cmd->err = "env : Too many arguments"; // exit_code ?
+	if (ft_strcmp(cmd->arg[0], "cd") == 0 && cmd->nb_args > 2 && ft_strlen(cmd->err) == 0)
+		cmd->err = "cd : Too many arguments"; // exit_code ?
+	if (ft_strcmp(cmd->arg[0], "exit") == 0 && cmd->nb_args > 2 && ft_strlen(cmd->err) == 0)
+		cmd->err = "exit : Too many arguments"; // exit_code ?
+	if (ft_strcmp(cmd->arg[0], "exit") == 0 && !ft_atoi(cmd->arg[1]) && ft_strlen(cmd->err) == 0)
+		cmd->err = "exit: numeric argument required"; // exit_code = 2
+}
+
+void	verif_args(t_data **d)
+{
+	t_cmd	*cmd;
+
+	cmd = *((*d)->cmds);
+	while(cmd != NULL)
+	{
+		// (*d)->curr_cmd = cmd; // not used 
+		verif_args_1(cmd);
+		cmd = cmd->nxt;
+	}
+}
+
+int	is_builtin(t_cmd *cmd)
+{
+	return (\
+	ft_strcmp(cmd->arg[0], "cd") == 0 || \
+	ft_strcmp(cmd->arg[0], "exit") == 0 || \
+	ft_strcmp(cmd->arg[0], "export") == 0 || \
+	ft_strcmp(cmd->arg[0], "unset") == 0 || \
+	ft_strcmp(cmd->arg[0], "echo") == 0 || \
+	ft_strcmp(cmd->arg[0], "pwd") == 0 || \
+	ft_strcmp(cmd->arg[0], "env") == 0);
+}
+
+char	*path_(char *s1, char *s2, t_data **d)
+{
+	int		i;
+	int		s1_len;
+	int		s2_len;
+	char	*new_string;
+
+	s1_len = ft_strlen(s1);
+	s2_len = ft_strlen(s2);
+	new_string = (char *)malloc_(s1_len + s2_len + 2, d);
+	if (new_string == NULL)
+		return (NULL);
+	i = -1;
+	while (++i < s1_len)
+		new_string[i] = s1[i];
+	new_string[i] = '/';
+	i = -1;
+	while (++i < s2_len)
+		new_string[s1_len + 1 + i] = s2[i];
+	new_string[s1_len + 1 + i] = '\0';
+	return (new_string);
 }

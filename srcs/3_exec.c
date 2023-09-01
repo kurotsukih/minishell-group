@@ -164,26 +164,29 @@ exit 12
 // 	return (result);
 // }
 
+// can extern cmd change the env ?
 void exec_extern_cmd(t_cmd *cmd, t_data **d)
 {
-	char	*path;
 	int		pid;
 	int		status;
 	char	**env_array;
+	int		len_env;
 
 	pid = fork();
 	if (pid < -1)
-		free_all_and_exit("fork error", -1, d); //
+		free_all_and_exit("fork error", -1, d); // code ?
 	if (pid == 0)
 	{
-		(*d)->exit_c = 0;
-		path = path_(cmd, d);
+		(*d)->exit_c = 0; // code ?
 		env_array = env_to_array(d);
-		printf("execve %s %s\n", path, cmd->arg[0]);
-		if (path != NULL && env_array != NULL)
-			execve(path, cmd->arg, env_array);
-		free(path);
-		free_array_env(env_array, len_env(d));
+		len_env = len_env_(d);
+		printf("execve %s %s\n", cmd->path, cmd->arg[0]);
+		if (cmd->path != NULL && env_array != NULL) //path != NULL ? env_array != NULL ?
+		{
+			printf("execve %s %s\n", cmd->path, cmd->arg[0]);
+			execve(cmd->path, cmd->arg, env_array);
+		}
+		free_env_array(env_array, len_env);
 	}
 	else
 		wait(&status);
@@ -196,20 +199,20 @@ void	exec_cmds(t_data **d)
 	cmd = *((*d)->cmds);
 	while (cmd != NULL)
 	{
+		if (cmd->err != NULL) // CONTINUE !!!
+			(printf("eror %s", cmd->err), del_cmd_from_lst(cmd, d)); // exic code ? 
 		(*d)->curr_cmd = cmd; // not used ?
-		// if (cmd->fd_in != STDIN_FILENO)
-		// {
-		// 	if (dup2(cmd->fd_out, STDOUT_FILENO) == -1) // дубл. дескриптора => stdout в файл
-		// 		cmd->err = "dup2 failed";
-		// 	close(cmd->fd_out);
-		// }
+		if (cmd->fd_out != STDOUT_FILENO)
+		{
+			if (dup2(cmd->fd_out, STDOUT_FILENO) == -1) // дубл. дескриптора => stdout в файл
+				cmd->err = "dup2 failed";
+			printf("dup2 STDOUT_FILENO = %d\n", STDOUT_FILENO);
+			close(cmd->fd_out);
+		}
 		// à la premiere erreur (le droit decriture pour les redir out, etc) ca fait tout fail
 		calc_dollar_convers(cmd, d);
-		if (ft_strlen(cmd->err) > 0)
-		{
-			del_cmd_from_list(cmd, d);
-			continue ;
-		}
+		if (cmd->err != NULL)
+			(printf("eror %s", cmd->err), del_cmd_from_lst(cmd, d)); // exic code ?
 		if (ft_strcmp(cmd->arg[0], "echo") == 0)
 			exec_echo(cmd);
 		else if (ft_strcmp(cmd->arg[0], "env") == 0 && (*d)->env != NULL)
@@ -226,14 +229,11 @@ void	exec_cmds(t_data **d)
 			exec_exit(d);
 		else
 			exec_extern_cmd(cmd, d);
-		// if (cmd->fd_in == STDIN_FILENO)
-		// 	if (dup2((*d)->saved_stdout, STDOUT_FILENO) == -1) // восстановить исходный stdout
-		// 		cmd->err = "dup2 failed"; // exit code ?
-		if (ft_strlen(cmd->err) > 0)
-		{
-			del_cmd_from_list(cmd, d);
-			printf("eror %s", cmd->err); // exit code ?
-		}
+		if (cmd->fd_out == STDOUT_FILENO)
+			if (dup2((*d)->saved_stdout, STDOUT_FILENO) == -1) // восстановить исходный stdout
+				cmd->err = "dup2 failed"; // exit code ?
+		if (cmd->err != NULL)
+			(printf("eror %s", cmd->err), del_cmd_from_lst(cmd, d)); // exic code ?
 		cmd = cmd->nxt;
 	}
 }
