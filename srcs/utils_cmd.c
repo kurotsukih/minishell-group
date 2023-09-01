@@ -307,3 +307,20 @@ char	*path_(char *s1, char *s2, t_data **d)
 	new_string[s1_len + 1 + i] = '\0';
 	return (new_string);
 }
+
+void	start_redirs(t_cmd *cmd)
+{
+	if (cmd->fd_out != STDOUT_FILENO)
+	{
+		if (dup2(cmd->fd_out, STDOUT_FILENO) == -1) // дубл. дескриптора => stdout в файл
+			cmd->err = "dup2 failed";
+		close(cmd->fd_out);
+	}
+}
+
+void	stop_redirs(t_cmd *cmd, t_data **d)
+{
+	if (cmd->fd_out == STDOUT_FILENO)
+		if (dup2((*d)->saved_stdout, STDOUT_FILENO) == -1) // восстановить исходный stdout
+			cmd->err = "dup2 failed"; // exit code ?
+}

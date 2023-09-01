@@ -1,10 +1,11 @@
-LIST  0x55f2b5acd300->0x55f2b5ae1d00:
+LIST  0x565549034300->0x565549048d00:
   ls :  fd_in = 0, fd_out = 1
   path = /usr/bin/ls
 
 en.subject.pdf
 fr.subject.pdf
 libft
+ls 
 Makefile
 minishell
 out

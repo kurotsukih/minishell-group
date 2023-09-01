@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   main.h                                             :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: akalimol <akalimol@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/05/06 13:24:48 by akadilkalim       #+#    #+#             */
-/*   Updated: 2023/06/01 20:15:13 by akalimol         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #ifndef MAIN_H
 # define MAIN_H
 
@@ -85,6 +73,8 @@ void	calc_dollar_convers(t_cmd *cmd, t_data **d);
 int		is_builtin(t_cmd *cmd);
 char	*path_(char *s1, char *s2, t_data **d);
 void	open_file(char *redir, char *redir_file, t_data **d);
+void	start_redirs(t_cmd *cmd);
+void 	stop_redirs(t_cmd *cmd, t_data **d);
 void	print_cmds(char *msg, t_data **d);
 
 // utils env

@@ -198,13 +198,7 @@ void	exec_cmds(t_data **d)
 		if (cmd->err != NULL) // CONTINUE !!!
 			(printf("eror %s", cmd->err), del_cmd_from_lst(cmd, d)); // exic code ? 
 		(*d)->curr_cmd = cmd; // not used ?
-		if (cmd->fd_out != STDOUT_FILENO)
-		{
-			if (dup2(cmd->fd_out, STDOUT_FILENO) == -1) // дубл. дескриптора => stdout в файл
-				cmd->err = "dup2 failed";
-			printf("dup2 STDOUT_FILENO = %d\n", STDOUT_FILENO);
-			close(cmd->fd_out);
-		}
+		start_redirs(cmd);
 		// à la premiere erreur (le droit decriture pour les redir out, etc) ca fait tout fail
 		calc_dollar_convers(cmd, d);
 		if (cmd->err != NULL)
@@ -225,9 +219,10 @@ void	exec_cmds(t_data **d)
 			exec_exit(d);
 		else
 			exec_extern_cmd(cmd, d);
-		if (cmd->fd_out == STDOUT_FILENO)
-			if (dup2((*d)->saved_stdout, STDOUT_FILENO) == -1) // восстановить исходный stdout
-				cmd->err = "dup2 failed"; // exit code ?
+		stop_redirs(cmd, d);
+		// if (cmd->fd_out == STDOUT_FILENO)
+		// 	if (dup2((*d)->saved_stdout, STDOUT_FILENO) == -1) // восстановить исходный stdout
+		// 		cmd->err = "dup2 failed"; // exit code ?
 		if (cmd->err != NULL)
 			(printf("eror %s", cmd->err), del_cmd_from_lst(cmd, d)); // exic code ?
 		cmd = cmd->nxt;
