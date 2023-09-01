@@ -67,7 +67,7 @@ typedef struct		s_data
 
 void	put_redirs_and_args(t_data **d);
 void	put_redirs(t_data **d);
-void	calc_dollar_conversions(t_data **d);
+void	calc_dollar_convers(t_data **d);
 void	verif_args(t_data **d);
 void	open_file(char *redir, char *redir_file, t_data **d);
 void	exec_pwd(t_data **d);

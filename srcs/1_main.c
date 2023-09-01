@@ -76,7 +76,7 @@ static void	init_d(t_data ***d, char **env_array) // **d ?
 	// signal(SIGINT, &sig_handler_main);
 }
 
-// pwd a b >out1 >out1+ >> out2 < in >> out2+ < in+ <in++
+// >out1 >out1+ >> out2 < in >> out2+ < in+ <in++
 static void put_full_cmd_to_arg0(char *full_cmd, int len, t_data **d)
 {
 	t_cmd *cmd;
@@ -150,9 +150,9 @@ int	main(int argc, char **argv, char **env_array)
 		add_history(cmd_line);
 		init_cmds(cmd_line, d);
 		put_redirs_and_args(d);
-		calc_dollar_conversions(d);
-		verif_args(d);
+		calc_dollar_convers(d); // 2 times ?
 		print_cmds("", d);
+		verif_args(d);
 		exec_cmds(d);
 		del_cmds(d);
 		free(cmd_line);

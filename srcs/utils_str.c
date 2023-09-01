@@ -43,7 +43,6 @@ char	*strndup_and_trim(char *src, int len, t_data **d)
 		i++;
 	}
 	dest[i] = '\0';
-	printf("strndup_and_trim return [%s]\n", dest);
 	return (dest);
 }
 

@@ -130,6 +130,7 @@ void del_cmd_from_list(t_cmd *cmd, t_data **d)
 	else
 		cmd->prv->nxt = cmd->nxt;
 	free(to_free); // & ?
+	(*d)->curr_cmd = NULL;
 	to_free = NULL;
 }
 

@@ -84,6 +84,6 @@ char	*get_value_from_env(char *key, t_data **d)
 			return (val_(var->var, d));
 		var = var->nxt;
 	}
-	(*d)->curr_cmd->err = "env variable not find";
+	(*d)->curr_cmd->err = "env variable not found";
 	return (NULL);
 }

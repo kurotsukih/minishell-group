@@ -4,7 +4,6 @@ void	exec_pwd(t_data **d)
 {
 	char	*s;
 
-	// write(STDOUT_FILENO, "write pwd\n", 11);
 	s = getcwd(NULL, 0);
 	if (s == NULL)
 	{
@@ -49,6 +48,24 @@ void	exec_env(t_data **d)
 	}
 }
 
+void	exec_export(t_cmd *cmd, t_data **d)
+{
+	t_env	*new_var;
+	int		i;
+
+	if (cmd->nb_args == 0)
+		exec_env(d);
+	exec_unset(cmd, d);
+	i = 0;
+	while (++i < cmd->nb_args)
+	{
+		new_var = (t_env *)malloc_(sizeof(t_env), d);
+		new_var->var = strdup_(cmd->arg[i], d);
+		new_var->nxt = *((*d)->env);
+		*((*d)->env) = new_var;
+	}
+}
+
 void	exec_unset(t_cmd *cmd, t_data **d)
 {
 	t_env	*var;
@@ -82,20 +99,3 @@ void	exec_unset(t_cmd *cmd, t_data **d)
 	}
 }
 
-void	exec_export(t_cmd *cmd, t_data **d)
-{
-	t_env	*new_var;
-	int		i;
-
-	if (cmd->nb_args == 0)
-		exec_env(d);
-	exec_unset(cmd, d);
-	i = 0;
-	while (++i < cmd->nb_args)
-	{
-		new_var = (t_env *)malloc_(sizeof(t_env), d);
-		new_var->var = strdup_(cmd->arg[i], d);
-		new_var->nxt = *((*d)->env);
-		*((*d)->env) = new_var;
-	}
-}

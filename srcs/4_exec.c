@@ -51,7 +51,6 @@ void	exec_exit(t_data **d)
 	free_all_and_exit("", -1, d);
 }
 
-
 void	exec_echo(t_cmd *cmd)
 {
 	int	option_n;
@@ -111,8 +110,12 @@ void	exec_cmds(t_data **d)
 		// 		cmd->err = "dup2 failed";
 		// 	close(cmd->fd_out);
 		// }
+		// à la premiere erreur (le droit decriture pour les redir out, etc) ca fait tout fail
 		if (ft_strlen(cmd->err) > 0)
+		{
+			del_cmd_from_list(cmd, d);
 			continue ;
+		}
 		if (ft_strcmp(cmd->arg[0], "echo") == 0)
 			exec_echo(cmd);
 		else if (ft_strcmp(cmd->arg[0], "env") == 0 && (*d)->env != NULL)
@@ -133,7 +136,10 @@ void	exec_cmds(t_data **d)
 		// 	if (dup2((*d)->saved_stdout, STDOUT_FILENO) == -1) // восстановить исходный stdout
 		// 		cmd->err = "dup2 failed"; // exit code ?
 		if (ft_strlen(cmd->err) > 0)
+		{
+			del_cmd_from_list(cmd, d);
 			printf("eror %s", cmd->err); // exit code ?
+		}
 		cmd = cmd->nxt;
 	}
 }
