@@ -21,24 +21,29 @@ char *alphanum_(char *s, t_data **d)
 char	*strndup_and_trim(char *src, int len, t_data **d)
 {
 	int		i;
+	int		i_beg;
+	int		i_end;
+	int		new_len;
 	char	*dest;
 
-	while (src[0] == ' ' && src[0] != '\0')
+	i = 0;
+	while (src[i] == ' ' && src[i] != '\0')
+		i++;
+	i_beg = i;
+	i = len - 1;
+	while (src[i] == ' ' && i >= 0)
+		i--;
+	i_end = i;
+	new_len = i_end - i_beg + 1;
+	dest = (char *)malloc_(new_len + 1, d);
+	i = 0;
+	while (i < new_len)
 	{
-		src++;
-		len--;
+		dest[i] = src[i_beg + i];
+		i++;
 	}
-	i = len;
-	while (src[--i] == ' ' && i >= 0)
-	{
-		src[i] = '\0';
-		len--;
-	}
-	dest = (char *)malloc_(len + 1, d);
-	i = -1;
-	while (++i < len)
-		dest[i] = src[i];
 	dest[i] = '\0';
+	printf("strndup_and_trim return [%s]\n", dest);
 	return (dest);
 }
 

@@ -152,8 +152,8 @@ int	main(int argc, char **argv, char **env_array)
 		put_redirs_and_args(d);
 		calc_dollar_conversions(d);
 		verif_args(d);
+		print_cmds("", d);
 		exec_cmds(d);
-		// print_cmds("", d);
 		del_cmds(d);
 		free(cmd_line);
 	}

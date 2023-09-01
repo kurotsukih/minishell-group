@@ -36,8 +36,15 @@ static void put_args_1(t_cmd *cmd, t_data **d)
 	int here_put_EOL;
 	char *s;
 
-	if (cmd->nb_args <= 1)
-		return;
+	if (cmd->nb_args == 0)
+		return ;
+	if (cmd->nb_args == 1)
+	{
+		s = strndup_and_trim(cmd->arg[0], ft_strlen(cmd->arg[0]), d); // strdup_and_trim
+		free(cmd->arg[0]);
+		cmd->arg[0] = s;
+		cmd->arg[cmd->nb_args] = NULL;
+	}
 	mod_(REINIT_QUOTES);
 	i_beg = 0;
 	k = 0;
@@ -53,9 +60,12 @@ static void put_args_1(t_cmd *cmd, t_data **d)
 			i_beg = i + 1;
 			k++;
 		}
-	cmd->arg[0][here_put_EOL] = '\0';
-	cmd->arg[cmd->nb_args] = NULL;
 	free(s);
+	cmd->arg[0][here_put_EOL] = '\0';
+	s = strndup_and_trim(cmd->arg[0], ft_strlen(cmd->arg[0]), d);
+	free(cmd->arg[0]);
+	cmd->arg[0] = s;
+	cmd->arg[cmd->nb_args] = NULL;
 }
 
 void put_redirs_and_args(t_data **d)

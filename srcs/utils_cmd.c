@@ -98,7 +98,10 @@ void print_cmds(char *msg, t_data **d)
 		}
 		else
 			printf("args = NULL");
-		printf(" fd_in = %d, fd_out = %d\n  ", cmd->fd_in, cmd->fd_out);
+		printf(" fd_in = %d, fd_out = %d", cmd->fd_in, cmd->fd_out);
+		if (ft_strlen(cmd->err) > 0)
+			printf(", err = %s\n", cmd->err);
+		printf("\n");
 		cmd = cmd->nxt;
 	}
 	printf("\n");
@@ -174,6 +177,7 @@ char	*path_(t_cmd *cmd, t_data **d)
 	int		i;
 	int		i_beg;
 
+	printf("path_ [%s]\n", cmd->arg[0]);
 	paths = get_value_from_env("PATH", d);
 	if (!paths)
 	{

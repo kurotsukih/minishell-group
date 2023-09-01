@@ -87,6 +87,7 @@ void exec_extern_cmd(t_cmd *cmd, t_data **d)
 		(*d)->exit_c = 0;
 		path = path_(cmd, d);
 		env_array = env_to_array(d);
+		printf("execve %s %s\n", path, cmd->arg[0]);
 		if (path != NULL && env_array != NULL)
 			execve(path, cmd->arg, env_array);
 		free(path);
