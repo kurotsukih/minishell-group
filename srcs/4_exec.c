@@ -111,6 +111,7 @@ void	exec_cmds(t_data **d)
 		// 	close(cmd->fd_out);
 		// }
 		// à la premiere erreur (le droit decriture pour les redir out, etc) ca fait tout fail
+		calc_dollar_convers(cmd, d);
 		if (ft_strlen(cmd->err) > 0)
 		{
 			del_cmd_from_list(cmd, d);

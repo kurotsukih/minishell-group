@@ -66,8 +66,6 @@ typedef struct		s_data
 }					t_data;
 
 void	put_redirs_and_args(t_data **d);
-void	put_redirs(t_data **d);
-void	calc_dollar_convers(t_data **d);
 void	verif_args(t_data **d);
 void	open_file(char *redir, char *redir_file, t_data **d);
 void	exec_pwd(t_data **d);
@@ -78,17 +76,20 @@ void	exec_unset(t_cmd *cmd, t_data **d);
 void	exec_cmds(t_data **d);
 void	exec_exit(t_data **d);
 void	exec_cd(t_cmd *cmd, t_data **d);
+void	del_cmd_from_list(t_cmd *cmd, t_data **d);
 void	del_cmds(t_data **d);
 
-// utils
+// utils cmd
 void	init_cmd(t_cmd **new, t_data **d);
 int		nb_args_(char *s, int len, t_data **d);
 char	*redir_(char *s);
 char	*path_(t_cmd *cmd, t_data **d);
 int		mod_(char c);	
+void	calc_dollar_convers(t_cmd *cmd, t_data **d);
 int		there_are_unclosed_quotes(t_cmd *cmd);
 void	print_cmds(char *msg, t_data **d);
 
+// utils env
 char	*key_(char *s, t_data **d);
 char 	*val_(char *s, t_data **d);
 char	**env_to_array(t_data **d);
@@ -96,18 +97,17 @@ int		len_env(t_data **d);
 char	*get_value_from_env(char *key, t_data **d);
 void	free_array_env(char **env, int len);
 
+// utils str
 char	*alphanum_(char *s, t_data **d);
-char	*strndup_and_trim(char *srs, int len, t_data **d);
+char	*strdup_(char *s, t_data **d);
 char	*strdup_and_erase_redirs(char *s0, t_data **d);
 char	*strdup_and_erase_args_except_redirs(char *s0, t_data **d);
-char	*strdup_(char *s, t_data **d);
+char	*strndup_and_trim(char *srs, int len, t_data **d);
 
+// utils
+void	*malloc_(size_t size, t_data **d);
+void	free_all_and_exit(char *msg, int exit_c, t_data **d); /// ***d ?
 void	sig_handler_main(int signal);
 void	sig_handler_fork(int signal);
-void	*malloc_(size_t size, t_data **d);
-
-void	free_all_and_exit(char *msg, int exit_c, t_data **d); /// ***d ?
-void	del_cmd_from_list(t_cmd *cmd, t_data **d);
-void	del_cmds(t_data **d);
 
 #endif

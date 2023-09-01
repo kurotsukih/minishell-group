@@ -150,7 +150,6 @@ int	main(int argc, char **argv, char **env_array)
 		add_history(cmd_line);
 		init_cmds(cmd_line, d);
 		put_redirs_and_args(d);
-		calc_dollar_convers(d); // 2 times ?
 		print_cmds("", d);
 		verif_args(d);
 		exec_cmds(d);
