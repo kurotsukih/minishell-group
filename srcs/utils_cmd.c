@@ -1,18 +1,14 @@
 #include "headers.h"
 
-void	init_cmd(t_cmds **new, t_data **d)
+void	init_cmd(t_cmd **new, t_data **d)
 {
-	*new = (t_cmds *)malloc_(sizeof(t_cmds), d);
-	(*new)->nb_max_args = INT_MAX;
-	(*new)->args = NULL;
-	(*new)->redir_in = NULL;
-	(*new)->redir_out = NULL;
-	(*new)->redir_out2 = NULL;
-	(*new)->to_free = NULL;
-	(*new)->fd_in = STDIN_FILENO;
+	*new = (t_cmd *)malloc_(sizeof(t_cmd), d);
+	(*new)->arg = NULL;
+	(*new)->fd_in = STDIN_FILENO; // -1 ?
 	(*new)->fd_out = STDOUT_FILENO;
 	(*new)->nxt = NULL;
 	(*new)->prv = NULL;
+	(*new)->err = "";
 }
 
 int	mod_(char c)
@@ -30,6 +26,18 @@ int	mod_(char c)
 	else if (mod == QUOTES2 && c == '\"')
 		mod = QUOTES0;
 	return (mod);
+}
+
+int	there_are_unclosed_quotes(t_cmd *cmd)
+{
+	int		mod;
+	int		i;
+
+	mod_(REINIT_QUOTES);
+	i = -1;
+	while (cmd->arg[0][++i] != '\0')
+		mod = mod_(cmd->arg[0][i]);
+	return (mod != QUOTES0);
 }
 
 char	*redir_(char *s)
@@ -66,7 +74,7 @@ int	nb_args_(char *s0, int len, t_data **d)
 void print_cmds(char *msg, t_data **d)
 {
 	int		i;
-	t_cmds	*cmd;
+	t_cmd	*cmd;
 
 	printf("LIST %s %14p->%14p:\n  ", msg, (*d)->cmds, (*d)->cmds == NULL ? 0 : *((*d)->cmds));
 	if ((*d)->cmds == NULL || *((*d)->cmds) == NULL)
@@ -77,69 +85,147 @@ void print_cmds(char *msg, t_data **d)
 	cmd = *((*d)->cmds);
 	while (cmd != NULL)
 	{
-		if (cmd->args != NULL)
+		if (ft_strlen(cmd->err) > 0)
+		{
+			printf("err %s\n", cmd->err);
+			continue ;
+		}
+		if (cmd->arg != NULL)
 		{
 			i = -1;
 			while (++i < cmd->nb_args)
-				printf("%s : ", cmd->args[i]);
+				printf("%s : ", cmd->arg[i]);
 		}
 		else
 			printf("args = NULL");
-		printf("\n  redirs [%s %s %s]\n  ", cmd->redir_out, cmd->redir_out2, cmd->redir_in);
+		printf(" fd_in = %d, fd_out = %d\n  ", cmd->fd_in, cmd->fd_out);
 		cmd = cmd->nxt;
 	}
 	printf("\n");
 }
 
-void del_cmd_from_list(t_cmds *cmd, t_data **d)
+void del_cmd_from_list(t_cmd *cmd, t_data **d)
 {
 	int		i;
-	t_cmds	*to_free;
+	t_cmd	*to_free;
 
 	if (cmd == NULL)
 		return ;
 	i = -1;
 	while(++i < cmd->nb_args)
 	{
-		free(cmd->args[i]);
-		cmd->args[i] = NULL;
+		free(cmd->arg[i]);
+		cmd->arg[i] = NULL;
 	}
-	free(cmd->args);
-	free(cmd->redir_in);
-	free(cmd->redir_out);
-	free(cmd->redir_out2);
-	cmd->args = NULL;
-	cmd->redir_in = NULL;
-	cmd->redir_out = NULL;
-	cmd->redir_out2 = NULL;
+	free(cmd->arg);
+	cmd->arg = NULL;
 	to_free = cmd;
 	if (cmd->nxt != NULL)
 		cmd->nxt->prv = cmd->prv;
 	if (cmd->prv == NULL)
-	{
 		*((*d)->cmds) = cmd->nxt;
-		// printf("3a) del cmd\n");
-	}
 	else
-	{
 		cmd->prv->nxt = cmd->nxt;
-		// printf("3b) del cmd\n");
-	}
 	free(to_free); // & ?
 	to_free = NULL;
-	// print_cmds("end free cmd", d);
 }
 
 void	del_cmds(t_data **d)
 {
-	t_cmds	*cmd;
+	t_cmd	*cmd;
 
 	cmd = *((*d)->cmds);
 	while(cmd != NULL)
 	{
-		// *((*d)->cmds) = (*((*d)->cmds))->nxt;
 		del_cmd_from_list(cmd, d);
 		cmd = cmd->nxt;
 	}
-	print_cmds("end free cmds", d);
+}
+
+static char	*path2_(char *s1, int len_s1, t_cmd *cmd, t_data **d)
+{
+	int		i;
+	int		j;
+	char	*dest;
+
+	dest = (char *) malloc_(len_s1 + ft_strlen(cmd->arg[0]) + 1, d);
+	i = 0;
+	while (i < len_s1)
+	{
+		dest[i] = s1[i];
+		i++;
+	}
+	dest[i++] = '/';
+	j = 0;
+	while (cmd->arg[0][j] != '\0')
+	{
+		dest[i] = cmd->arg[0][j];
+		i++;
+		j++;
+	}
+	dest[i] = '\0';
+	return (dest);
+}
+
+char	*path_(t_cmd *cmd, t_data **d)
+{
+	char	*paths;
+	char	*path;
+	int		i;
+	int		i_beg;
+
+	paths = get_value_from_env("PATH", d);
+	if (!paths)
+	{
+		//free_all_and_go_to_next_cmd("no var env PATH" , exit_code = 127)
+		return (NULL);
+	}
+	i = -1;
+	i_beg = 0;
+	while (++i < (int)ft_strlen(paths))
+		if (paths[i] == '\0' || paths[i] == ':')
+		{
+			path = path2_(&(paths[i_beg]), i - i_beg, cmd, d);
+			if (access(path, X_OK) == 0)
+				return (path);
+			if (errno != 2)
+				(*d)->exit_c = 126;
+			i_beg = i + 1;
+		}
+	//free_all_and_go_to_next_cmd("command not found" , exit_code = 127)
+	return (NULL);
+}
+
+void	open_file(char *redir, char *redir_file, t_data **d)
+{
+	if (ft_strlen(redir_file) == 0)
+	{
+		//'bash: erreur de syntaxe près du symbole inattendu « > »"
+		(*d)->curr_cmd->err = "erreur de syntaxe près du symbole inattendu « > »";
+		return ;
+	}
+	if (ft_strcmp(redir, "<") == 0)
+	{
+		if ((*d)->curr_cmd->fd_in != STDIN_FILENO)
+			close((*d)->curr_cmd->fd_in);
+		(*d)->curr_cmd->fd_in = open(redir_file, O_RDONLY);
+		if (!(*d)->curr_cmd->fd_in)
+			(*d)->curr_cmd->err = "open file failed";
+	}
+	else if (ft_strcmp(redir, ">") == 0)
+	{
+		if ((*d)->curr_cmd->fd_out != STDIN_FILENO)
+			close((*d)->curr_cmd->fd_out);
+		(*d)->curr_cmd->fd_out = open(redir_file, O_WRONLY | O_CREAT | O_TRUNC, 0666);
+		if (!(*d)->curr_cmd->fd_out)
+			(*d)->curr_cmd->err = "open file failed";
+	}
+	else if (ft_strcmp(redir, ">>") == 0)
+	{
+		if ((*d)->curr_cmd->fd_out != STDIN_FILENO)
+			close((*d)->curr_cmd->fd_out);
+		(*d)->curr_cmd->fd_out = open(redir_file, O_WRONLY | O_CREAT | O_APPEND, 0666);
+		if (!(*d)->curr_cmd->fd_out)
+			(*d)->curr_cmd->err = "open file failed";
+	}
 }

@@ -21,7 +21,7 @@ char *key_(char *s, t_data **d)
 	return (NULL);
 }
 
-char *val_(char *s)
+char *val_(char *s, t_data **d)
 {
 	int		i;
 	char	*s_dup;
@@ -31,7 +31,7 @@ char *val_(char *s)
 	{
 		if (s[i] == '=')
 		{
-			s_dup = ft_strdup(&s[i + 1]);
+			s_dup = strdup_(&s[i + 1], d);
 			if (s_dup == NULL)
 				return (NULL);
 			return (s_dup);
@@ -81,8 +81,9 @@ char	*get_value_from_env(char *key, t_data **d)
 	while (var != NULL)
 	{
 		if (ft_strcmp(key_(var->var, d), key) == 0)
-			return (val_(var->var));
+			return (val_(var->var, d));
 		var = var->nxt;
 	}
+	(*d)->curr_cmd->err = "env variable not find";
 	return (NULL);
 }

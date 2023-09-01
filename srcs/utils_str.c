@@ -49,9 +49,7 @@ char	*strdup_and_erase_redirs(char *s0, t_data **d) // len useful
 
 	i = 0;
 	mod_(REINIT_QUOTES);
-	s = ft_strdup(s0); // malloc_
-	if (s == NULL)
-		free_all_and_go_to_next_cmd("strdup", d);
+	s = strdup_(s0, d);
 	while (s[i] != '\0')
 	{
 		if (mod_(s[i]) == QUOTES0 && ft_strlen(redir_(&s[i])) > 0)
@@ -77,9 +75,7 @@ char	*strdup_and_erase_args_except_redirs(char *s0, t_data **d) // enlever len
 
 	i = 0;
 	mod_(REINIT_QUOTES);
-	s = ft_strdup(s0); // malloc_
-	if (s == NULL)
-		free_all_and_go_to_next_cmd("strdup", d);
+	s = strdup_(s0, d);
 	while (s[i] != '\0')
 	{	
 		if (mod_(s[i]) == QUOTES0 && ft_strlen(redir_(&s[i])) > 0)
@@ -97,12 +93,30 @@ char	*strdup_and_erase_args_except_redirs(char *s0, t_data **d) // enlever len
 	return (s);
 }
 
-void	free_charchar(char **s, int len)
+void	free_array_env(char **env, int len)
 {
 	int	i;
 
 	i = 0;
 	while (i < len)
-		free(s[i]);
-	free(s);
+		free(env[i]);
+	free(env);
+}
+
+char	*strdup_(char *s, t_data **d)
+{
+	size_t	i;
+	char	*dup;
+
+	dup = (char *)malloc_((ft_strlen(s) + 1) * sizeof(char), d);
+	if (dup == NULL)
+		return (NULL);
+	i = 0;
+	while (s[i] != '\0')
+	{
+		dup[i] = s[i];
+		i++;
+	}
+	dup[i] = '\0';
+	return (dup);
 }

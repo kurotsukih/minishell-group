@@ -39,23 +39,24 @@ void	*malloc_(size_t size, t_data **d)
 	mem = NULL;
 	mem = malloc(size);
 	if (mem == NULL)
-		free_all_and_exit("malloc problem", d);
+	{
+		if ((*d)->curr_cmd == NULL)
+			free_all_and_exit("malloc problem", -1, d); // code ?
+		else
+			(*d)->curr_cmd->err = "malloc failure";
+	}
 	return (mem);
 }
 
-void	free_all_and_exit(char *msg, t_data **d)
+// if there is a global error, then exit
+// if there is an error concerning only one command, then skip this command
+void	free_all_and_exit(char *msg, int exit_c, t_data **d)
 {
 	if (msg == NULL)
-		printf("%s %s\n", msg, strerror(errno));
-	if ((*d)->to_free != NULL)
-		free((*d)->to_free); ///
-	exit((*d)->exit_c);
-}
-
-void	free_all_and_go_to_next_cmd(char *msg, t_data **d)
-{
-	if (msg == NULL)
-		printf("%s %s\n", msg, strerror(errno));
-	if ((*d)->to_free != NULL)
-		free((*d)->to_free); ///
+		printf("error %s\n", strerror(errno));
+	else
+		printf("error %s %s\n", msg, strerror(errno));
+	// free all
+	(void)d;
+	exit(exit_c);
 }

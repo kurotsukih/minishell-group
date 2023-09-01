@@ -1,37 +1,21 @@
 #include "headers.h"
 
-void	exec_echo(t_cmds *cmd)
-{
-	int	option_n;
-	int	i;
-
-	// write(STDOUT_FILENO, "write echo\n", 12);
-	option_n = 0;
-	i = 0;
-	while (++i < cmd->nb_args)
-	{
-		if (ft_strcmp(cmd->args[i], "-n") == 0)
-			option_n = 1;
-		else if (i == cmd->nb_args - 1)
-			printf("%s", cmd->args[i]);
-		else
-			printf("%s ", cmd->args[i]);
-	}
-	if (option_n == 0)
-		printf("\n");
-}
-
-void	exec_pwd(void)
+void	exec_pwd(t_data **d)
 {
 	char	*s;
 
 	// write(STDOUT_FILENO, "write pwd\n", 11);
 	s = getcwd(NULL, 0);
+	if (s == NULL)
+	{
+		(*d)->curr_cmd->err = "getcwd failed"; // exit code ?
+		return ;
+	}
 	printf("%s\n", s);
 	free(s);
 }
 
-void	exec_cd(t_cmds *cmd, t_data **d)
+void	exec_cd(t_cmd *cmd, t_data **d)
 {
 	char	*dir;
 
@@ -42,24 +26,15 @@ void	exec_cd(t_cmds *cmd, t_data **d)
 		dir = get_value_from_env("HOME", d);
 		if (dir == NULL)
 		{
-		//  free_all_and_go_to_next_cmd("cd " , exit_code = )
+			(*d)->curr_cmd->err = "env variable HOME not found"; // exit code ?
 			return ;
 		}
+		if (chdir(dir) == -1)
+			(*d)->curr_cmd->err = "chdir failure "; // exit code ? 
+		return ;
 	}
-	if (cmd->nb_args > 1)
-		dir = cmd->args[1];
-	if (chdir(dir) == -1)
-	{
-		//  free_all_and_go_to_next_cmd("cd " , exit_code = )
-	}
-	if(dir != NULL)
-		free(dir);
-}
-
-void	exec_exit(t_data **d)
-{
-	//(*d)->exit_c = 
-	free_all_and_exit("", d);
+	if (chdir(cmd->arg[1]) == -1)
+		(*d)->curr_cmd->err = "chdir failure "; // exit code ?
 }
 
 void	exec_env(t_data **d)
@@ -74,10 +49,11 @@ void	exec_env(t_data **d)
 	}
 }
 
-void	exec_unset(t_cmds *cmd, t_data **d)
+void	exec_unset(t_cmd *cmd, t_data **d)
 {
 	t_env	*var;
 	t_env	*prv;
+	char	*key;
 	int		i;
 
 	i = 0;
@@ -87,7 +63,10 @@ void	exec_unset(t_cmds *cmd, t_data **d)
 		var = *((*d)->env);
 		while (var != NULL)
 		{
-			if (ft_strcmp(key_(var->var, d), cmd->args[i]) == 0)
+			key = key_(var->var, d);
+			if (key == NULL)
+				continue ;
+			if (ft_strcmp(key, cmd->arg[i]) == 0)
 			{
 				free(var->var);
 				if (prv != NULL)
@@ -103,7 +82,7 @@ void	exec_unset(t_cmds *cmd, t_data **d)
 	}
 }
 
-void	exec_export(t_cmds *cmd, t_data **d)
+void	exec_export(t_cmd *cmd, t_data **d)
 {
 	t_env	*new_var;
 	int		i;
@@ -115,7 +94,7 @@ void	exec_export(t_cmds *cmd, t_data **d)
 	while (++i < cmd->nb_args)
 	{
 		new_var = (t_env *)malloc_(sizeof(t_env), d);
-		new_var->var = ft_strdup(cmd->args[i]);
+		new_var->var = strdup_(cmd->arg[i], d);
 		new_var->nxt = *((*d)->env);
 		*((*d)->env) = new_var;
 	}

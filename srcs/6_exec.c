@@ -30,35 +30,6 @@
 // 	}
 // }
 
-// static char	*ft_open_all_files(t_list *arg, t_cmd *cmd)
-// {
-// 	while (arg)
-// 	{
-// 		if (arg->type == REDIR_OUT || arg->type == REDIR_OUT2)
-// 		{
-// 			if (cmd->out_fd != 1)
-// 				close(cmd->out_fd);
-// 			cmd->out_fd = open(arg, O_WRONLY | O_CREAT | O_APPEND, 0666);
-// 		}
-// 		else if (arg->type == REDIR_IN)
-// 		{
-// 			if (fd != 0)
-// 				close(fd);
-// 			cmd->in_fd = open(arg, O_RDONLY);
-// 		}
-// 		else
-// 		{
-// 			if (fd != 0)
-// 				close(fd);
-// 			cmd->in_fd = *(arg);
-// 		}
-// 		if (cmd->in_fd == -1 || cmd->out_fd == -1)
-// 			return (arg);
-// 		arg = arg->next;
-// 	}
-// 	return (NULL);
-// }
-
 // static void	pipe_(int i_cmd, t_data **d)
 // {
 // 	int		fd[2];
@@ -122,18 +93,11 @@
 // 				else if (cmd->params)
 // 				{
 // 					exit_c = exec_program(cmd, d->env, n);
-// 					path = NULL;
 // 					if (!ft_strcmp(cmd->ars, "."))
 // 						return (exit_(-1, "bash: .: filename arg required\n"), -1);
 // 					exit_c = ft_find_path(cmd->args, env, &path);
-// 					if (!path)
-// 						exit_c;
 // 					args = ft_construct_command(cmd->args);
-// 					if (!args)
-// 						return (free(path), 255);
 // 					execve(path, args, ft_construct_command(env));
-// 					free(args);
-// 					free(path);
 // 					path = cmd->args;
 // 					if (ft_strchr(path, '/'))
 // 						exit_(-1, "bash: %s: no such file or directory\n");

@@ -32,23 +32,22 @@
 # define QUOTES0 0
 # define QUOTES1 1
 # define QUOTES2 2
+// # define SUCCESS 0
+// # define FAILURE 1
 
 extern int g_signal;
 
-typedef struct 		s_cmds
+// arg[0] = prog name
+typedef struct 		s_cmd
 {
-	char			**args; // args[0] = prog name, argd[n] mixed args and options 
+	char			**arg;
 	int				nb_args;
-	int				nb_max_args;
-	char			*redir_in;
-	char			*redir_out;
-	char			*redir_out2;
 	int				fd_in;
 	int				fd_out;
-	char			**to_free;
-	struct s_cmds	*nxt;
-	struct s_cmds	*prv;
-}					t_cmds;
+	struct s_cmd	*nxt;
+	struct s_cmd	*prv; // not used ?
+	char			*err;
+}					t_cmd;
 
 typedef struct		s_env
 {
@@ -56,55 +55,59 @@ typedef struct		s_env
 	struct s_env	*nxt;
 }					t_env;
 
-typedef struct 		s_data
+// *cmd = currectly traited cmd
+typedef struct		s_data
 {
-	t_cmds			**cmds;
+	t_cmd			**cmds;
+	t_cmd			*curr_cmd;
 	t_env			**env;
 	int				exit_c;
-	char			*err;
-	char			*to_free;
+	int				saved_stdout;
 }					t_data;
 
-void	put_full_cmd_to_arg0(char *cmd_line, t_data **d);
 void	put_redirs_and_args(t_data **d);
 void	put_redirs(t_data **d);
 void	calc_dollar_conversions(t_data **d);
-int		args_are_correct(t_cmds *cmd, t_data **d);
+void	verif_args(t_data **d);
+void	open_file(char *redir, char *redir_file, t_data **d);
+void	exec_pwd(t_data **d);
+void	exec_echo(t_cmd *cmd);
 void	exec_env(t_data **d); 
-void	exec_export(t_cmds *cmd, t_data **d);
-void	exec_unset(t_cmds *cmd, t_data **d);
+void	exec_export(t_cmd *cmd, t_data **d);
+void	exec_unset(t_cmd *cmd, t_data **d);
 void	exec_cmds(t_data **d);
 void	exec_exit(t_data **d);
-void	exec_cd(t_cmds *cmd, t_data **d);
-void	exec_pwd(void);
-void	exec_echo(t_cmds *cmd);
+void	exec_cd(t_cmd *cmd, t_data **d);
 void	del_cmds(t_data **d);
 
 // utils
-void	init_cmd(t_cmds **new, t_data **d);
-char	*redir_(char *s);
-int		mod_(char c);	
+void	init_cmd(t_cmd **new, t_data **d);
 int		nb_args_(char *s, int len, t_data **d);
+char	*redir_(char *s);
+char	*path_(t_cmd *cmd, t_data **d);
+int		mod_(char c);	
+int		there_are_unclosed_quotes(t_cmd *cmd);
 void	print_cmds(char *msg, t_data **d);
 
-char	*val_(char *s);
 char	*key_(char *s, t_data **d);
+char 	*val_(char *s, t_data **d);
 char	**env_to_array(t_data **d);
 int		len_env(t_data **d);
 char	*get_value_from_env(char *key, t_data **d);
+void	free_array_env(char **env, int len);
 
 char	*alphanum_(char *s, t_data **d);
 char	*strndup_and_trim(char *srs, int len, t_data **d);
 char	*strdup_and_erase_redirs(char *s0, t_data **d);
 char	*strdup_and_erase_args_except_redirs(char *s0, t_data **d);
-void	free_charchar(char **s, int len);
+char	*strdup_(char *s, t_data **d);
 
 void	sig_handler_main(int signal);
 void	sig_handler_fork(int signal);
 void	*malloc_(size_t size, t_data **d);
-void	free_all_and_exit(char *msg, t_data **d); /// ***d
-void	free_all_and_go_to_next_cmd(char *msg, t_data **d);
-void	del_cmd_from_list(t_cmds *cmd, t_data **d);
+
+void	free_all_and_exit(char *msg, int exit_c, t_data **d); /// ***d ?
+void	del_cmd_from_list(t_cmd *cmd, t_data **d);
 void	del_cmds(t_data **d);
 
 #endif

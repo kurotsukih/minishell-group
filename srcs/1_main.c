@@ -1,9 +1,9 @@
 /*
-после "cat файл", "cat файл | cat -e" : free(): double free detected in tcache 2
+после "cat файл", "cat файл | cat -e" : double fre e detected in tcache 2
 
 readline rl_clear_history, rl_on_new_line rl_replace_line rl_redisplay, add_history,
-mallo c free
-printf writ e access ope n read close
+mallo c fre e
+print f writ e access ope n read close
 fork wait waitpid wait3 wait4 
 signa l sigaction sigemptyset sigaddset kill
 exit
@@ -61,15 +61,70 @@ static void	put_env(char **env_array, t_data **d)
 	}
 }
 
-static void	init(t_data ***d, char **env_array)
+static void	init_d(t_data ***d, char **env_array) // **d ?
 {
 	*d = (t_data **)malloc_(sizeof(t_data *), *d);
 	**d = (t_data *)malloc_(sizeof(t_data), *d);
-	(**d)->cmds = (t_cmds **)malloc_(sizeof(t_cmds *), *d);
+	(**d)->cmds = (t_cmd **)malloc_(sizeof(t_cmd *), *d);
 	*((**d)->cmds) = NULL;
+	(**d)->curr_cmd = NULL;
 	put_env(env_array, *d);
+	(**d)->saved_stdout = dup(STDOUT_FILENO); // доп дескриптор stdout
+	if ((**d)->saved_stdout == -1)
+		free_all_and_exit("dup error", -1, *d); // code ? if there is no redir ?
 	// signal(SIGQUIT, SIG_IGN);
 	// signal(SIGINT, &sig_handler_main);
+}
+
+// pwd a b >out1 >out1+ >> out2 < in >> out2+ < in+ <in++
+static void put_full_cmd_to_arg0(char *full_cmd, int len, t_data **d)
+{
+	t_cmd *cmd;
+	t_cmd *last;
+	int i;
+
+	init_cmd(&cmd, d); // deplace here
+	(*d)->curr_cmd = cmd;
+	cmd->nb_args = nb_args_(full_cmd, len, d);
+	cmd->arg = (char **)malloc_((cmd->nb_args + 1) * sizeof(char *), d);
+	cmd->arg[0] = (char *)malloc_(len + 1, d);
+	i = 0;
+	while (++i < cmd->nb_args + 1)
+		cmd->arg[i] = NULL;
+	i = -1;
+	while (++i < len)
+		cmd->arg[0][i] = full_cmd[i];
+	cmd->arg[0][i] = '\0';
+	if (*((*d)->cmds) == NULL)
+		*((*d)->cmds) = cmd;
+	else
+	{
+		last = *((*d)->cmds);
+		while (last != NULL && last->nxt != NULL)
+			last = last->nxt;
+		last->nxt = cmd;
+		cmd->prv = last;
+	}
+}
+
+static void init_cmds(char *cmd_line, t_data **d)
+{
+	int i_beg;
+	int i;
+
+	mod_(REINIT_QUOTES);
+	i_beg = 0;
+	i = -1;
+	while (1)
+		if ((mod_(cmd_line[++i]) == QUOTES0 && cmd_line[i + 1] == '|') || cmd_line[i + 1] == '\0')
+		{
+			put_full_cmd_to_arg0(&cmd_line[i_beg], i - i_beg + 1, d);
+			if (cmd_line[i + 1] == '\0') // ++i
+				break;
+			i++;
+			i_beg = i + 1;
+		}
+	(*d)->curr_cmd = NULL;
 }
 
 int	main(int argc, char **argv, char **env_array)
@@ -79,7 +134,7 @@ int	main(int argc, char **argv, char **env_array)
 
 	(void)argc;
 	(void)argv;
-	init(&d, env_array);
+	init_d(&d, env_array);
 	cmd_line = NULL;
 	while (1)
 	{
@@ -93,14 +148,15 @@ int	main(int argc, char **argv, char **env_array)
 		// 	continue;
 		// }
 		add_history(cmd_line);
-		put_full_cmd_to_arg0(cmd_line, d);
+		init_cmds(cmd_line, d);
 		put_redirs_and_args(d);
-		print_cmds("", d);
-		// calc_dollar_conversions(d);
-		// exec_cmds(d);
+		calc_dollar_conversions(d);
+		verif_args(d);
+		exec_cmds(d);
+		// print_cmds("", d);
 		del_cmds(d);
-		print_cmds("", d);
-		// free(cmd_line)
+		free(cmd_line);
 	}
+	close((*d)->saved_stdout);
 	return 0; //(d->exit_code);
 }
