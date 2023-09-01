@@ -6,7 +6,6 @@ void	init_cmd(t_cmd **new, t_data **d)
 	(*new)->arg = NULL;
 	(*new)->fd_in = STDIN_FILENO;
 	(*new)->fd_out = STDOUT_FILENO;
-	(*new)->path = NULL;
 	(*new)->nxt = NULL;
 	(*new)->prv = NULL;
 	(*new)->err = NULL;
@@ -95,8 +94,6 @@ void print_cmds(char *msg, t_data **d)
 		else
 			printf("args = NULL");
 		printf(" fd_in = %d, fd_out = %d\n", cmd->fd_in, cmd->fd_out);
-		if (cmd->path != NULL)
-			printf("  path = %s\n", cmd->path);
 		if (cmd->err != NULL)
 			printf("  err = %s\n", cmd->err);
 		cmd = cmd->nxt;
@@ -126,7 +123,6 @@ void del_cmd_from_lst(t_cmd *cmd, t_data **d)
 		*((*d)->cmds) = cmd->nxt;
 	else
 		cmd->prv->nxt = cmd->nxt;
-	free(cmd->path);
 	free(cmd->err);
 	free(to_free); // &to_free ?
 	(*d)->curr_cmd = NULL;
@@ -273,43 +269,67 @@ int	is_builtin(t_cmd *cmd)
 	ft_strcmp(cmd->arg[0], "env") == 0);
 }
 
-char	*path_(char *s1, char *s2, t_data **d)
+static char	*path2_(char *s1, char *s2, t_data **d)
 {
 	int		i;
 	int		s1_len;
 	int		s2_len;
-	char	*new_string;
+	char	*new_str;
 
 	s1_len = 0;
 	if (s1 != NULL)
 		s1_len = ft_strlen(s1);
 	s2_len = ft_strlen(s2);
-	new_string = (char *)malloc_(s1_len + s2_len + 2, d);
-	if (new_string == NULL)
+	new_str = (char *)malloc_(s1_len + s2_len + 2, d);
+	if (new_str == NULL)
 		return (NULL);
 	i = 0;
 	while (i < s1_len)
 	{
-		new_string[i] = s1[i];
+		new_str[i] = s1[i];
 		i++;
 	}
 	if(s1 != NULL)
 	{
-		new_string[i] = '/';
+		new_str[i] = '/';
 		i++;
 	}
 	i = 0;
 	while (i < s2_len)
 	{
-		new_string[s1_len + 1 + i] = s2[i];
+		new_str[s1_len + 1 + i] = s2[i];
 		i++;
 	}
-	new_string[s1_len + 1 + i] = '\0';
-	return (new_string);
+	new_str[s1_len + 1 + i] = '\0';
+	return (new_str);
+}
+
+char	*path_(t_cmd *cmd, t_data **d)
+{
+	char	*paths_str;
+	char	*path;
+	int		i;
+	int		i_beg;
+
+	paths_str = get_value_from_env("PATH", d);
+	i_beg = 0;
+	i = -1;
+	while (++i < (int)ft_strlen(paths_str))
+		if (paths_str[i] == ':' || paths_str[i] == '\0')
+		{
+			path = strndup_and_trim(&(paths_str[i_beg]), i - i_beg, d);
+			path = path2_(path, cmd->arg[0], d);
+			if (access(path, X_OK) == 0)
+				return (path);
+			free(path);
+			i_beg = i + 1;
+		}
+	return (cmd->err = "command not found", NULL);// exit_code = 127, if (errno != 2) exit_c = 126;
 }
 
 void	start_redirs(t_cmd *cmd)
 {
+	printf("srart_redirs\n");
 	if (cmd->fd_out != STDOUT_FILENO)
 	{
 		if (dup2(cmd->fd_out, STDOUT_FILENO) == -1) // дубл. дескриптора => stdout в файл
@@ -320,6 +340,7 @@ void	start_redirs(t_cmd *cmd)
 
 void	stop_redirs(t_cmd *cmd, t_data **d)
 {
+	printf("stop_redirs\n");
 	if (cmd->fd_out == STDOUT_FILENO)
 		if (dup2((*d)->saved_stdout, STDOUT_FILENO) == -1) // восстановить исходный stdout
 			cmd->err = "dup2 failed"; // exit code ?

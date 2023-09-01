@@ -88,33 +88,3 @@ char	*get_value_from_env(char *key, t_data **d)
 	return (NULL);
 }
 
-void	put_paths_to_d(t_data **d)
-{
-	char	*paths_str;
-	int		i;
-	int		i_beg;
-	int		k;
-
-	paths_str = get_value_from_env("PATH", d);
-	if (!paths_str || ft_strlen(paths_str) == 0)
-		{
-			return;
-			// exit_code = 127)
-		}
-	(*d)->nb_paths = 1;
-	i = -1;
-	while (paths_str[++i] != '\0')
-		if (paths_str[i] == ':')
-			(*d)->nb_paths++;
-	(*d)->paths = (char **)malloc_((*d)->nb_paths * sizeof(char *), d);
-	i_beg = 0;
-	i = -1;
-	k = -1;
-	while (paths_str[++i] != '\0')
-		if (paths_str[i] == ':')
-		{
-			(*d)->paths[++k] = strndup_and_trim(&(paths_str[i_beg]), i - i_beg, d);
-			i_beg = i + 1;
-		}
-	(*d)->paths[++k] = strndup_and_trim(&(paths_str[i_beg]), i - i_beg + 1, d);
-}

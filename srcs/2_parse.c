@@ -127,31 +127,3 @@ void put_redirs_and_args(t_data **d)
 	}
 }
 
-void put_paths_to_cmds(t_data **d)
-{
-	t_cmd	*cmd;
-	char	*path;
-	int		i;
-
-	cmd = *((*d)->cmds);
-	while (cmd != NULL)
-	{
-		if (is_builtin(cmd))
-			continue ;
-		(*d)->curr_cmd = cmd;
-		i = -1;
-		while(++i < (*d)->nb_paths)
-		{
-			path = path_((*d)->paths[i], cmd->arg[0], d);
-			if (access(path, X_OK) == 0)
-				{
-					cmd->path = path;
-					break ;
-				}
-			free(path);
-		}
-		if (cmd->path == NULL)
-			cmd->err = "command not found"; // exit_code = 127, if (errno != 2) exit_c = 126;
-		cmd = cmd->nxt;
-	}
-}

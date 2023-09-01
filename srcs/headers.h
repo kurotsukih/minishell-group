@@ -32,7 +32,6 @@ typedef struct 		s_cmd
 	int				nb_args;
 	int				fd_in;
 	int				fd_out;
-	char			*path;
 	struct s_cmd	*nxt;
 	struct s_cmd	*prv; // not used ?
 	char			*err;
@@ -50,15 +49,12 @@ typedef struct		s_data
 	t_cmd			**cmds;
 	t_cmd			*curr_cmd;
 	t_env			**env;
-	char			**paths;
-	int				nb_paths;
 	int				exit_c;
 	int				saved_stdout;
 }					t_data;
 
 void	put_full_cmd_to_arg0(char *s, t_data **d);
 void	put_redirs_and_args(t_data **d);
-void	put_paths_to_cmds(t_data **d);
 void	del_cmd_from_lst(t_cmd *cmd, t_data **d);
 void	del_cmds(t_data **d);
 
@@ -71,7 +67,7 @@ void	verif_args(t_data **d);
 int		there_are_unclosed_quotes(t_cmd *cmd);
 void	calc_dollar_convers(t_cmd *cmd, t_data **d);
 int		is_builtin(t_cmd *cmd);
-char	*path_(char *s1, char *s2, t_data **d);
+char	*path_(t_cmd *cmd, t_data **d);
 void	open_file(char *redir, char *redir_file, t_data **d);
 void	start_redirs(t_cmd *cmd);
 void 	stop_redirs(t_cmd *cmd, t_data **d);
@@ -83,7 +79,6 @@ char 	*val_(char *s, t_data **d);
 char	**env_to_array(t_data **d);
 int		len_env_(t_data **d);
 char	*get_value_from_env(char *key, t_data **d);
-void	put_paths_to_d(t_data **d);
 void	free_env_array(char **env, int len);
 
 // utils exec

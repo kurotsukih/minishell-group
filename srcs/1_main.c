@@ -68,10 +68,7 @@ static void	init_d(t_data ***d, char **env_array) // **d ?
 	(**d)->cmds = (t_cmd **)malloc_(sizeof(t_cmd *), *d);
 	*((**d)->cmds) = NULL;
 	(**d)->curr_cmd = NULL;
-	(**d)->paths = NULL;
-	(**d)->nb_paths = 0;
 	put_env(env_array, *d);
-	put_paths_to_d(*d);
 	(**d)->saved_stdout = dup(STDOUT_FILENO); // доп дескриптор stdout
 	if ((**d)->saved_stdout == -1)
 		free_all_and_exit("dup error", -1, *d); // code ? if there is no redir ?
@@ -102,7 +99,6 @@ int	main(int argc, char **argv, char **env_array)
 		add_history(cmd_line);
 		put_full_cmd_to_arg0(cmd_line, d);
 		put_redirs_and_args(d);
-		put_paths_to_cmds(d);
 		print_cmds("", d);
 		verif_args(d);
 		exec_cmds(d);

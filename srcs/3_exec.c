@@ -171,6 +171,7 @@ void exec_extern_cmd(t_cmd *cmd, t_data **d)
 	int		status;
 	char	**env_array;
 	int		len_env;
+	char	*path;
 
 	pid = fork();
 	if (pid < -1)
@@ -180,8 +181,9 @@ void exec_extern_cmd(t_cmd *cmd, t_data **d)
 		(*d)->exit_c = 0; // code ?
 		env_array = env_to_array(d);
 		len_env = len_env_(d);
-		if (cmd->path != NULL) //path != NULL ? env_array != NULL ?
-			execve(cmd->path, cmd->arg, env_array);
+		path = path_(cmd, d);
+		if (path != NULL) //path != NULL ? env_array != NULL ?
+			execve(path, cmd->arg, env_array);
 		free_env_array(env_array, len_env);
 	}
 	else
@@ -220,9 +222,6 @@ void	exec_cmds(t_data **d)
 		else
 			exec_extern_cmd(cmd, d);
 		stop_redirs(cmd, d);
-		// if (cmd->fd_out == STDOUT_FILENO)
-		// 	if (dup2((*d)->saved_stdout, STDOUT_FILENO) == -1) // восстановить исходный stdout
-		// 		cmd->err = "dup2 failed"; // exit code ?
 		if (cmd->err != NULL)
 			(printf("eror %s", cmd->err), del_cmd_from_lst(cmd, d)); // exic code ?
 		cmd = cmd->nxt;

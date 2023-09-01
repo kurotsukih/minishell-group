@@ -1,15 +1,6 @@
-LIST  0x565549034300->0x565549048d00:
-  ls :  fd_in = 0, fd_out = 1
-  path = /usr/bin/ls
+LIST  0x561da82202f0->0x561da8234710:
+  pwd :  fd_in = 0, fd_out = 1
 
-en.subject.pdf
-fr.subject.pdf
-libft
-ls 
-Makefile
-minishell
-out
-src1
-src2
-src3
-srcs
+srart_redirs
+/mnt/md0/42/minishell
+stop_redirs
