@@ -67,15 +67,6 @@ typedef struct		s_data
 
 void	put_redirs_and_args(t_data **d);
 void	verif_args(t_data **d);
-void	open_file(char *redir, char *redir_file, t_data **d);
-void	exec_pwd(t_data **d);
-void	exec_echo(t_cmd *cmd);
-void	exec_env(t_data **d); 
-void	exec_export(t_cmd *cmd, t_data **d);
-void	exec_unset(t_cmd *cmd, t_data **d);
-void	exec_cmds(t_data **d);
-void	exec_exit(t_data **d);
-void	exec_cd(t_cmd *cmd, t_data **d);
 void	del_cmd_from_list(t_cmd *cmd, t_data **d);
 void	del_cmds(t_data **d);
 
@@ -85,8 +76,9 @@ int		nb_args_(char *s, int len, t_data **d);
 char	*redir_(char *s);
 char	*path_(t_cmd *cmd, t_data **d);
 int		mod_(char c);	
-void	calc_dollar_convers(t_cmd *cmd, t_data **d);
 int		there_are_unclosed_quotes(t_cmd *cmd);
+void	calc_dollar_convers(t_cmd *cmd, t_data **d);
+void	open_file(char *redir, char *redir_file, t_data **d);
 void	print_cmds(char *msg, t_data **d);
 
 // utils env
@@ -96,6 +88,16 @@ char	**env_to_array(t_data **d);
 int		len_env(t_data **d);
 char	*get_value_from_env(char *key, t_data **d);
 void	free_array_env(char **env, int len);
+
+// utils exec
+void	exec_pwd(t_data **d);
+void	exec_echo(t_cmd *cmd);
+void	exec_env(t_data **d); 
+void	exec_export(t_cmd *cmd, t_data **d);
+void	exec_unset(t_cmd *cmd, t_data **d);
+void	exec_cmds(t_data **d);
+void	exec_exit(t_data **d);
+void	exec_cd(t_cmd *cmd, t_data **d);
 
 // utils str
 char	*alphanum_(char *s, t_data **d);
