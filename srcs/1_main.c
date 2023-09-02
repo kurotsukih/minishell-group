@@ -6,7 +6,7 @@
 /*   By: akostrik <akostrik@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/02 15:22:16 by akostrik          #+#    #+#             */
-/*   Updated: 2023/09/02 22:48:19 by akostrik         ###   ########.fr       */
+/*   Updated: 2023/09/03 00:55:43 by akostrik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,6 +102,8 @@ static void	init_d(t_data ***d, char **env_array) // **d ?
 	(**d)->cmds = (t_cmd **)malloc_(sizeof(t_cmd *), *d);
 	*((**d)->cmds) = NULL;
 	(**d)->curr_cmd = NULL;
+	(**d)->saved_stdin = dup(STDIN_FILENO); // another descriptor stdout
+	(**d)->saved_stdout = dup(STDOUT_FILENO);
 	put_env(env_array, *d);
 	// signal(SIGQUIT, SIG_IGN);
 	// signal(SIGINT, &sig_handler_main);
@@ -132,7 +134,7 @@ int	main(int argc, char **argv, char **env_array)
 		verif_args(d);
 		// print_cmds("", d);
 		exec_cmds(d);
-		del_cmds(d);
+		rmv_cmds(d);
 		free(cmd_line);
 	}
 	close((*d)->saved_stdout);

@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   utils_env.c                                        :+:      :+:    :+:   */
+/*   8_utils_env.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: akostrik <akostrik@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/02 15:22:49 by akostrik          #+#    #+#             */
-/*   Updated: 2023/09/02 15:22:50 by akostrik         ###   ########.fr       */
+/*   Updated: 2023/09/03 00:56:46 by akostrik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,7 +72,7 @@ char	*get_value_from_env(char *key, t_data **d)
 			return (&(var->var[(int)ft_strlen(key) + 1]));
 		var = var->nxt;
 	}
-	(*d)->curr_cmd->err = "env variable not found";
+	free_all_and_exit("env variable not found", -1, d);
 	return (NULL);
 }
 

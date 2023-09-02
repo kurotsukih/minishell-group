@@ -1,1 +1,2 @@
-a
+echo UUU
+exit 12

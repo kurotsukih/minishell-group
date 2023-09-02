@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   utils_cmd.c                                        :+:      :+:    :+:   */
+/*   7_utils_cmd.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: akostrik <akostrik@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/02 15:22:47 by akostrik          #+#    #+#             */
-/*   Updated: 2023/09/02 23:36:28 by akostrik         ###   ########.fr       */
+/*   Updated: 2023/09/03 00:55:51 by akostrik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,6 @@ void	init_cmd(t_cmd **new, t_data **d)
 	(*new)->fd_out = STDOUT_FILENO;
 	(*new)->nxt = NULL;
 	(*new)->prv = NULL;
-	(*d)->curr_cmd = *new;
 }
 
 int	mod_(char c)
@@ -126,7 +125,7 @@ void rmv_cmd(t_cmd *cmd, t_data **d)
 	to_free = NULL;
 }
 
-void	del_cmds(t_data **d)
+void	rmv_cmds(t_data **d)
 {
 	t_cmd	*cmd;
 
@@ -139,7 +138,7 @@ void	del_cmds(t_data **d)
 }
 
 /* ************************************************************************** */
-static void	*heredoc_to_tmp_file(char *delim, t_cmd *cmd, t_data **d)
+void	*heredoc_to_tmp_file(char *delim, t_cmd *cmd, t_data **d)
 {
 	char	*line;
 	int		fd;
@@ -157,48 +156,6 @@ static void	*heredoc_to_tmp_file(char *delim, t_cmd *cmd, t_data **d)
 		write(fd, line, ft_strlen(line));
 		write(fd, "\n", 1);
 		free(line);
-	}
-	return (NULL);
-}
-
-/* ************************************************************************** */
-void	*open_file(char *redir, char *file, t_cmd *cmd, t_data **d)
-{
-	//if ((**d)->saved_stdin == -1)
-	if (ft_strlen(file) == 0)
-			return (printf("%s : err syntaxe\n", cmd->arg[0]), rmv_cmd(cmd, d), NULL);
-	if (strcmp_(redir, "<") == 0)
-	{
-		if (cmd->fd_in != STDIN_FILENO)
-			close(cmd->fd_in);
-		cmd->fd_in = open(file, O_RDONLY);
-		if (!cmd->fd_in)
-			return (printf("%s : open file pb\n", cmd->arg[0]), rmv_cmd(cmd, d), NULL);
-	}
-	else if (strcmp_(redir, "<<") == 0)
-	{
-		heredoc_to_tmp_file(file, cmd, d); // delimitor = file
-		if (cmd->fd_in != STDIN_FILENO)
-			close(cmd->fd_in);
-		cmd->fd_in = open(TMP_FILE, O_RDONLY);
-		if (!cmd->fd_in)
-			return (printf("%s : open file pb\n", cmd->arg[0]), rmv_cmd(cmd, d), NULL);
-	}
-	else if (strcmp_(redir, ">") == 0)
-	{
-		if (cmd->fd_out != STDIN_FILENO)
-			close(cmd->fd_out);
-		cmd->fd_out = open(file, O_WRONLY | O_CREAT | O_TRUNC, 0666);
-		if (!cmd->fd_out)
-			return (printf("%s : open file pb\n", cmd->arg[0]), rmv_cmd(cmd, d), NULL);
-	}
-	else if (strcmp_(redir, ">>") == 0)
-	{
-		if (cmd->fd_out != STDIN_FILENO)
-			close(cmd->fd_out);
-		cmd->fd_out = open(file, O_WRONLY | O_CREAT | O_APPEND, 0666);
-		if (!cmd->fd_out)
-			return (printf("%s : open file pb\n", cmd->arg[0]), rmv_cmd(cmd, d), NULL);
 	}
 	return (NULL);
 }

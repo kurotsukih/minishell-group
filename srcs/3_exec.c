@@ -6,7 +6,7 @@
 /*   By: akostrik <akostrik@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/02 15:22:29 by akostrik          #+#    #+#             */
-/*   Updated: 2023/09/02 23:31:29 by akostrik         ###   ########.fr       */
+/*   Updated: 2023/09/03 01:00:15 by akostrik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,60 +54,27 @@
 // 127 команда не найдена, дочерний процесс, созданный для ее выполнения, возвращает 127
 // 126 команда найдена, но не может быть выполнена
 
-// static void	pipe_(int i_cmd, t_data **d)
-// {
-// 	int		fd[2];
-
-// 	if (i_cmd != 0 && cmds[i_cmd - 1].out_fd != 1)
-// 		close(n->cmds[i_cmd - 1].out_fd);
-// 	if (i_cmd < n->count_cmd - 1)
-// 	{
-// 		if (pipe(fd) == -1)
-// 			return (exit_(-1), 1);
-// 		n->cmds[i_cmd].out_fd = fd[1];
-// 		n->cmds[i_cmd].out_pipe_fd = fd[0];
-// 		n->cmds[i_cmd + 1].in_fd = fd[0];
-// 	}
-// 	if (ft_open_all_files(n->cmds[i_cmd].redir, n->cmds + i_cmd))
-// 	{
-// 		exit_();
-// 		if (n->cmds[i_cmd].in_fd != -1 && n->cmds[i_cmd].in_fd != 0)
-// 			close(n->cmds[i_cmd].in_fd);
-// 		if (n->cmds[i_cmd].out_fd != -1 && n->cmds[i_cmd].out_fd != 1)
-// 			close(n->cmds[i_cmd].out_fd);
-// 		return (1);
-// 	}
-// 	return (0);
-// }
-
 // int	exec_command(t_node *n)
 // {
-
 // 	num = 0;
 // 	while (cmd != NULL)
 // 	{
-// 		ft_prepare_pipe(n, cmd);
-// 		if ((check(cmds), n->count_cmd, ) && num++ >= 0)
+// 		pid = fork();
+// 		exit_c = 0;
+// 		if (pid == 0)
 // 		{
-// 			pid = fork();
-// 			exit_c = 0;
-// 			if (pid == 0)
-// 			{
-//				exit_c = exec_program(cmd, d->env, n);
-//				exit_c = ft_find_path(cmd->args, env, &path);
-//				execve(...);
-// 				pid = (exit(exit_c), 0);
-// 			}
-// 			else if (cmd->in_fd != 0)
-// 				close(cmd->in_fd);
-// 		}
+//			exit_c = exec_program(cmd, d->env, n);
+//			exit_c = ft_find_path(cmd->args, env, &path);
+//			execve(...);
+//			pid = (exit(exit_c), 0);
+//		}
 // 		cmd = cmd -> nxt;
 // 	}
 // 	ft_wait_child_processes(num, pid);
-// 	return ();
 // }
 
 // if extern cmd change the env ?
+
 static void *exec_extern_cmd(t_cmd *cmd, t_data **d)
 {
 	int		pid;
@@ -116,7 +83,6 @@ static void *exec_extern_cmd(t_cmd *cmd, t_data **d)
 	int		len_env;
 	char	*path;
 
-	printf("exec_extern_cmd\n");
 	pid = fork();
 	if (pid < -1)
 		return (printf("%s : fork pb\n", cmd->arg[0]), rmv_cmd(cmd, d), NULL);
@@ -133,7 +99,6 @@ static void *exec_extern_cmd(t_cmd *cmd, t_data **d)
 	}
 	else
 		wait(&status);
-	printf("exec_extern_cmd return\n");
 	return (NULL);
 }
 
@@ -190,11 +155,7 @@ void	exec_cmds(t_data **d)
 		else if (strcmp_(cmd->arg[0], "exit") == 0)
 			exec_exit(cmd, d);
 		else
-		{
-			printf("call exec_extern_cmd\n");
 			exec_extern_cmd(cmd, d);
-			printf("after exec_extern_cmd\n");
-		}
 		stop_redirs(cmd, d);
 		if (unlink(TMP_FILE) == -1)
 			; //printf("pb remove tmp file\n");

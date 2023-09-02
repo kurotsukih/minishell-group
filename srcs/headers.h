@@ -6,7 +6,7 @@
 /*   By: akostrik <akostrik@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/02 15:22:31 by akostrik          #+#    #+#             */
-/*   Updated: 2023/09/02 23:37:45 by akostrik         ###   ########.fr       */
+/*   Updated: 2023/09/03 00:55:36 by akostrik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,6 +43,7 @@ typedef struct 		s_cmd
 	int				nb_args;
 	int				fd_in;
 	int				fd_out;
+	int				fd_pipe[2];
 	struct s_cmd	*nxt;
 	struct s_cmd	*prv; // not used ?
 }					t_cmd;
@@ -64,10 +65,10 @@ typedef struct		s_data
 	int				saved_stdout;
 }					t_data;
 
-void	parse(char *cmd_line, t_data **d);
+void	*parse(char *s, t_data **d);
 void	exec_cmds(t_data **d);
 void	rmv_cmd(t_cmd *cmd, t_data **d);
-void	del_cmds(t_data **d);
+void	rmv_cmds(t_data **d);
 
 // builtins
 void	*exec_echo(t_cmd *cmd);
@@ -83,7 +84,7 @@ void	*malloc_(int size, t_data **d);
 void	sig_handler_main(int signal);
 void	sig_handler_fork(int signal);
 void	sig_handler_heredoc(int signal);
-void	free_array(char **arr, int len)
+void	free_array(char **arr, int len);
 void	free_all_and_exit(char *msg, int exit_c, t_data **d); /// ***d ?
 
 // utils cmd
@@ -97,6 +98,7 @@ int		is_builtin(t_cmd *cmd);
 char	*path_(t_cmd *cmd, t_data **d);
 void	*open_file(char *redir, char *filename, t_cmd *cmd, t_data **d);
 void	remove_quotes(t_cmd *cmd);
+void	*heredoc_to_tmp_file(char *delim, t_cmd *cmd, t_data **d);
 void	print_cmds(char *msg, t_data **d);
 
 // utils env
