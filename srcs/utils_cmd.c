@@ -229,7 +229,6 @@ static char	*s_with_conversion_(char *old_s, int j, t_data **d)
 		new_s[k] = old_s[k + (int)ft_strlen(key) - (int)ft_strlen(val) + 1];
 	new_s[k] = '\0';
 	free(key);
-	free(val);
 	return (new_s);
 }
 
@@ -343,7 +342,6 @@ char	*path_(t_cmd *cmd, t_data **d)
 	int		i_beg;
 
 	paths_str = get_value_from_env("PATH", d);
-	printf("paths_str = %s\n", paths_str);
 	i_beg = 0;
 	i = -1;
 	while (++i < (int)ft_strlen(paths_str))
@@ -356,7 +354,6 @@ char	*path_(t_cmd *cmd, t_data **d)
 			free(path);
 			i_beg = i + 1;
 		}
-	printf("path_ %s return \n", cmd->arg[0]);
 	return (cmd->err = "command not found", NULL);// exit_code = 127, if (errno != 2) exit_c = 126;
 }
 

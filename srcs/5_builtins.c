@@ -17,10 +17,10 @@ void	exec_echo(t_cmd *cmd)
 	{
 		if (strcmp(cmd->arg[i], "-n") == 0)
 			option_n = 1;
-		else if (i == cmd->nb_args - 1)
-			printf("%s", cmd->arg[i]);
-		else
+		else if (i < cmd->nb_args - 1)
 			printf("%s ", cmd->arg[i]);
+		else
+			printf("%s", cmd->arg[i]);
 	}
 	if (option_n == 0)
 		printf("\n");
