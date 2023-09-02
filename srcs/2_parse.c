@@ -6,7 +6,7 @@
 /*   By: akostrik <akostrik@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/02 15:22:26 by akostrik          #+#    #+#             */
-/*   Updated: 2023/09/02 15:22:27 by akostrik         ###   ########.fr       */
+/*   Updated: 2023/09/02 17:47:14 by akostrik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,8 +19,7 @@ static void put_full_cmd_to_arg0_1(char *full_cmd, int len, t_data **d)
 	t_cmd *last;
 	int i;
 
-	init_cmd(&cmd, d); // deplace here
-	(*d)->curr_cmd = cmd;
+	init_cmd(&cmd, d);
 	cmd->nb_args = nb_args_(full_cmd, len, d);
 	cmd->arg = (char **)malloc_((cmd->nb_args + 1) * sizeof(char *), d);
 	cmd->arg[0] = (char *)malloc_(len + 1, d);
@@ -51,6 +50,8 @@ static void put_redirs(t_cmd *cmd, t_data **d)
 	char *redir;
 	char *redir_file;
 
+	(*d)->saved_stdin = dup(STDIN_FILENO); // доп дескриптор stdout
+	(*d)->saved_stdout = dup(STDOUT_FILENO); // доп дескриптор stdout
 	mod_(REINIT_QUOTES);
 	s = strdup_and_erase_args_except_redirs(cmd->arg[0], d);
 	i = -1;
@@ -66,36 +67,33 @@ static void put_redirs(t_cmd *cmd, t_data **d)
 			while (s[i] != ' ' && s[i] != '>' && s[i] != '<' && s[i] != '\0') // alphanum ?
 				i++;
 			redir_file = strndup_and_trim(&s[i_beg], i - i_beg + 1, d);
-			open_file(redir, redir_file, cmd);
+			open_file(redir, redir_file, cmd, d);
 		}
 	}
 }
 
-static void put_args(t_cmd *cmd, t_data **d)
+static void put_args(t_cmd *cmd, t_data **d) // 3 lines
 {
-	int i;
-	int i_beg;
-	int k;
-	int i_end_arg0;
-	char *s;
+	char	*s;
+	int		i;
+	int		i_beg;
+	int		i_end_arg0;
+	int		k;
 
-	if (cmd->nb_args == 0)
-		return ;
 	mod_(REINIT_QUOTES);
 	i_beg = 0;
-	k = 0;
+	k = -1;
 	i = -1;
 	s = strdup_and_erase_redirs(cmd->arg[0], d);
 	while (s[++i] != '\0')
 		if (mod_(s[i]) == QUOTES0 && s[i] != ' ' && (s[i + 1] == ' ' \
 			|| s[i + 1] == '\0' || s[i + 1] == '\'' || s[i + 1] == '\"'))
 		{
-			if (k == 0)
+			if (++k == 0)
 				i_end_arg0 = i + 1;
 			else
 				cmd->arg[k] = strndup_and_trim(&s[i_beg], i - i_beg + 1, d);
 			i_beg = i + 1;
-			k++;
 		}
 	free(s);
 	cmd->arg[0][i_end_arg0] = '\0';
@@ -105,7 +103,7 @@ static void put_args(t_cmd *cmd, t_data **d)
 	cmd->arg[cmd->nb_args] = NULL;
 }
 
-static void	put_full_cmd_to_arg0(char *s, t_data **d)
+void	parse(char *s, t_data **d)
 {
 	int i_beg;
 	int i;
@@ -117,6 +115,9 @@ static void	put_full_cmd_to_arg0(char *s, t_data **d)
 		if ((mod_(s[++i]) == QUOTES0 && s[i + 1] == '|') || s[i + 1] == '\0')
 		{
 			put_full_cmd_to_arg0_1(&s[i_beg], i - i_beg + 1, d);
+			put_redirs((*d)->curr_cmd, d);
+			if ((*d)->curr_cmd->nb_args > 0)
+				put_args((*d)->curr_cmd, d);
 			if (s[i + 1] == '\0') // ++i
 				break;
 			i++;
@@ -124,19 +125,3 @@ static void	put_full_cmd_to_arg0(char *s, t_data **d)
 		}
 	(*d)->curr_cmd = NULL;
 }
-
-void	parse(char *cmd_line, t_data **d)
-{
-	t_cmd *cmd;
-
-	put_full_cmd_to_arg0(cmd_line, d);
-	cmd = *((*d)->cmds);
-	while (cmd != NULL)
-	{
-		(*d)->curr_cmd = cmd;
-		put_redirs(cmd, d);
-		put_args(cmd, d);
-		cmd = cmd->nxt;
-	}
-}
-

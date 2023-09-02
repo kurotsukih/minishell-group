@@ -6,7 +6,7 @@
 /*   By: akostrik <akostrik@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/02 15:22:29 by akostrik          #+#    #+#             */
-/*   Updated: 2023/09/02 15:22:30 by akostrik         ###   ########.fr       */
+/*   Updated: 2023/09/02 18:00:15 by akostrik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -148,7 +148,7 @@ exit 12
 // }
 
 // can extern cmd change the env ?
-void exec_extern_cmd(t_cmd *cmd, t_data **d)
+static void *exec_extern_cmd(t_cmd *cmd, t_data **d)
 {
 	int		pid;
 	int		status;
@@ -158,19 +158,21 @@ void exec_extern_cmd(t_cmd *cmd, t_data **d)
 
 	pid = fork();
 	if (pid < -1)
-		free_all_and_exit("fork error", -1, d); // code ?
+		return (printf("%s : pid error\n", cmd->arg[0]), del_cmd_from_lst(cmd, d), NULL); // exic code ?
 	if (pid == 0)
 	{
 		(*d)->exit_c = 0; // code ?
 		env_array = env_to_array(d);
 		len_env = len_env_(d);
 		path = path_(cmd, d);
-		if (path != NULL) //path != NULL ? env_array != NULL ?
-			execve(path, cmd->arg, env_array);
+		if (path == NULL)
+			path = ".";
+		execve(path, cmd->arg, env_array); //if env_array != NULL ?
 		free_env_array(env_array, len_env);
 	}
 	else
 		wait(&status);
+	return (NULL);
 }
 
 void	exec_cmds(t_data **d)
@@ -180,33 +182,28 @@ void	exec_cmds(t_data **d)
 	cmd = *((*d)->cmds);
 	while (cmd != NULL)
 	{
-		if (cmd->err != NULL) // CONTINUE !!!
-			(printf("eror %s", cmd->err), del_cmd_from_lst(cmd, d)); // exic code ? 
+
 		(*d)->curr_cmd = cmd; // not used ?
-		start_redirs(cmd);
+		start_redirs(cmd, d);
 		// à la premiere erreur (le droit decriture pour les redir out, etc) ca fait tout fail
 		calc_dollar_conversions(cmd, d);
-		if (cmd->err != NULL)
-			(printf("eror %s", cmd->err), del_cmd_from_lst(cmd, d)); // exic code ?
 		if (strcmp_(cmd->arg[0], "echo") == 0)
 			exec_echo(cmd);
-		else if (strcmp_(cmd->arg[0], "env") == 0 && (*d)->env != NULL)
+		else if (strcmp_(cmd->arg[0], "env") == 0)
 			exec_env(d);
 		else if (strcmp_(cmd->arg[0], "pwd") == 0)
-			exec_pwd(d);
+			exec_pwd(cmd, d);
 		else if (strcmp_(cmd->arg[0], "cd") == 0)
 			exec_cd(cmd, d);
 		else if (strcmp_(cmd->arg[0], "export") == 0)
 			exec_export(cmd, d);
-		else if (strcmp_(cmd->arg[0], "unset") == 0 && (*d)->env != NULL)
+		else if (strcmp_(cmd->arg[0], "unset") == 0)
 			exec_unset(cmd, d);
 		else if (strcmp_(cmd->arg[0], "exit") == 0)
-			exec_exit(d);
+			exec_exit(cmd, d);
 		else
 			exec_extern_cmd(cmd, d);
 		stop_redirs(cmd, d);
-		if (cmd->err != NULL)
-			(printf("eror %s", cmd->err), del_cmd_from_lst(cmd, d)); // exic code ?
 		cmd = cmd->nxt;
 	}
 }

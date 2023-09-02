@@ -6,7 +6,7 @@
 /*   By: akostrik <akostrik@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/02 15:22:47 by akostrik          #+#    #+#             */
-/*   Updated: 2023/09/02 15:22:48 by akostrik         ###   ########.fr       */
+/*   Updated: 2023/09/02 17:57:37 by akostrik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ void	init_cmd(t_cmd **new, t_data **d)
 	(*new)->fd_out = STDOUT_FILENO;
 	(*new)->nxt = NULL;
 	(*new)->prv = NULL;
-	(*new)->err = NULL;
+	(*d)->curr_cmd = *new;
 }
 
 int	mod_(char c)
@@ -106,8 +106,6 @@ void print_cmds(char *msg, t_data **d)
 		else
 			printf("args = NULL");
 		printf(" fd_in = %d, fd_out = %d\n", cmd->fd_in, cmd->fd_out);
-		if (cmd->err != NULL)
-			printf("  err = %s\n", cmd->err);
 		cmd = cmd->nxt;
 	}
 	printf("\n");
@@ -135,7 +133,6 @@ void del_cmd_from_lst(t_cmd *cmd, t_data **d)
 		*((*d)->cmds) = cmd->nxt;
 	else
 		cmd->prv->nxt = cmd->nxt;
-	free(cmd->err);
 	free(to_free); // &to_free ?
 	(*d)->curr_cmd = NULL;
 	to_free = NULL;
@@ -153,14 +150,14 @@ void	del_cmds(t_data **d)
 	}
 }
 
-static void	put_heredoc_to_tmp_file(char *delimiter, char *filename, t_cmd *cmd)
+static void	put_heredoc_to_tmp_file(char *delimiter, char *filename, t_cmd *cmd, t_data **d)
 {
 	char	*line;
 	int		fd;
 
 	fd = open(filename, O_WRONLY | O_CREAT | O_TRUNC, 0666);
 	if (!fd)
-		cmd->err = "open file failed";
+		return (printf("error open file failed"), del_cmd_from_lst(cmd, d)); // exic code ?
 	line = NULL;
 	while (1)
 	{
@@ -176,29 +173,27 @@ static void	put_heredoc_to_tmp_file(char *delimiter, char *filename, t_cmd *cmd)
 	}
 }
 
-void	open_file(char *redir, char *filename, t_cmd *cmd)
+void	*open_file(char *redir, char *filename, t_cmd *cmd, t_data **d)
 {
+	//if ((**d)->saved_stdin == -1)
 	if (ft_strlen(filename) == 0)
-	{
-		cmd->err = "erreur de syntaxe près du symbole inattendu « > »";
-		return ;
-	}
+			return (printf("%s : erreur de syntaxe près du symbole inattendu « > »\n", cmd->arg[0]), del_cmd_from_lst(cmd, d), NULL); 	// exic code ?
 	if (strcmp_(redir, "<") == 0)
 	{
 		if (cmd->fd_in != STDIN_FILENO)
 			close(cmd->fd_in);
 		cmd->fd_in = open(filename, O_RDONLY);
 		if (!cmd->fd_in)
-			cmd->err = "open file failed";
+			return (printf("%s : open file failed\n", cmd->arg[0]), del_cmd_from_lst(cmd, d), NULL); 	// exic code ?
 	}
 	else if (strcmp_(redir, "<<") == 0)
 	{
-		put_heredoc_to_tmp_file(filename, "tmp_file", cmd); // delimitor = filename
+		put_heredoc_to_tmp_file(filename, "tmp_file", cmd, d); // delimitor = filename
 		if (cmd->fd_in != STDIN_FILENO)
 			close(cmd->fd_in);
 		cmd->fd_in = open("tmp_file", O_RDONLY);
 		if (!cmd->fd_in)
-			cmd->err = "open file failed";
+			return (printf("%s : open file failed\n", cmd->arg[0]), del_cmd_from_lst(cmd, d), NULL); 	// exic code ?
 	}
 	else if (strcmp_(redir, ">") == 0)
 	{
@@ -206,7 +201,7 @@ void	open_file(char *redir, char *filename, t_cmd *cmd)
 			close(cmd->fd_out);
 		cmd->fd_out = open(filename, O_WRONLY | O_CREAT | O_TRUNC, 0666);
 		if (!cmd->fd_out)
-			cmd->err = "open file failed";
+			return (printf("%s : open file failed\n", cmd->arg[0]), del_cmd_from_lst(cmd, d), NULL); 	// exic code ?
 	}
 	else if (strcmp_(redir, ">>") == 0)
 	{
@@ -214,8 +209,9 @@ void	open_file(char *redir, char *filename, t_cmd *cmd)
 			close(cmd->fd_out);
 		cmd->fd_out = open(filename, O_WRONLY | O_CREAT | O_APPEND, 0666);
 		if (!cmd->fd_out)
-			cmd->err = "open file failed";
+			return (printf("%s : open file failed\n", cmd->arg[0]), del_cmd_from_lst(cmd, d), NULL); 	// exic code ?
 	}
+	return (NULL);
 }
 
 static char	*s_with_conversion_(char *old_s, int j, t_data **d)
@@ -270,20 +266,21 @@ void	calc_dollar_conversions(t_cmd *cmd, t_data **d)
 		}
 }
 
-static void	verif_args_1(t_cmd *cmd)
+static void	*verif_args_1(t_cmd *cmd, t_data **d)
 {
-	if (there_are_unclosed_quotes(cmd) && ft_strlen(cmd->err) == 0)
-		cmd->err = "unclosed quotes"; // exit_code ?
-	if (!cmd->arg && ft_strlen(cmd->err) == 0)
-		cmd->err = "empty commande"; // exit_code = 255
-	if (strcmp_(cmd->arg[0], "env") == 0 && cmd->nb_args > 1 && ft_strlen(cmd->err) == 0)
-		cmd->err = "env : Too many arguments"; // exit_code ?
-	if (strcmp_(cmd->arg[0], "cd") == 0 && cmd->nb_args > 2 && ft_strlen(cmd->err) == 0)
-		cmd->err = "cd : Too many arguments"; // exit_code ?
-	if (strcmp_(cmd->arg[0], "exit") == 0 && cmd->nb_args > 2 && ft_strlen(cmd->err) == 0)
-		cmd->err = "exit : Too many arguments"; // exit_code ?
-	if (strcmp_(cmd->arg[0], "exit") == 0 && !ft_atoi(cmd->arg[1]) && ft_strlen(cmd->err) == 0)
-		cmd->err = "exit: numeric argument required"; // exit_code = 2
+	if (!cmd->arg)
+		return (printf("empty command\n"), del_cmd_from_lst(cmd, d), NULL); // exit_code = 255
+	else if (there_are_unclosed_quotes(cmd))
+		return (printf("%s : unclosed quotes\n", cmd->arg[0]), del_cmd_from_lst(cmd, d), NULL); // exit_code
+	else if (strcmp_(cmd->arg[0], "env") == 0 && cmd->nb_args >= 2)
+		return (printf("%s : Too many arguments\n", cmd->arg[0]), del_cmd_from_lst(cmd, d), NULL); // exit_code
+	else if (strcmp_(cmd->arg[0], "cd") == 0 && cmd->nb_args >= 3)
+		return (printf("%s : Too many arguments\n", cmd->arg[0]), del_cmd_from_lst(cmd, d), NULL); // exit_code
+	else if (strcmp_(cmd->arg[0], "exit") == 0 && cmd->nb_args >= 3)
+		return (printf("%s : Too many arguments\n", cmd->arg[0]), del_cmd_from_lst(cmd, d), NULL); // exit_code
+	else if (strcmp_(cmd->arg[0], "exit") == 0 && cmd->nb_args == 2 && !ft_atoi(cmd->arg[1]))
+		return (printf("%s : numeric argument required\n", cmd->arg[0]), del_cmd_from_lst(cmd, d), NULL); // exit_code = 2
+	return (NULL);
 }
 
 void	verif_args(t_data **d)
@@ -294,7 +291,7 @@ void	verif_args(t_data **d)
 	while(cmd != NULL)
 	{
 		// (*d)->curr_cmd = cmd; // not used 
-		verif_args_1(cmd);
+		verif_args_1(cmd, d);
 		cmd = cmd->nxt;
 	}
 }
@@ -366,31 +363,33 @@ char	*path_(t_cmd *cmd, t_data **d)
 			free(path);
 			i_beg = i + 1;
 		}
-	return (cmd->err = "command not found", NULL);// exit_code = 127, if (errno != 2) exit_c = 126;
+	return (printf("%s : command not found\n", cmd->arg[0]), del_cmd_from_lst(cmd, d), NULL); // exit_code = 127, if (errno != 2) exit_c = 126;
 }
 
-void	start_redirs(t_cmd *cmd)
+void	*start_redirs(t_cmd *cmd, t_data **d)
 {
 	if (cmd->fd_in != STDIN_FILENO)
 	{
 		if (dup2(cmd->fd_in, STDIN_FILENO) == -1) // дубл. дескриптора => stdout в файл
-			cmd->err = "dup2 failed";
+			return (printf("%s : dup@ fqiled\n", cmd->arg[0]), del_cmd_from_lst(cmd, d), NULL); // exit_code = 127, if (errno != 2) exit_c = 126;
 		close(cmd->fd_in);
 	}
 	if (cmd->fd_out != STDOUT_FILENO)
 	{
 		if (dup2(cmd->fd_out, STDOUT_FILENO) == -1) // дубл. дескриптора => stdout в файл
-			cmd->err = "dup2 failed";
+			return (printf("%s : dup@ fqiled\n", cmd->arg[0]), del_cmd_from_lst(cmd, d), NULL); // exit_code = 127, if (errno != 2) exit_c = 126;
 		close(cmd->fd_out);
 	}
+	return (NULL);
 }
 
-void	stop_redirs(t_cmd *cmd, t_data **d)
+void	*stop_redirs(t_cmd *cmd, t_data **d)
 {
 	if (cmd->fd_in == STDIN_FILENO)
 		if (dup2((*d)->saved_stdin, STDIN_FILENO) == -1) // восстановить исходный stdout
-			cmd->err = "dup2 failed"; // exit code ?
+			return (printf("%s : dup@ fqiled\n", cmd->arg[0]), del_cmd_from_lst(cmd, d), NULL); // exit_code = 127, if (errno != 2) exit_c = 126;
 	if (cmd->fd_out == STDOUT_FILENO)
 		if (dup2((*d)->saved_stdout, STDOUT_FILENO) == -1) // восстановить исходный stdout
-			cmd->err = "dup2 failed"; // exit code ?
+			return (printf("%s : dup@ fqiled\n", cmd->arg[0]), del_cmd_from_lst(cmd, d), NULL); // exit_code = 127, if (errno != 2) exit_c = 126;
+	return (NULL);
 }

@@ -6,7 +6,7 @@
 /*   By: akostrik <akostrik@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/02 15:22:16 by akostrik          #+#    #+#             */
-/*   Updated: 2023/09/02 15:22:17 by akostrik         ###   ########.fr       */
+/*   Updated: 2023/09/02 17:20:17 by akostrik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,12 +81,6 @@ static void	init_d(t_data ***d, char **env_array) // **d ?
 	*((**d)->cmds) = NULL;
 	(**d)->curr_cmd = NULL;
 	put_env(env_array, *d);
-	(**d)->saved_stdin = dup(STDIN_FILENO); // доп дескриптор stdout
-	if ((**d)->saved_stdin == -1)
-		free_all_and_exit("dup error", -1, *d); // code ? if there is no redir ?
-	(**d)->saved_stdout = dup(STDOUT_FILENO); // доп дескриптор stdout
-	if ((**d)->saved_stdout == -1)
-		free_all_and_exit("dup error", -1, *d); // code ? if there is no redir ?
 	// signal(SIGQUIT, SIG_IGN);
 	// signal(SIGINT, &sig_handler_main);
 }
@@ -113,8 +107,8 @@ int	main(int argc, char **argv, char **env_array)
 		// }
 		add_history(cmd_line);
 		parse(cmd_line, d);
-		// print_cmds("", d);
 		verif_args(d);
+		// print_cmds("", d);
 		exec_cmds(d);
 		del_cmds(d);
 		free(cmd_line);

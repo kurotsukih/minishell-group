@@ -6,7 +6,7 @@
 /*   By: akostrik <akostrik@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/02 15:22:55 by akostrik          #+#    #+#             */
-/*   Updated: 2023/09/02 15:22:56 by akostrik         ###   ########.fr       */
+/*   Updated: 2023/09/02 17:40:56 by akostrik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,18 +50,10 @@ void	*malloc_(int size, t_data **d)
 {
 	void	*mem;
 
-	// printf("  f malloc_(%d) 1\n", size);
 	mem = NULL;
 	mem = (void *)malloc(size * sizeof(char));
-	// printf("  f malloc_(%d) 2\n", size);
 	if (mem == NULL)
-	{
-		if ((*d)->curr_cmd == NULL)
 			free_all_and_exit("malloc failure", -1, d); // code ?
-		else
-			(*d)->curr_cmd->err = "malloc failure";
-	}
-	// printf("  f malloc_(%d) 3\n", size);
 	return (mem);
 }
 
@@ -69,7 +61,7 @@ void	free_all_and_exit(char *msg, int exit_c, t_data **d)
 {
 	if (msg == NULL)
 		msg = "";
-	printf("error %s %s\n", msg, strerror(errno));
+	printf("%s %s\n", msg, strerror(errno));
 	// free (env)
 	close((*d)->saved_stdin);
 	close((*d)->saved_stdout);

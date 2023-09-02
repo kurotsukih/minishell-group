@@ -6,7 +6,7 @@
 /*   By: akostrik <akostrik@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/02 15:22:31 by akostrik          #+#    #+#             */
-/*   Updated: 2023/09/02 15:22:32 by akostrik         ###   ########.fr       */
+/*   Updated: 2023/09/02 17:57:46 by akostrik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,8 +32,6 @@
 # define QUOTES0 0
 # define QUOTES1 1
 # define QUOTES2 2
-// # define SUCCESS 0
-// # define FAILURE 1
 
 extern int g_signal;
 
@@ -46,7 +44,6 @@ typedef struct 		s_cmd
 	int				fd_out;
 	struct s_cmd	*nxt;
 	struct s_cmd	*prv; // not used ?
-	char			*err;
 }					t_cmd;
 
 typedef struct		s_env
@@ -67,8 +64,18 @@ typedef struct		s_data
 }					t_data;
 
 void	parse(char *cmd_line, t_data **d);
+void	exec_cmds(t_data **d);
 void	del_cmd_from_lst(t_cmd *cmd, t_data **d);
 void	del_cmds(t_data **d);
+
+// builtins
+void	*exec_echo(t_cmd *cmd);
+void	*exec_cd(t_cmd *cmd, t_data **d);
+void	*exec_pwd(t_cmd *cmd, t_data **d);
+void	*exec_export(t_cmd *cmd, t_data **d);
+void	*exec_unset(t_cmd *cmd, t_data **d);
+void	*exec_env(t_data **d); 
+void	*exec_exit(t_cmd *cmd, t_data **d);
 
 // utils cmd
 void	init_cmd(t_cmd **new, t_data **d);
@@ -80,9 +87,9 @@ int		there_are_unclosed_quotes(t_cmd *cmd);
 void	calc_dollar_conversions(t_cmd *cmd, t_data **d);
 int		is_builtin(t_cmd *cmd);
 char	*path_(t_cmd *cmd, t_data **d);
-void	open_file(char *redir, char *filename, t_cmd *cmd);
-void	start_redirs(t_cmd *cmd);
-void 	stop_redirs(t_cmd *cmd, t_data **d);
+void	*open_file(char *redir, char *filename, t_cmd *cmd, t_data **d);
+void	*start_redirs(t_cmd *cmd, t_data **d);
+void 	*stop_redirs(t_cmd *cmd, t_data **d);
 void	print_cmds(char *msg, t_data **d);
 
 // utils env
@@ -92,16 +99,6 @@ char	**env_to_array(t_data **d);
 int		len_env_(t_data **d);
 char	*get_value_from_env(char *key, t_data **d);
 void	free_env_array(char **env, int len);
-
-// utils exec
-void	exec_pwd(t_data **d);
-void	exec_echo(t_cmd *cmd);
-void	exec_env(t_data **d); 
-void	exec_export(t_cmd *cmd, t_data **d);
-void	exec_unset(t_cmd *cmd, t_data **d);
-void	exec_cmds(t_data **d);
-void	exec_exit(t_data **d);
-void	exec_cd(t_cmd *cmd, t_data **d);
 
 // utils str
 char	*alphanum_(char *s, t_data **d);
