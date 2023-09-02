@@ -65,24 +65,20 @@ char *val_(char *s, t_data **d)
 char	*get_value_from_env(char *key, t_data **d)
 {
 	t_env	*var;
-	char	*key2 = NULL;
-	char	*val2 = NULL;
+	char *to_return;
+	// char	*val2 = NULL;
 
 	var = *((*d)->env);
 	while (var != NULL)
 	{
 		printf("*** var : [%s]\n", var->var);
-		key2 = key_(var->var, d);
-		printf("  key : [%s]\n", key2);
-		val2 = val_(var->var, d);
-		printf("  val : [%s]\n", val2);
-		printf("  strcmp [%s] [%s] ?\n", key2, key);
-		if (strcmp_(key2, key) == 0)
+		printf("  strncmp [%s] [%s] %d ?\n", var->var, key, (int)ft_strlen(key));
+		if (ft_strncmp(key, var->var, ft_strlen(key)) == 0)
 		{
-			printf("  free %s\n", key2);
-			free(key2);
-			printf("  return %s\n", val2);
-			return (val2);
+			// val2 = val_(var->var, d);
+			to_return = &(var->var[(int)ft_strlen(key) + 1]);
+			printf("  return %s\n", to_return);
+			return (to_return);
 		}
 		var = var->nxt;
 		printf("  continue\n");
@@ -97,7 +93,7 @@ char	**env_to_array(t_data **d)
 	char	**env_array;
 	t_env	*var;
 
-	env_array = (char **)malloc_(len_env_(d) + 1 *sizeof(char *), d);
+	env_array = (char **)malloc_((len_env_(d) + 1) *sizeof(char *), d);
 	i = -1;
 	var = *((*d)->env);
 	while (var != NULL)

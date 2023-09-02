@@ -343,6 +343,7 @@ char	*path_(t_cmd *cmd, t_data **d)
 	int		i_beg;
 
 	paths_str = get_value_from_env("PATH", d);
+	printf("paths_str = %s\n", paths_str);
 	i_beg = 0;
 	i = -1;
 	while (++i < (int)ft_strlen(paths_str))
