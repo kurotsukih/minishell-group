@@ -6,7 +6,7 @@
 /*   By: akostrik <akostrik@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/02 15:22:47 by akostrik          #+#    #+#             */
-/*   Updated: 2023/09/02 23:19:08 by akostrik         ###   ########.fr       */
+/*   Updated: 2023/09/02 23:36:28 by akostrik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,20 +50,6 @@ int	there_are_unclosed_quotes(t_cmd *cmd)
 	while (cmd->arg[0][++i] != '\0')
 		mod = mod_(cmd->arg[0][i]);
 	return (mod != QUOTES0);
-}
-
-char	*redir_(char *s)
-{
-	if (s[0] == '>' && s[1] == '>')
-		return (">>");
-	else if (s[0] == '<' && s[1] == '<')
-		return ("<<");
-	else if (s[0] == '>')
-		return (">");
-	else if (s[0] == '<')
-		return ("<");
-	else
-		return (""); // NULL
 }
 
 int	nb_args_(char *s0, int len, t_data **d)

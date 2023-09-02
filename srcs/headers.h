@@ -6,7 +6,7 @@
 /*   By: akostrik <akostrik@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/02 15:22:31 by akostrik          #+#    #+#             */
-/*   Updated: 2023/09/02 22:52:42 by akostrik         ###   ########.fr       */
+/*   Updated: 2023/09/02 23:37:45 by akostrik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,10 +78,17 @@ void	*exec_unset(t_cmd *cmd, t_data **d);
 void	*exec_env(t_data **d); 
 void	*exec_exit(t_cmd *cmd, t_data **d);
 
+// utils
+void	*malloc_(int size, t_data **d);
+void	sig_handler_main(int signal);
+void	sig_handler_fork(int signal);
+void	sig_handler_heredoc(int signal);
+void	free_array(char **arr, int len)
+void	free_all_and_exit(char *msg, int exit_c, t_data **d); /// ***d ?
+
 // utils cmd
 void	init_cmd(t_cmd **new, t_data **d);
 int		nb_args_(char *s, int len, t_data **d);
-char	*redir_(char *s);
 int		mod_(char c);
 void	verif_args(t_data **d);
 int		there_are_unclosed_quotes(t_cmd *cmd);
@@ -98,7 +105,6 @@ char 	*val_(char *s, t_data **d);
 char	**env_to_array(t_data **d);
 int		len_env_(t_data **d);
 char	*get_value_from_env(char *key, t_data **d);
-void	free_env_array(char **env, int len);
 
 // utils str
 char	*alphanum_(char *s, t_data **d);
@@ -107,11 +113,6 @@ char	*strdup_and_erase_redirs(char *s0, t_data **d);
 char	*strdup_and_erase_args_except_redirs(char *s0, t_data **d);
 char	*strndup_and_trim(char *srs, int len, t_data **d);
 int		strcmp_(char *s1, char *s2);
-
-// utils
-void	*malloc_(int size, t_data **d);
-void	free_all_and_exit(char *msg, int exit_c, t_data **d); /// ***d ?
-void	sig_handler_main(int signal);
-void	sig_handler_fork(int signal);
+char	*redir_(char *s);
 
 #endif

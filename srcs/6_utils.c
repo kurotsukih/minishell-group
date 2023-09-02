@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   utils.c                                            :+:      :+:    :+:   */
+/*   6_utils.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: akostrik <akostrik@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/02 15:22:55 by akostrik          #+#    #+#             */
-/*   Updated: 2023/09/02 23:15:59 by akostrik         ###   ########.fr       */
+/*   Updated: 2023/09/02 23:35:26 by akostrik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,4 +64,14 @@ void	free_all_and_exit(char *msg, int exit_c, t_data **d)
 	close((*d)->saved_stdin);
 	close((*d)->saved_stdout);
 	exit(exit_c);
+}
+
+void	free_array(char **arr, int len)
+{
+	int	i;
+
+	i = 0;
+	while (i < len)
+		free(arr[i]);
+	free(arr);
 }

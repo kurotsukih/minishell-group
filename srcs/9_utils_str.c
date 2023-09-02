@@ -6,7 +6,7 @@
 /*   By: akostrik <akostrik@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/02 15:22:52 by akostrik          #+#    #+#             */
-/*   Updated: 2023/09/02 22:31:43 by akostrik         ###   ########.fr       */
+/*   Updated: 2023/09/02 23:36:37 by akostrik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -113,16 +113,6 @@ char	*strdup_and_erase_args_except_redirs(char *s0, t_data **d) // enlever len
 	return (s);
 }
 
-void	free_env_array(char **env, int len)
-{
-	int	i;
-
-	i = 0;
-	while (i < len)
-		free(env[i]);
-	free(env);
-}
-
 char	*strdup_(char *s, t_data **d)
 {
 	size_t	i;
@@ -150,3 +140,16 @@ int	strcmp_(char *s1, char *s2)
 	return (0);
 }
 
+char	*redir_(char *s)
+{
+	if (s[0] == '>' && s[1] == '>')
+		return (">>");
+	else if (s[0] == '<' && s[1] == '<')
+		return ("<<");
+	else if (s[0] == '>')
+		return (">");
+	else if (s[0] == '<')
+		return ("<");
+	else
+		return (""); // NULL
+}
