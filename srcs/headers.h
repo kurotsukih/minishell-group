@@ -6,7 +6,7 @@
 /*   By: akostrik <akostrik@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/02 15:22:31 by akostrik          #+#    #+#             */
-/*   Updated: 2023/09/02 21:57:06 by akostrik         ###   ########.fr       */
+/*   Updated: 2023/09/02 22:52:42 by akostrik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,7 @@
 # define QUOTES0 0
 # define QUOTES1 1
 # define QUOTES2 2
+# define TMP_FILE "tmp"
 
 extern int g_signal;
 

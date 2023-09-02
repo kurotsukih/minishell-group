@@ -6,7 +6,7 @@
 /*   By: akostrik <akostrik@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/02 15:22:55 by akostrik          #+#    #+#             */
-/*   Updated: 2023/09/02 18:11:26 by akostrik         ###   ########.fr       */
+/*   Updated: 2023/09/02 23:15:59 by akostrik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,7 @@ void	free_all_and_exit(char *msg, int exit_c, t_data **d)
 {
 	if (msg == NULL)
 		msg = "";
-	printf("%s %s\n", msg, strerror(errno));
+	// printf("%s %s\n", msg, strerror(errno));
 	// free (env)
 	close((*d)->saved_stdin);
 	close((*d)->saved_stdout);

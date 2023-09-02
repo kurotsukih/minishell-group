@@ -6,7 +6,7 @@
 /*   By: akostrik <akostrik@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/02 15:22:47 by akostrik          #+#    #+#             */
-/*   Updated: 2023/09/02 22:30:12 by akostrik         ###   ########.fr       */
+/*   Updated: 2023/09/02 23:13:36 by akostrik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -153,21 +153,19 @@ void	del_cmds(t_data **d)
 }
 
 /* ************************************************************************** */
-static void	*heredoc_to_file(char *delim, char *file, t_cmd *cmd, t_data **d)
+static void	*heredoc_to_tmp_file(char *delim, t_cmd *cmd, t_data **d)
 {
 	char	*line;
 	int		fd;
 
-	fd = open(file, O_WRONLY | O_CREAT | O_TRUNC, 0666);
+	fd = open(TMP_FILE, O_WRONLY | O_CREAT | O_TRUNC, 0666);
 	if (!fd)
-		return (printf("%s : open file pb\n", cmd->arg[0]), rmv_cmd(cmd, d), NULL); 	// exic code ?
+		return (printf("%s : tmp file pb\n", cmd->arg[0]), rmv_cmd(cmd, d), NULL);
 	line = NULL;
 	while (1)
 	{
 		line = readline(">");
-		if (line == NULL || strcmp_(line, delim) != 0)
-			break ;
-		if (line == NULL)
+		if (line == NULL || strcmp_(line, delim) == 0)
 			break ;
 		// remove_quotes_str(line);
 		write(fd, line, ft_strlen(line));
@@ -182,23 +180,23 @@ void	*open_file(char *redir, char *file, t_cmd *cmd, t_data **d)
 {
 	//if ((**d)->saved_stdin == -1)
 	if (ft_strlen(file) == 0)
-			return (printf("%s : erreur syntaxe, symbole inattendu « > »\n", cmd->arg[0]), rmv_cmd(cmd, d), NULL); 	// exic code ?
+			return (printf("%s : err syntaxe\n", cmd->arg[0]), rmv_cmd(cmd, d), NULL);
 	if (strcmp_(redir, "<") == 0)
 	{
 		if (cmd->fd_in != STDIN_FILENO)
 			close(cmd->fd_in);
 		cmd->fd_in = open(file, O_RDONLY);
 		if (!cmd->fd_in)
-			return (printf("%s : open file pb\n", cmd->arg[0]), rmv_cmd(cmd, d), NULL); 	// exic code ?
+			return (printf("%s : open file pb\n", cmd->arg[0]), rmv_cmd(cmd, d), NULL);
 	}
 	else if (strcmp_(redir, "<<") == 0)
 	{
-		heredoc_to_file(file, "tmp_file", cmd, d); // delimitor = file
+		heredoc_to_tmp_file(file, cmd, d); // delimitor = file
 		if (cmd->fd_in != STDIN_FILENO)
 			close(cmd->fd_in);
-		cmd->fd_in = open("tmp_file", O_RDONLY);
+		cmd->fd_in = open(TMP_FILE, O_RDONLY);
 		if (!cmd->fd_in)
-			return (printf("%s : open file pb\n", cmd->arg[0]), rmv_cmd(cmd, d), NULL); 	// exic code ?
+			return (printf("%s : open file pb\n", cmd->arg[0]), rmv_cmd(cmd, d), NULL);
 	}
 	else if (strcmp_(redir, ">") == 0)
 	{
@@ -206,7 +204,7 @@ void	*open_file(char *redir, char *file, t_cmd *cmd, t_data **d)
 			close(cmd->fd_out);
 		cmd->fd_out = open(file, O_WRONLY | O_CREAT | O_TRUNC, 0666);
 		if (!cmd->fd_out)
-			return (printf("%s : open file pb\n", cmd->arg[0]), rmv_cmd(cmd, d), NULL); 	// exic code ?
+			return (printf("%s : open file pb\n", cmd->arg[0]), rmv_cmd(cmd, d), NULL);
 	}
 	else if (strcmp_(redir, ">>") == 0)
 	{
@@ -214,7 +212,7 @@ void	*open_file(char *redir, char *file, t_cmd *cmd, t_data **d)
 			close(cmd->fd_out);
 		cmd->fd_out = open(file, O_WRONLY | O_CREAT | O_APPEND, 0666);
 		if (!cmd->fd_out)
-			return (printf("%s : open file pb\n", cmd->arg[0]), rmv_cmd(cmd, d), NULL); 	// exic code ?
+			return (printf("%s : open file pb\n", cmd->arg[0]), rmv_cmd(cmd, d), NULL);
 	}
 	return (NULL);
 }

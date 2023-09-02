@@ -6,7 +6,7 @@
 /*   By: akostrik <akostrik@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/02 15:22:16 by akostrik          #+#    #+#             */
-/*   Updated: 2023/09/02 21:53:16 by akostrik         ###   ########.fr       */
+/*   Updated: 2023/09/02 22:48:19 by akostrik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,13 @@ strerro r perro r
 isatty ttyname ttyslot ioctl
 geten v 
 tcsetattr tcgetattr tgetent tgetflag tgetnum tgetstr tgoto tputs
+
+wait3 wait4 : resource usage information about the ft_wait_child_processes
+stat lstat fstat : file or file system status, information about a file
+unlink : call the unlink function to remove the specified file
+pipe : creates a pipe, a unidirectional data channel that can be used for interprocess communication.
+isatty : 1 if fd is an open file descriptor referring to a terminal; otherwise 0
+ttyname : pathname of the terminal device that is open on the file descriptor fd
 
 SIGIN T = the user types C-c
 SIGQUI T = SIGIN T, except that it’s controlled by C-\ + produces a core dump when it terminates the process, 
