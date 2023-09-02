@@ -359,6 +359,12 @@ char	*path_(t_cmd *cmd, t_data **d)
 
 void	start_redirs(t_cmd *cmd)
 {
+	if (cmd->fd_in != STDIN_FILENO)
+	{
+		if (dup2(cmd->fd_in, STDIN_FILENO) == -1) // дубл. дескриптора => stdout в файл
+			cmd->err = "dup2 failed";
+		close(cmd->fd_in);
+	}
 	if (cmd->fd_out != STDOUT_FILENO)
 	{
 		if (dup2(cmd->fd_out, STDOUT_FILENO) == -1) // дубл. дескриптора => stdout в файл
@@ -369,6 +375,9 @@ void	start_redirs(t_cmd *cmd)
 
 void	stop_redirs(t_cmd *cmd, t_data **d)
 {
+	if (cmd->fd_in == STDIN_FILENO)
+		if (dup2((*d)->saved_stdin, STDIN_FILENO) == -1) // восстановить исходный stdout
+			cmd->err = "dup2 failed"; // exit code ?
 	if (cmd->fd_out == STDOUT_FILENO)
 		if (dup2((*d)->saved_stdout, STDOUT_FILENO) == -1) // восстановить исходный stdout
 			cmd->err = "dup2 failed"; // exit code ?

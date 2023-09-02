@@ -50,6 +50,7 @@ typedef struct		s_data
 	t_cmd			*curr_cmd;
 	t_env			**env;
 	int				exit_c;
+	int				saved_stdin;
 	int				saved_stdout;
 }					t_data;
 

@@ -56,11 +56,10 @@ void	*malloc_(int size, t_data **d)
 void	free_all_and_exit(char *msg, int exit_c, t_data **d)
 {
 	if (msg == NULL)
-		printf("error %s\n", strerror(errno));
-	else
-		printf("error %s %s\n", msg, strerror(errno));
-	// free all
-	// free (paths)
+		msg = "";
+	printf("error %s %s\n", msg, strerror(errno));
+	// free (env)
+	close((*d)->saved_stdin);
 	close((*d)->saved_stdout);
 	exit(exit_c);
 }

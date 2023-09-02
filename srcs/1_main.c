@@ -69,6 +69,9 @@ static void	init_d(t_data ***d, char **env_array) // **d ?
 	*((**d)->cmds) = NULL;
 	(**d)->curr_cmd = NULL;
 	put_env(env_array, *d);
+	(**d)->saved_stdin = dup(STDIN_FILENO); // доп дескриптор stdout
+	if ((**d)->saved_stdin == -1)
+		free_all_and_exit("dup error", -1, *d); // code ? if there is no redir ?
 	(**d)->saved_stdout = dup(STDOUT_FILENO); // доп дескриптор stdout
 	if ((**d)->saved_stdout == -1)
 		free_all_and_exit("dup error", -1, *d); // code ? if there is no redir ?
