@@ -6,7 +6,7 @@
 /*   By: akostrik <akostrik@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/02 15:22:47 by akostrik          #+#    #+#             */
-/*   Updated: 2023/09/02 23:13:36 by akostrik         ###   ########.fr       */
+/*   Updated: 2023/09/02 23:19:08 by akostrik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -217,7 +217,7 @@ void	*open_file(char *redir, char *file, t_cmd *cmd, t_data **d)
 	return (NULL);
 }
 
-static char	*s_with_conversion_(char *old_s, int j, t_data **d)
+static char	*s_with_doll_conversion_(char *old_s, int j, t_data **d)
 {
 	char	*new_s;
 	int		len_new_s;
@@ -245,7 +245,7 @@ static char	*s_with_conversion_(char *old_s, int j, t_data **d)
 
 void	calc_dollar_conversions(t_cmd *cmd, t_data **d)
 {
-	char	*s_with_conversion;
+	char	*s_with_doll_conversion;
 	int		i;
 	int		j;
 
@@ -261,9 +261,9 @@ void	calc_dollar_conversions(t_cmd *cmd, t_data **d)
 				// 	(ft_itoa(exit_code));
 				if (cmd->arg[i][j] == '$')
 				{
-					s_with_conversion = s_with_conversion_(cmd->arg[i], j, d);
+					s_with_doll_conversion = s_with_doll_conversion_(cmd->arg[i], j, d);
 					free(cmd->arg[i]);
-					cmd->arg[i] = s_with_conversion;
+					cmd->arg[i] = s_with_doll_conversion;
 				}
 			}
 		}

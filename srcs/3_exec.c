@@ -6,7 +6,7 @@
 /*   By: akostrik <akostrik@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/02 15:22:29 by akostrik          #+#    #+#             */
-/*   Updated: 2023/09/02 22:24:16 by akostrik         ###   ########.fr       */
+/*   Updated: 2023/09/02 23:31:29 by akostrik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,22 +82,18 @@
 
 // int	exec_command(t_node *n)
 // {
-// 	int	result;
 
 // 	num = 0;
-// 	result = -1;
 // 	while (cmd != NULL)
 // 	{
-// 		result = ft_prepare_pipe(n, cmd);
-// 		if ((check(cmds), n->count_cmd, result) && num++ >= 0)
+// 		ft_prepare_pipe(n, cmd);
+// 		if ((check(cmds), n->count_cmd, ) && num++ >= 0)
 // 		{
 // 			pid = fork();
 // 			exit_c = 0;
 // 			if (pid == 0)
 // 			{
 //				exit_c = exec_program(cmd, d->env, n);
-//				if (!strcmp(cmd->ars, "."))
-//					return (exit_(-1, "bash: .: filename arg required\n"), -1);
 //				exit_c = ft_find_path(cmd->args, env, &path);
 //				execve(...);
 // 				pid = (exit(exit_c), 0);
@@ -105,12 +101,10 @@
 // 			else if (cmd->in_fd != 0)
 // 				close(cmd->in_fd);
 // 		}
-// 		else if (result == 0 && n->count_cmd == 1)
-// 			result = execute_builtin(&n->cmds[i_cmd], d, n);
 // 		cmd = cmd -> nxt;
 // 	}
-// 	ft_wait_child_processes(&result, num, pid);
-// 	return (result);
+// 	ft_wait_child_processes(num, pid);
+// 	return ();
 // }
 
 // if extern cmd change the env ?
@@ -122,6 +116,7 @@ static void *exec_extern_cmd(t_cmd *cmd, t_data **d)
 	int		len_env;
 	char	*path;
 
+	printf("exec_extern_cmd\n");
 	pid = fork();
 	if (pid < -1)
 		return (printf("%s : fork pb\n", cmd->arg[0]), rmv_cmd(cmd, d), NULL);
@@ -138,6 +133,7 @@ static void *exec_extern_cmd(t_cmd *cmd, t_data **d)
 	}
 	else
 		wait(&status);
+	printf("exec_extern_cmd return\n");
 	return (NULL);
 }
 
@@ -194,8 +190,14 @@ void	exec_cmds(t_data **d)
 		else if (strcmp_(cmd->arg[0], "exit") == 0)
 			exec_exit(cmd, d);
 		else
+		{
+			printf("call exec_extern_cmd\n");
 			exec_extern_cmd(cmd, d);
+			printf("after exec_extern_cmd\n");
+		}
 		stop_redirs(cmd, d);
+		if (unlink(TMP_FILE) == -1)
+			; //printf("pb remove tmp file\n");
 		cmd = cmd->nxt;
 	}
 }
