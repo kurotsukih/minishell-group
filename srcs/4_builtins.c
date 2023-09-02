@@ -83,7 +83,7 @@ void	exec_unset(t_cmd *cmd, t_data **d)
 			key = key_(var->var, d);
 			if (key == NULL)
 				continue ;
-			if (ft_strcmp(key, cmd->arg[i]) == 0)
+			if (strcmp_(key, cmd->arg[i]) == 0)
 			{
 				free(var->var);
 				if (prv != NULL)

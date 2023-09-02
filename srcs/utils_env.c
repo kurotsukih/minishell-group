@@ -2,41 +2,91 @@
 
 char *key_(char *s, t_data **d)
 {
+	char	*key;
 	int		i;
-	char	*s_copy;
+	int		len_key;
 
-	s_copy = (char *)malloc_(ft_strlen(s), d);
-	if (s_copy == NULL)
-		return (NULL);
+	printf("  key_(%s)\n", s);
+	len_key = 0;
 	i = -1;
-	while (s[++i] != '\0')
+	while (s[++i] != '=' && s[i] != '\0')
+		len_key ++;
+	printf("  f key_ : malloc %d\n", len_key + 1);
+	// key = (char *)malloc(len_key + 1);
+	// key = (char *)malloc(ft_strlen(s) + 1);
+	key = (char *)malloc(100);
+	printf("  f key_ : malloc ok\n");
+	i = 0;
+	while (i < len_key)
 	{
-		s_copy[i] = s[i];
-		if (s[i] == '=')
-		{
-			s_copy[i] = '\0';
-			return (s_copy);
-		}
+		key[i] = s[i];
+		i++;
 	}
-	return (NULL);
+	key[i] = '\0';
+	return (key);
+	(void)d;
 }
 
 char *val_(char *s, t_data **d)
 {
 	int		i;
-	char	*s_dup;
+	char	*val;
+	int		len_key;
+	int		len_val;
 
+	printf("  val_(%s)\n", s);
 	i = -1;
 	while (s[++i] != '\0')
-	{
 		if (s[i] == '=')
-		{
-			s_dup = strdup_(&s[i + 1], d);
-			if (s_dup == NULL)
-				return (NULL);
-			return (s_dup);
-		}
+			break ;
+	if (s[i] != '=')
+		return (NULL);
+	len_key = i;
+	len_val = 0;
+	while (s[++i] != '\0')
+		len_val++ ;
+	printf("  f val_ : malloc %d\n", len_val + 1);
+	// val = (char *)malloc_(len_val + 1, d);
+	// val = (char *)malloc(len_val + 1);
+	// val = (char *)malloc(ft_strlen(s) + 1);
+	val = (char *)malloc(100);
+	printf("  f val_ : malloc ok\n");
+	i = 0;
+	while (s[len_key + i + 1] != '\0')
+	{
+		val[i] = s[len_key + i + 1];
+		i++;
 	}
+	val[i] = '\0';
+	(void)d;
+	return (val);
+}
+
+char	*get_value_from_env(char *key, t_data **d)
+{
+	t_env	*var;
+	char	*key2 = NULL;
+	char	*val2 = NULL;
+
+	var = *((*d)->env);
+	while (var != NULL)
+	{
+		printf("*** var : [%s]\n", var->var);
+		key2 = key_(var->var, d);
+		printf("  key : [%s]\n", key2);
+		val2 = val_(var->var, d);
+		printf("  val : [%s]\n", val2);
+		if (strcmp_(key2, key) == 0)
+		{
+			printf("  free %s\n", key2);
+			free(key2);
+			printf("  return %s\n", val2);
+			return (val2);
+		}
+		var = var->nxt;
+		printf("  continue\n");
+	}
+	(*d)->curr_cmd->err = "env variable not found";
 	return (NULL);
 }
 
@@ -72,19 +122,3 @@ int len_env_(t_data **d)
 	}
 	return (len);
 }
-
-char	*get_value_from_env(char *key, t_data **d)
-{
-	t_env	*var;
-
-	var = *((*d)->env);
-	while (var != NULL)
-	{
-		if (ft_strcmp(key_(var->var, d), key) == 0)
-			return (val_(var->var, d));
-		var = var->nxt;
-	}
-	(*d)->curr_cmd->err = "env variable not found";
-	return (NULL);
-}
-

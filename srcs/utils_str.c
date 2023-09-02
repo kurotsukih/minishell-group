@@ -112,15 +112,24 @@ char	*strdup_(char *s, t_data **d)
 	size_t	i;
 	char	*dup;
 
-	dup = (char *)malloc_((ft_strlen(s) + 1) * sizeof(char), d);
-	if (dup == NULL)
-		return (NULL);
-	i = 0;
-	while (s[i] != '\0')
-	{
+	dup = (char *)malloc_(ft_strlen(s) + 1, d);
+	i = -1;
+	while (s[++i] != '\0')
 		dup[i] = s[i];
-		i++;
-	}
 	dup[i] = '\0';
 	return (dup);
+}
+
+int	strcmp_(char *s1, char *s2)
+{
+	int	i;
+
+	i = 0;
+	while (s1[i] || s2[i])
+	{
+		if (s1[i] != s2[i])
+			return ((unsigned char)s1[i] - (unsigned char)s2[i]);
+		i++;
+	}
+	return (0);
 }

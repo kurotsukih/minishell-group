@@ -34,12 +34,14 @@ void	sig_handler_fork(int signal)
 
 // global error                      => exit
 // error concerning only one command => skip this command
-void	*malloc_(size_t size, t_data **d)
+void	*malloc_(int size, t_data **d)
 {
 	void	*mem;
 
+	// printf("  f malloc_(%d) 1\n", size);
 	mem = NULL;
-	mem = malloc(size);
+	mem = (void *)malloc(size * sizeof(char));
+	// printf("  f malloc_(%d) 2\n", size);
 	if (mem == NULL)
 	{
 		if ((*d)->curr_cmd == NULL)
@@ -47,6 +49,7 @@ void	*malloc_(size_t size, t_data **d)
 		else
 			(*d)->curr_cmd->err = "malloc failure";
 	}
+	// printf("  f malloc_(%d) 3\n", size);
 	return (mem);
 }
 

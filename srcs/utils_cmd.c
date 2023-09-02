@@ -51,7 +51,7 @@ char	*redir_(char *s)
 	else if (s[0] == '<')
 		return ("<");
 	else
-		return ("");
+		return (""); // NULL
 }
 
 int	nb_args_(char *s0, int len, t_data **d)
@@ -141,37 +141,68 @@ void	del_cmds(t_data **d)
 	}
 }
 
-void	open_file(char *redir, char *redir_file, t_data **d)
+static void	put_heredoc_to_tmp_file(char *delimiter, char *filename, t_cmd *cmd)
 {
-	if (ft_strlen(redir_file) == 0)
+	char	*line;
+	int		fd;
+
+	fd = open(filename, O_WRONLY | O_CREAT | O_TRUNC, 0666);
+	if (!fd)
+		cmd->err = "open file failed";
+	line = NULL;
+	while (1)
 	{
-		//'bash: erreur de syntaxe près du symbole inattendu « > »"
-		(*d)->curr_cmd->err = "erreur de syntaxe près du symbole inattendu « > »";
+		line = readline(">");
+		if (line == NULL || strcmp_(line, delimiter) != 0)
+			break ;
+		if (line == NULL)
+			break ;
+		// ft_remove_quotes_string(line);
+		write(fd, line, ft_strlen(line));
+		write(fd, "\n", 1);
+		free(line);
+	}
+}
+
+void	open_file(char *redir, char *filename, t_cmd *cmd)
+{
+	if (ft_strlen(filename) == 0)
+	{
+		cmd->err = "erreur de syntaxe près du symbole inattendu « > »";
 		return ;
 	}
-	if (ft_strcmp(redir, "<") == 0)
+	if (strcmp_(redir, "<") == 0)
 	{
-		if ((*d)->curr_cmd->fd_in != STDIN_FILENO)
-			close((*d)->curr_cmd->fd_in);
-		(*d)->curr_cmd->fd_in = open(redir_file, O_RDONLY);
-		if (!(*d)->curr_cmd->fd_in)
-			(*d)->curr_cmd->err = "open file failed";
+		if (cmd->fd_in != STDIN_FILENO)
+			close(cmd->fd_in);
+		cmd->fd_in = open(filename, O_RDONLY);
+		if (!cmd->fd_in)
+			cmd->err = "open file failed";
 	}
-	else if (ft_strcmp(redir, ">") == 0)
+	else if (strcmp_(redir, "<<") == 0)
 	{
-		if ((*d)->curr_cmd->fd_out != STDIN_FILENO)
-			close((*d)->curr_cmd->fd_out);
-		(*d)->curr_cmd->fd_out = open(redir_file, O_WRONLY | O_CREAT | O_TRUNC, 0666);
-		if (!(*d)->curr_cmd->fd_out)
-			(*d)->curr_cmd->err = "open file failed";
+		put_heredoc_to_tmp_file(filename, "tmp_file", cmd); // delimitor = filename
+		if (cmd->fd_in != STDIN_FILENO)
+			close(cmd->fd_in);
+		cmd->fd_in = open("tmp_file", O_RDONLY);
+		if (!cmd->fd_in)
+			cmd->err = "open file failed";
 	}
-	else if (ft_strcmp(redir, ">>") == 0)
+	else if (strcmp_(redir, ">") == 0)
 	{
-		if ((*d)->curr_cmd->fd_out != STDIN_FILENO)
-			close((*d)->curr_cmd->fd_out);
-		(*d)->curr_cmd->fd_out = open(redir_file, O_WRONLY | O_CREAT | O_APPEND, 0666);
-		if (!(*d)->curr_cmd->fd_out)
-			(*d)->curr_cmd->err = "open file failed";
+		if (cmd->fd_out != STDIN_FILENO)
+			close(cmd->fd_out);
+		cmd->fd_out = open(filename, O_WRONLY | O_CREAT | O_TRUNC, 0666);
+		if (!cmd->fd_out)
+			cmd->err = "open file failed";
+	}
+	else if (strcmp_(redir, ">>") == 0)
+	{
+		if (cmd->fd_out != STDIN_FILENO)
+			close(cmd->fd_out);
+		cmd->fd_out = open(filename, O_WRONLY | O_CREAT | O_APPEND, 0666);
+		if (!cmd->fd_out)
+			cmd->err = "open file failed";
 	}
 }
 
@@ -202,7 +233,7 @@ static char	*s_with_conversion_(char *old_s, int j, t_data **d)
 	return (new_s);
 }
 
-void	calc_dollar_convers(t_cmd *cmd, t_data **d)
+void	calc_dollar_conversions(t_cmd *cmd, t_data **d)
 {
 	char	*s_with_conversion;
 	int		i;
@@ -234,13 +265,13 @@ static void	verif_args_1(t_cmd *cmd)
 		cmd->err = "unclosed quotes"; // exit_code ?
 	if (!cmd->arg && ft_strlen(cmd->err) == 0)
 		cmd->err = "empty commande"; // exit_code = 255
-	if (ft_strcmp(cmd->arg[0], "env") == 0 && cmd->nb_args > 1 && ft_strlen(cmd->err) == 0)
+	if (strcmp_(cmd->arg[0], "env") == 0 && cmd->nb_args > 1 && ft_strlen(cmd->err) == 0)
 		cmd->err = "env : Too many arguments"; // exit_code ?
-	if (ft_strcmp(cmd->arg[0], "cd") == 0 && cmd->nb_args > 2 && ft_strlen(cmd->err) == 0)
+	if (strcmp_(cmd->arg[0], "cd") == 0 && cmd->nb_args > 2 && ft_strlen(cmd->err) == 0)
 		cmd->err = "cd : Too many arguments"; // exit_code ?
-	if (ft_strcmp(cmd->arg[0], "exit") == 0 && cmd->nb_args > 2 && ft_strlen(cmd->err) == 0)
+	if (strcmp_(cmd->arg[0], "exit") == 0 && cmd->nb_args > 2 && ft_strlen(cmd->err) == 0)
 		cmd->err = "exit : Too many arguments"; // exit_code ?
-	if (ft_strcmp(cmd->arg[0], "exit") == 0 && !ft_atoi(cmd->arg[1]) && ft_strlen(cmd->err) == 0)
+	if (strcmp_(cmd->arg[0], "exit") == 0 && !ft_atoi(cmd->arg[1]) && ft_strlen(cmd->err) == 0)
 		cmd->err = "exit: numeric argument required"; // exit_code = 2
 }
 
@@ -260,13 +291,13 @@ void	verif_args(t_data **d)
 int	is_builtin(t_cmd *cmd)
 {
 	return (\
-	ft_strcmp(cmd->arg[0], "cd") == 0 || \
-	ft_strcmp(cmd->arg[0], "exit") == 0 || \
-	ft_strcmp(cmd->arg[0], "export") == 0 || \
-	ft_strcmp(cmd->arg[0], "unset") == 0 || \
-	ft_strcmp(cmd->arg[0], "echo") == 0 || \
-	ft_strcmp(cmd->arg[0], "pwd") == 0 || \
-	ft_strcmp(cmd->arg[0], "env") == 0);
+	strcmp_(cmd->arg[0], "cd") == 0 || \
+	strcmp_(cmd->arg[0], "exit") == 0 || \
+	strcmp_(cmd->arg[0], "export") == 0 || \
+	strcmp_(cmd->arg[0], "unset") == 0 || \
+	strcmp_(cmd->arg[0], "echo") == 0 || \
+	strcmp_(cmd->arg[0], "pwd") == 0 || \
+	strcmp_(cmd->arg[0], "env") == 0);
 }
 
 static char	*path2_(char *s1, char *s2, t_data **d)
@@ -324,12 +355,12 @@ char	*path_(t_cmd *cmd, t_data **d)
 			free(path);
 			i_beg = i + 1;
 		}
+	printf("path_ %s return \n", cmd->arg[0]);
 	return (cmd->err = "command not found", NULL);// exit_code = 127, if (errno != 2) exit_c = 126;
 }
 
 void	start_redirs(t_cmd *cmd)
 {
-	printf("srart_redirs\n");
 	if (cmd->fd_out != STDOUT_FILENO)
 	{
 		if (dup2(cmd->fd_out, STDOUT_FILENO) == -1) // дубл. дескриптора => stdout в файл
@@ -340,7 +371,6 @@ void	start_redirs(t_cmd *cmd)
 
 void	stop_redirs(t_cmd *cmd, t_data **d)
 {
-	printf("stop_redirs\n");
 	if (cmd->fd_out == STDOUT_FILENO)
 		if (dup2((*d)->saved_stdout, STDOUT_FILENO) == -1) // восстановить исходный stdout
 			cmd->err = "dup2 failed"; // exit code ?

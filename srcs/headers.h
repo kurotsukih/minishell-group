@@ -65,10 +65,10 @@ char	*redir_(char *s);
 int		mod_(char c);
 void	verif_args(t_data **d);
 int		there_are_unclosed_quotes(t_cmd *cmd);
-void	calc_dollar_convers(t_cmd *cmd, t_data **d);
+void	calc_dollar_conversions(t_cmd *cmd, t_data **d);
 int		is_builtin(t_cmd *cmd);
 char	*path_(t_cmd *cmd, t_data **d);
-void	open_file(char *redir, char *redir_file, t_data **d);
+void	open_file(char *redir, char *filename, t_cmd *cmd);
 void	start_redirs(t_cmd *cmd);
 void 	stop_redirs(t_cmd *cmd, t_data **d);
 void	print_cmds(char *msg, t_data **d);
@@ -97,9 +97,10 @@ char	*strdup_(char *s, t_data **d);
 char	*strdup_and_erase_redirs(char *s0, t_data **d);
 char	*strdup_and_erase_args_except_redirs(char *s0, t_data **d);
 char	*strndup_and_trim(char *srs, int len, t_data **d);
+int		strcmp_(char *s1, char *s2);
 
 // utils
-void	*malloc_(size_t size, t_data **d);
+void	*malloc_(int size, t_data **d);
 void	free_all_and_exit(char *msg, int exit_c, t_data **d); /// ***d ?
 void	sig_handler_main(int signal);
 void	sig_handler_fork(int signal);

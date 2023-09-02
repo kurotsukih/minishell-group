@@ -15,7 +15,7 @@ void	exec_echo(t_cmd *cmd)
 	i = 0;
 	while (++i < cmd->nb_args)
 	{
-		if (ft_strcmp(cmd->arg[i], "-n") == 0)
+		if (strcmp(cmd->arg[i], "-n") == 0)
 			option_n = 1;
 		else if (i == cmd->nb_args - 1)
 			printf("%s", cmd->arg[i]);

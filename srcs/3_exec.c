@@ -42,38 +42,11 @@ exit 12
 // puis dans ce bash execute echo ahah puis exit 12,
 // on reviens au shell d'origine et si on echo le retour de la derniere commande (ici bash) c'est bien 12
 
-// (le fichier qui répresent le heredoc peut etre implementé en tant que fichier 
-// temporaire qui se delete a la fin de la cmd) 
+// le fichier qui répresent le heredoc peut etre implementé en tant que fichier 
+// temp, se delete a la fin de la cmd
 
-// exec_command = exec		/ exec_builtin
-// exec         = execv e	/ exec_builtin
-// Add a moment when there can be only one command and it is builtin
 // 127 команда не найдена, дочерний процесс, созданный для ее выполнения, возвращает 127
 // 126 команда найдена, но не может быть выполнена
-
-// static void	ft_wait_child_processes(int *is_success, int size, int pid)
-// {
-// 	int	i;
-// 	int	status;
-// 	i = 0;
-// 	while (i < size)
-// 	{
-// 		if (wait(&status) == pid)
-// 		{
-// 			if (WIFEXITED(status))
-// 				*is_success = WEXITSTATUS(status);
-// 			if (WIFSIGNALED(status))
-// 			{
-// 				*is_success = WTERMSIG(status) + 128;
-// 				if (*is_success == 130)
-// 					exit_(-1, "\n", NULL, NULL, NULL, NULL);
-// 				if (*is_success == 131)
-// 					exit_(-1, "Quit (core dumped)\n", NULL, NULL, NULL, NULL);
-// 			}
-// 		}
-// 		i++;
-// 	}
-// }
 
 // static void	pipe_(int i_cmd, t_data **d)
 // {
@@ -121,8 +94,6 @@ exit 12
 // 		if ((check(cmds), n->count_cmd, result) && num++ >= 0)
 // 		{
 // 			pid = fork();
-// 			if (pid < -1)
-// 				exit_();
 // 			exit_c = 0;
 // 			if (pid == 0)
 // 			{
@@ -138,7 +109,7 @@ exit 12
 // 				else if (cmd->params)
 // 				{
 // 					exit_c = exec_program(cmd, d->env, n);
-// 					if (!ft_strcmp(cmd->ars, "."))
+// 					if (!strcmp(cmd->ars, "."))
 // 						return (exit_(-1, "bash: .: filename arg required\n"), -1);
 // 					exit_c = ft_find_path(cmd->args, env, &path);
 // 					args = ft_construct_command(cmd->args);
@@ -202,22 +173,22 @@ void	exec_cmds(t_data **d)
 		(*d)->curr_cmd = cmd; // not used ?
 		start_redirs(cmd);
 		// à la premiere erreur (le droit decriture pour les redir out, etc) ca fait tout fail
-		calc_dollar_convers(cmd, d);
+		calc_dollar_conversions(cmd, d);
 		if (cmd->err != NULL)
 			(printf("eror %s", cmd->err), del_cmd_from_lst(cmd, d)); // exic code ?
-		if (ft_strcmp(cmd->arg[0], "echo") == 0)
+		if (strcmp_(cmd->arg[0], "echo") == 0)
 			exec_echo(cmd);
-		else if (ft_strcmp(cmd->arg[0], "env") == 0 && (*d)->env != NULL)
+		else if (strcmp_(cmd->arg[0], "env") == 0 && (*d)->env != NULL)
 			exec_env(d);
-		else if (ft_strcmp(cmd->arg[0], "pwd") == 0)
+		else if (strcmp_(cmd->arg[0], "pwd") == 0)
 			exec_pwd(d);
-		else if (ft_strcmp(cmd->arg[0], "cd") == 0)
+		else if (strcmp_(cmd->arg[0], "cd") == 0)
 			exec_cd(cmd, d);
-		else if (ft_strcmp(cmd->arg[0], "export") == 0)
+		else if (strcmp_(cmd->arg[0], "export") == 0)
 			exec_export(cmd, d);
-		else if (ft_strcmp(cmd->arg[0], "unset") == 0 && (*d)->env != NULL)
+		else if (strcmp_(cmd->arg[0], "unset") == 0 && (*d)->env != NULL)
 			exec_unset(cmd, d);
-		else if (ft_strcmp(cmd->arg[0], "exit") == 0)
+		else if (strcmp_(cmd->arg[0], "exit") == 0)
 			exec_exit(d);
 		else
 			exec_extern_cmd(cmd, d);
