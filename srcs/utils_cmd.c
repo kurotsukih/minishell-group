@@ -6,7 +6,7 @@
 /*   By: akostrik <akostrik@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/02 15:22:47 by akostrik          #+#    #+#             */
-/*   Updated: 2023/09/02 21:56:44 by akostrik         ###   ########.fr       */
+/*   Updated: 2023/09/02 22:30:12 by akostrik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,7 +77,9 @@ int	nb_args_(char *s0, int len, t_data **d)
 	nb_args = 0;
 	i = -1;
 	while (++i < len)
-		if (mod_(s[i]) == QUOTES0 && s[i] != ' ' && (s[i + 1] == ' ' || s[i + 1] == '\0' || s[i + 1] == '\'' || s[i + 1] == '\"' || i == len - 1))
+		if (mod_(s[i]) == QUOTES0 && s[i] != ' ' && (s[i + 1] == ' ' || \
+			s[i + 1] == '\0' || s[i + 1] == '\'' || s[i + 1] == '\"' || i == len - 1))
+/* ************************************************************************** */
 				nb_args++;
 	free(s);
 	return (nb_args);
@@ -88,7 +90,7 @@ void print_cmds(char *msg, t_data **d)
 	int		i;
 	t_cmd	*cmd;
 
-	printf("LIST %s %14p->%14p:\n  ", msg, (*d)->cmds, (*d)->cmds == NULL ? 0 : *((*d)->cmds));
+	printf("CMDST %s %14p:\n  ", msg, (*d)->cmds);
 	if ((*d)->cmds == NULL || *((*d)->cmds) == NULL)
 	{
 		printf("empty\n");
@@ -150,19 +152,20 @@ void	del_cmds(t_data **d)
 	}
 }
 
-static void	*put_heredoc_to_tmp_file(char *delimiter, char *filename, t_cmd *cmd, t_data **d)
+/* ************************************************************************** */
+static void	*heredoc_to_file(char *delim, char *file, t_cmd *cmd, t_data **d)
 {
 	char	*line;
 	int		fd;
 
-	fd = open(filename, O_WRONLY | O_CREAT | O_TRUNC, 0666);
+	fd = open(file, O_WRONLY | O_CREAT | O_TRUNC, 0666);
 	if (!fd)
-		return (printf("%s : open file failed\n", cmd->arg[0]), rmv_cmd(cmd, d), NULL); 	// exic code ?
+		return (printf("%s : open file pb\n", cmd->arg[0]), rmv_cmd(cmd, d), NULL); 	// exic code ?
 	line = NULL;
 	while (1)
 	{
 		line = readline(">");
-		if (line == NULL || strcmp_(line, delimiter) != 0)
+		if (line == NULL || strcmp_(line, delim) != 0)
 			break ;
 		if (line == NULL)
 			break ;
@@ -174,43 +177,44 @@ static void	*put_heredoc_to_tmp_file(char *delimiter, char *filename, t_cmd *cmd
 	return (NULL);
 }
 
-void	*open_file(char *redir, char *filename, t_cmd *cmd, t_data **d)
+/* ************************************************************************** */
+void	*open_file(char *redir, char *file, t_cmd *cmd, t_data **d)
 {
 	//if ((**d)->saved_stdin == -1)
-	if (ft_strlen(filename) == 0)
-			return (printf("%s : erreur de syntaxe près du symbole inattendu « > »\n", cmd->arg[0]), rmv_cmd(cmd, d), NULL); 	// exic code ?
+	if (ft_strlen(file) == 0)
+			return (printf("%s : erreur syntaxe, symbole inattendu « > »\n", cmd->arg[0]), rmv_cmd(cmd, d), NULL); 	// exic code ?
 	if (strcmp_(redir, "<") == 0)
 	{
 		if (cmd->fd_in != STDIN_FILENO)
 			close(cmd->fd_in);
-		cmd->fd_in = open(filename, O_RDONLY);
+		cmd->fd_in = open(file, O_RDONLY);
 		if (!cmd->fd_in)
-			return (printf("%s : open file failed\n", cmd->arg[0]), rmv_cmd(cmd, d), NULL); 	// exic code ?
+			return (printf("%s : open file pb\n", cmd->arg[0]), rmv_cmd(cmd, d), NULL); 	// exic code ?
 	}
 	else if (strcmp_(redir, "<<") == 0)
 	{
-		put_heredoc_to_tmp_file(filename, "tmp_file", cmd, d); // delimitor = filename
+		heredoc_to_file(file, "tmp_file", cmd, d); // delimitor = file
 		if (cmd->fd_in != STDIN_FILENO)
 			close(cmd->fd_in);
 		cmd->fd_in = open("tmp_file", O_RDONLY);
 		if (!cmd->fd_in)
-			return (printf("%s : open file failed\n", cmd->arg[0]), rmv_cmd(cmd, d), NULL); 	// exic code ?
+			return (printf("%s : open file pb\n", cmd->arg[0]), rmv_cmd(cmd, d), NULL); 	// exic code ?
 	}
 	else if (strcmp_(redir, ">") == 0)
 	{
 		if (cmd->fd_out != STDIN_FILENO)
 			close(cmd->fd_out);
-		cmd->fd_out = open(filename, O_WRONLY | O_CREAT | O_TRUNC, 0666);
+		cmd->fd_out = open(file, O_WRONLY | O_CREAT | O_TRUNC, 0666);
 		if (!cmd->fd_out)
-			return (printf("%s : open file failed\n", cmd->arg[0]), rmv_cmd(cmd, d), NULL); 	// exic code ?
+			return (printf("%s : open file pb\n", cmd->arg[0]), rmv_cmd(cmd, d), NULL); 	// exic code ?
 	}
 	else if (strcmp_(redir, ">>") == 0)
 	{
 		if (cmd->fd_out != STDIN_FILENO)
 			close(cmd->fd_out);
-		cmd->fd_out = open(filename, O_WRONLY | O_CREAT | O_APPEND, 0666);
+		cmd->fd_out = open(file, O_WRONLY | O_CREAT | O_APPEND, 0666);
 		if (!cmd->fd_out)
-			return (printf("%s : open file failed\n", cmd->arg[0]), rmv_cmd(cmd, d), NULL); 	// exic code ?
+			return (printf("%s : open file pb\n", cmd->arg[0]), rmv_cmd(cmd, d), NULL); 	// exic code ?
 	}
 	return (NULL);
 }
@@ -267,20 +271,24 @@ void	calc_dollar_conversions(t_cmd *cmd, t_data **d)
 		}
 }
 
+/* ************************************************************************** */
 static void	*verif_args_1(t_cmd *cmd, t_data **d)
 {
+	char	*s;
+
+	s = cmd->arg[0];
 	if (!cmd->arg)
 		return (printf("empty command\n"), rmv_cmd(cmd, d), NULL); // exit_code = 255
 	else if (there_are_unclosed_quotes(cmd))
-		return (printf("%s : unclosed quotes\n", cmd->arg[0]), rmv_cmd(cmd, d), NULL); // exit_code
-	else if (strcmp_(cmd->arg[0], "env") == 0 && cmd->nb_args >= 2)
-		return (printf("%s : Too many arguments\n", cmd->arg[0]), rmv_cmd(cmd, d), NULL); // exit_code
-	else if (strcmp_(cmd->arg[0], "cd") == 0 && cmd->nb_args >= 3)
-		return (printf("%s : Too many arguments\n", cmd->arg[0]), rmv_cmd(cmd, d), NULL); // exit_code
-	else if (strcmp_(cmd->arg[0], "exit") == 0 && cmd->nb_args >= 3)
-		return (printf("%s : Too many arguments\n", cmd->arg[0]), rmv_cmd(cmd, d), NULL); // exit_code
-	else if (strcmp_(cmd->arg[0], "exit") == 0 && cmd->nb_args == 2 && !ft_atoi(cmd->arg[1]))
-		return (printf("%s : numeric argument required\n", cmd->arg[0]), rmv_cmd(cmd, d), NULL); // exit_code = 2
+		return (printf("%s : unclosed quotes\n", s), rmv_cmd(cmd, d), NULL);
+	else if (strcmp_(s, "env") == 0 && cmd->nb_args >= 2)
+		return (printf("%s : Too many arguments\n", s), rmv_cmd(cmd, d), NULL);
+	else if (strcmp_(s, "cd") == 0 && cmd->nb_args >= 3)
+		return (printf("%s : Too many arguments\n", s), rmv_cmd(cmd, d), NULL);
+	else if (strcmp_(s, "exit") == 0 && cmd->nb_args >= 3)
+		return (printf("%s : Too many arguments\n", s), rmv_cmd(cmd, d), NULL);
+	else if (strcmp_(s, "exit") == 0 && cmd->nb_args == 2 && !ft_atoi(cmd->arg[1]))
+		return (printf("%s : numeric arg. required\n", s), rmv_cmd(cmd, d), NULL); // exit_code = 2
 	return (NULL);
 }
 
@@ -364,9 +372,11 @@ char	*path_(t_cmd *cmd, t_data **d)
 			free(path);
 			i_beg = i + 1;
 		}
-	return (printf("%s : command not found\n", cmd->arg[0]), rmv_cmd(cmd, d), NULL); // exit_code = 127, if (errno != 2) exit_c = 126;
+	return (printf("%s : cmd not found\n", cmd->arg[0]), rmv_cmd(cmd, d), NULL); 
+	// exit_code = 127, if (errno != 2) exit_c = 126;
 }
 
+/* ************************************************************************** */
 static void	remove_quotes_str(char *str)
 {
 	char	mode;

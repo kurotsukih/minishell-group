@@ -6,7 +6,7 @@
 /*   By: akostrik <akostrik@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/02 15:22:52 by akostrik          #+#    #+#             */
-/*   Updated: 2023/09/02 18:32:10 by akostrik         ###   ########.fr       */
+/*   Updated: 2023/09/02 22:31:43 by akostrik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,11 +20,13 @@ char *alphanum_(char *s, t_data **d)
 	if ((s[0] < 'a' || s[0] > 'z') && (s[0] < 'A' && s[0] > 'Z'))
 		return (NULL);
 	i = -1;
-	while ((s[++i] >= '0' && s[i] < '9') || (s[i] >= 'a' && s[i] < 'z') || (s[i] >= 'A' && s[i] < 'Z') || s[i] == '_')
+	while ((s[++i] >= '0' && s[i] < '9') \
+		|| (s[i] >= 'a' && s[i] < 'z') || (s[i] >= 'A' && s[i] < 'Z') || s[i] == '_')
 		;
 	alphanum = (char *)malloc_(i + 1, d);
 	i = -1;
-	while ((s[++i] >= '0' && s[i] < '9') || (s[i] >= 'a' && s[i] < 'z') || (s[i] >= 'A' && s[i] < 'Z') || s[i] == '_')
+	while ((s[++i] >= '0' && s[i] < '9') \
+		|| (s[i] >= 'a' && s[i] < 'z') || (s[i] >= 'A' && s[i] < 'Z') || s[i] == '_')
 		alphanum[i] = s[i];
 	alphanum[i] = '\0';
 	return (alphanum);
@@ -75,7 +77,8 @@ char	*strdup_and_erase_redirs(char *s0, t_data **d) // len useful
 				s[i++] = ' ';
 			while(s[i] == ' ')
 				i++;
-			while(mod_(s[i]) == QUOTES0 && (s[i] != ' ' && s[i] != '>' && s[i] != '<' && s[i] != '\0'))
+			while(mod_(s[i]) == QUOTES0 && \
+				(s[i] != ' ' && s[i] != '>' && s[i] != '<' && s[i] != '\0'))
 				s[i++] = ' ';
 		}
 		else
@@ -100,7 +103,8 @@ char	*strdup_and_erase_args_except_redirs(char *s0, t_data **d) // enlever len
 				i++;
 			while(s[i] == ' ')
 				i++;
-			while(mod_(s[i]) == QUOTES0 && (s[i] != ' ' && s[i] != '>' && s[i] != '<' && s[i] != '\0'))
+			while(mod_(s[i]) == QUOTES0 && \
+				(s[i] != ' ' && s[i] != '>' && s[i] != '<' && s[i] != '\0'))
 				i++;
 		}
 		else

@@ -6,17 +6,13 @@
 /*   By: akostrik <akostrik@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/02 15:22:29 by akostrik          #+#    #+#             */
-/*   Updated: 2023/09/02 22:08:13 by akostrik         ###   ########.fr       */
+/*   Updated: 2023/09/02 22:24:16 by akostrik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "headers.h"
 
-// char *args[] = { "/bin/sh", "-c", "echo hello! > /path/to/file", NULL };
-// execv("/bin/sh", args);
-
 // execve creates a new process with the same ope n file descriptors as the parent
-// (there are exceptions and naunces which can be read from the execve man page))
 
 // >out1 < src1 cat >>out2 >out3 <src2 <<eof -e >out3 < src3
 
@@ -33,29 +29,27 @@
 // et tte les redir in, il te reste cat -e
 // les redir peuvent etre située n'importe ou par rapport a la commande et ses eventuels arguments
 
-// heredoc = juste une redir in, 
+// heredo c = juste une redir in, 
 // mais au lieu de rediriger le contenu d'un fichier ds le stdin ca redirige un input 
-// (jusqua atteindre le delimiteur que tu defini dans ton heredoc)
+// (jusqua atteindre le delimiteur)
 
-// exemple d'un heredoc 
-/*
-<<lol bash
-echo ahah
-exit 12
-> lol
-*/
+// <<lol bash
+// echo ahah
+// exit 12
+// > lol
+
 // ahah
 // echo $?
 // 12
-// je demande a lancer bash en redirigeant un heredoc dans le stdin,
+// je demande a lancer bash en redirigeant un heredo c dans le stdin,
 // le delimiteur est lol
 // le fichier qu'il represente contiendra tout ce que je rentre en input jusqu'a une ligne = "lol"
 // echo ahah suivit de exit 12 donc la cmd lance bash,
 // puis dans ce bash execute echo ahah puis exit 12,
 // on reviens au shell d'origine et si on echo le retour de la derniere commande (ici bash) c'est bien 12
 
-// le fichier qui répresent le heredoc peut etre implementé en tant que fichier 
-// temp, se delete a la fin de la cmd
+// le fichier qui répresent le heredo c peut etre implementé en tant que fichier 
+// temp, qui se delete a la fin de la cmd
 
 // 127 команда не найдена, дочерний процесс, созданный для ее выполнения, возвращает 127
 // 126 команда найдена, но не может быть выполнена
@@ -88,18 +82,10 @@ exit 12
 
 // int	exec_command(t_node *n)
 // {
-// 	int	num;
-// 	int	pid;
 // 	int	result;
-// 	t_list cmd;
-// 	char	*path;
-// 	int	exit_c;
-// 	char	**args;
 
 // 	num = 0;
 // 	result = -1;
-// 	pid = 0;
-// 	cmd = *l;
 // 	while (cmd != NULL)
 // 	{
 // 		result = ft_prepare_pipe(n, cmd);
@@ -109,45 +95,25 @@ exit 12
 // 			exit_c = 0;
 // 			if (pid == 0)
 // 			{
-// 				signal(SIGINT, &sig_handler_fork);
-// 				signal(SIGQUIT, &sig_handler_fork);
-// 				if (dup2(cmd->in_fd, STDIN_FILENO) == -1)
-// 					exit_();
-// 				if (dup2(cmd->out_fd, STDOUT_FILENO) == -1)
-// 					exit_();
-// 				ft_clean_fds(cmd);
-// 				if (cmd->params && ft_is_builtin(cmd->params) == 1)
-// 					exit_c = exec_builtin(cmd, d, n);
-// 				else if (cmd->params)
-// 				{
-// 					exit_c = exec_program(cmd, d->env, n);
-// 					if (!strcmp(cmd->ars, "."))
-// 						return (exit_(-1, "bash: .: filename arg required\n"), -1);
-// 					exit_c = ft_find_path(cmd->args, env, &path);
-// 					args = ft_construct_command(cmd->args);
-// 					execve(path, args, ft_construct_command(env));
-// 					path = cmd->args;
-// 					if (ft_strchr(path, '/'))
-// 						exit_(-1, "bash: %s: no such file or directory\n");
-// 					else
-// 						exit_(-1, "bash: %s: command not found\n");
-// 				}
+//				exit_c = exec_program(cmd, d->env, n);
+//				if (!strcmp(cmd->ars, "."))
+//					return (exit_(-1, "bash: .: filename arg required\n"), -1);
+//				exit_c = ft_find_path(cmd->args, env, &path);
+//				execve(...);
 // 				pid = (exit(exit_c), 0);
 // 			}
 // 			else if (cmd->in_fd != 0)
 // 				close(cmd->in_fd);
-// 			pid = signal(SIGINT, SIG_IGN), pid;
 // 		}
 // 		else if (result == 0 && n->count_cmd == 1)
 // 			result = execute_builtin(&n->cmds[i_cmd], d, n);
 // 		cmd = cmd -> nxt;
 // 	}
 // 	ft_wait_child_processes(&result, num, pid);
-// 	signal(SIGINT, &sig_handler_fork); // mb sig_handler_mai n
 // 	return (result);
 // }
 
-// can extern cmd change the env ?
+// if extern cmd change the env ?
 static void *exec_extern_cmd(t_cmd *cmd, t_data **d)
 {
 	int		pid;
@@ -158,7 +124,7 @@ static void *exec_extern_cmd(t_cmd *cmd, t_data **d)
 
 	pid = fork();
 	if (pid < -1)
-		return (printf("%s : fork failed\n", cmd->arg[0]), rmv_cmd(cmd, d), NULL); // exic code ?
+		return (printf("%s : fork pb\n", cmd->arg[0]), rmv_cmd(cmd, d), NULL);
 	if (pid == 0)
 	{
 		(*d)->exit_c = 0; // code ?
@@ -168,7 +134,7 @@ static void *exec_extern_cmd(t_cmd *cmd, t_data **d)
 		if (path == NULL)
 			path = ".";
 		execve(path, cmd->arg, env_array); //if env_array != NULL ?
-		free_env_array(env_array, len_env);
+		// free_env_array(env_array, len_env); no executed ?
 	}
 	else
 		wait(&status);
@@ -180,13 +146,13 @@ void	*start_redirs(t_cmd *cmd, t_data **d)
 	if (cmd->fd_in != STDIN_FILENO)
 	{
 		if (dup2(cmd->fd_in, STDIN_FILENO) == -1) // дубл. дескриптора => stdout в файл
-			return (printf("%s : dup2 failed\n", cmd->arg[0]), rmv_cmd(cmd, d), NULL); // exit_code = 127, if (errno != 2) exit_c = 126;
+			return (printf("%s : dup2 pb\n", cmd->arg[0]), rmv_cmd(cmd, d), NULL); // exit_code = 127, if (errno != 2) exit_c = 126;
 		close(cmd->fd_in);
 	}
 	if (cmd->fd_out != STDOUT_FILENO)
 	{
 		if (dup2(cmd->fd_out, STDOUT_FILENO) == -1)
-			return (printf("%s : dup2 failed\n", cmd->arg[0]), rmv_cmd(cmd, d), NULL); // exit_code = 127, if (errno != 2) exit_c = 126;
+			return (printf("%s : dup2 pb\n", cmd->arg[0]), rmv_cmd(cmd, d), NULL); // exit_code = 127, if (errno != 2) exit_c = 126;
 		close(cmd->fd_out);
 	}
 	return (NULL);
@@ -194,14 +160,10 @@ void	*start_redirs(t_cmd *cmd, t_data **d)
 
 void	*stop_redirs(t_cmd *cmd, t_data **d)
 {
-	//if (cmd->fd_in != STDIN_FILENO)
-		if (dup2((*d)->saved_stdin, STDIN_FILENO) == -1) // восстановить исходный stdout
-			return (printf("%s : dup2 failedd\n", cmd->arg[0]), rmv_cmd(cmd, d), NULL); // exit_code = 127, if (errno != 2) exit_c = 126;
-	//if (cmd->fd_out != STDOUT_FILENO)
-		if (dup2((*d)->saved_stdout, STDOUT_FILENO) == -1)
-			return (printf("%s : dup2 failed\n", cmd->arg[0]), rmv_cmd(cmd, d), NULL); // exit_code = 127, if (errno != 2) exit_c = 126;
-	(void)cmd;
-	(void)d;
+	if (dup2((*d)->saved_stdin, STDIN_FILENO) == -1) // восстановить исходный stdout
+		return (printf("%s : dup2 pb\n", cmd->arg[0]), rmv_cmd(cmd, d), NULL); // exit_code = 127, if (errno != 2) exit_c = 126;
+	if (dup2((*d)->saved_stdout, STDOUT_FILENO) == -1)
+		return (printf("%s : dup2 pb\n", cmd->arg[0]), rmv_cmd(cmd, d), NULL); // exit_code = 127, if (errno != 2) exit_c = 126;
 	return (NULL);
 }
 
@@ -212,12 +174,11 @@ void	exec_cmds(t_data **d)
 	cmd = *((*d)->cmds);
 	while (cmd != NULL)
 	{
-
 		(*d)->curr_cmd = cmd; // not used ?
-		start_redirs(cmd, d);
 		// à la premiere erreur (le droit decriture pour les redir out, etc) ca fait tout fail
 		calc_dollar_conversions(cmd, d);
 		remove_quotes(cmd);
+		start_redirs(cmd, d);
 		if (strcmp_(cmd->arg[0], "echo") == 0)
 			exec_echo(cmd);
 		else if (strcmp_(cmd->arg[0], "env") == 0)
