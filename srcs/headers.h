@@ -54,8 +54,7 @@ typedef struct		s_data
 	int				saved_stdout;
 }					t_data;
 
-void	put_full_cmd_to_arg0(char *s, t_data **d);
-void	put_redirs_and_args(t_data **d);
+void	parse(char *cmd_line, t_data **d);
 void	del_cmd_from_lst(t_cmd *cmd, t_data **d);
 void	del_cmds(t_data **d);
 

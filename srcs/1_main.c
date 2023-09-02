@@ -100,9 +100,8 @@ int	main(int argc, char **argv, char **env_array)
 		// 	continue;
 		// }
 		add_history(cmd_line);
-		put_full_cmd_to_arg0(cmd_line, d);
-		put_redirs_and_args(d);
-		print_cmds("", d);
+		parse(cmd_line, d);
+		// print_cmds("", d);
 		verif_args(d);
 		exec_cmds(d);
 		del_cmds(d);

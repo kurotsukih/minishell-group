@@ -31,27 +31,7 @@ static void put_full_cmd_to_arg0_1(char *full_cmd, int len, t_data **d)
 	}
 }
 
-void	put_full_cmd_to_arg0(char *s, t_data **d)
-{
-	int i_beg;
-	int i;
-
-	mod_(REINIT_QUOTES);
-	i_beg = 0;
-	i = -1;
-	while (1)
-		if ((mod_(s[++i]) == QUOTES0 && s[i + 1] == '|') || s[i + 1] == '\0')
-		{
-			put_full_cmd_to_arg0_1(&s[i_beg], i - i_beg + 1, d);
-			if (s[i + 1] == '\0') // ++i
-				break;
-			i++;
-			i_beg = i + 1;
-		}
-	(*d)->curr_cmd = NULL;
-}
-
-void put_redirs_1(t_cmd *cmd, t_data **d)
+static void put_redirs(t_cmd *cmd, t_data **d)
 {
 	char *s;
 	int i;
@@ -79,7 +59,7 @@ void put_redirs_1(t_cmd *cmd, t_data **d)
 	}
 }
 
-static void put_args_1(t_cmd *cmd, t_data **d)
+static void put_args(t_cmd *cmd, t_data **d)
 {
 	int i;
 	int i_beg;
@@ -113,16 +93,37 @@ static void put_args_1(t_cmd *cmd, t_data **d)
 	cmd->arg[cmd->nb_args] = NULL;
 }
 
-void put_redirs_and_args(t_data **d)
+static void	put_full_cmd_to_arg0(char *s, t_data **d)
+{
+	int i_beg;
+	int i;
+
+	mod_(REINIT_QUOTES);
+	i_beg = 0;
+	i = -1;
+	while (1)
+		if ((mod_(s[++i]) == QUOTES0 && s[i + 1] == '|') || s[i + 1] == '\0')
+		{
+			put_full_cmd_to_arg0_1(&s[i_beg], i - i_beg + 1, d);
+			if (s[i + 1] == '\0') // ++i
+				break;
+			i++;
+			i_beg = i + 1;
+		}
+	(*d)->curr_cmd = NULL;
+}
+
+void	parse(char *cmd_line, t_data **d)
 {
 	t_cmd *cmd;
 
+	put_full_cmd_to_arg0(cmd_line, d);
 	cmd = *((*d)->cmds);
 	while (cmd != NULL)
 	{
 		(*d)->curr_cmd = cmd;
-		put_redirs_1(cmd, d);
-		put_args_1(cmd, d);
+		put_redirs(cmd, d);
+		put_args(cmd, d);
 		cmd = cmd->nxt;
 	}
 }
