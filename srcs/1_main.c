@@ -6,7 +6,7 @@
 /*   By: akostrik <akostrik@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/02 15:22:16 by akostrik          #+#    #+#             */
-/*   Updated: 2023/09/03 00:55:43 by akostrik         ###   ########.fr       */
+/*   Updated: 2023/09/03 01:12:13 by akostrik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,6 +70,7 @@ le fils s'est terminé à cause d'un signal:
 WIFSIGNALED(status) = vrai 
 WTERMSIG(status) = le numéro du signal
 
+pour les process zombie j'ai utilisé la macro sigaction avec SIGCHLD et SA_NOCLDWAIT
 */
 
 #include "headers.h"
