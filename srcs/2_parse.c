@@ -74,7 +74,7 @@ void put_redirs_1(t_cmd *cmd, t_data **d)
 			while (s[i] != ' ' && s[i] != '>' && s[i] != '<' && s[i] != '\0') // alphanum ?
 				i++;
 			redir_file = strndup_and_trim(&s[i_beg], i - i_beg + 1, d);
-			open_file(redir, redir_file, d);
+			open_file(redir, redir_file, cmd);
 		}
 	}
 }
