@@ -6,7 +6,7 @@
 /*   By: akostrik <akostrik@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/02 15:22:16 by akostrik          #+#    #+#             */
-/*   Updated: 2023/09/02 17:20:17 by akostrik         ###   ########.fr       */
+/*   Updated: 2023/09/02 18:09:55 by akostrik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ signa l sigaction sigemptyset sigaddset kill
 exit
 getcwd chdir stat lstat fstat unlink execv e dup dup2 pipe
 ope ndir readdir closedir
-strerror perror
+strerro r perro r
 isatty ttyname ttyslot ioctl
 geten v 
 tcsetattr tcgetattr tgetent tgetflag tgetnum tgetstr tgoto tputs

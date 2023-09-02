@@ -6,7 +6,7 @@
 /*   By: akostrik <akostrik@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/02 15:22:47 by akostrik          #+#    #+#             */
-/*   Updated: 2023/09/02 17:57:37 by akostrik         ###   ########.fr       */
+/*   Updated: 2023/09/02 18:37:22 by akostrik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -150,14 +150,14 @@ void	del_cmds(t_data **d)
 	}
 }
 
-static void	put_heredoc_to_tmp_file(char *delimiter, char *filename, t_cmd *cmd, t_data **d)
+static void	*put_heredoc_to_tmp_file(char *delimiter, char *filename, t_cmd *cmd, t_data **d)
 {
 	char	*line;
 	int		fd;
 
 	fd = open(filename, O_WRONLY | O_CREAT | O_TRUNC, 0666);
 	if (!fd)
-		return (printf("error open file failed"), del_cmd_from_lst(cmd, d)); // exic code ?
+		return (printf("%s : open file failed\n", cmd->arg[0]), del_cmd_from_lst(cmd, d), NULL); 	// exic code ?
 	line = NULL;
 	while (1)
 	{
@@ -166,11 +166,12 @@ static void	put_heredoc_to_tmp_file(char *delimiter, char *filename, t_cmd *cmd,
 			break ;
 		if (line == NULL)
 			break ;
-		// ft_remove_quotes_string(line);
+		// remove_quotes_str(line);
 		write(fd, line, ft_strlen(line));
 		write(fd, "\n", 1);
 		free(line);
 	}
+	return (NULL);
 }
 
 void	*open_file(char *redir, char *filename, t_cmd *cmd, t_data **d)
@@ -392,4 +393,40 @@ void	*stop_redirs(t_cmd *cmd, t_data **d)
 		if (dup2((*d)->saved_stdout, STDOUT_FILENO) == -1) // восстановить исходный stdout
 			return (printf("%s : dup@ fqiled\n", cmd->arg[0]), del_cmd_from_lst(cmd, d), NULL); // exit_code = 127, if (errno != 2) exit_c = 126;
 	return (NULL);
+}
+
+static void	remove_quotes_str(char *str)
+{
+	char	mode;
+	int		i;
+	int		j;
+
+	i = 0;
+	j = 0;
+	mode = QUOTES0;
+	while (str[i])
+	{
+		if (mode == QUOTES0 && str[i] == '\'')
+			mode = QUOTES1;
+		else if (mode == QUOTES1 && str[i] == '\'')
+			mode = QUOTES0;
+		else if (mode == QUOTES0 && str[i] == '\"')
+			mode = QUOTES2;
+		else if (mode == QUOTES2 && str[i] == '\"')
+			mode = QUOTES0;
+		else
+			str[j++] = str[i];
+		i++;
+	}
+	while (j != i)
+		str[j++] = '\0';
+}
+
+void	remove_quotes(t_cmd *cmd)
+{
+	int		i;
+
+	i = -1; // 0 ?
+	while (++i < cmd->nb_args)
+		remove_quotes_str(cmd->arg[i]);
 }

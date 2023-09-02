@@ -6,7 +6,7 @@
 /*   By: akostrik <akostrik@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/02 15:22:55 by akostrik          #+#    #+#             */
-/*   Updated: 2023/09/02 17:40:56 by akostrik         ###   ########.fr       */
+/*   Updated: 2023/09/02 18:11:26 by akostrik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,8 +44,6 @@ void	sig_handler_fork(int signal)
 		exit(131);
 }
 
-// global error                      => exit
-// error concerning only one command => skip this command
 void	*malloc_(int size, t_data **d)
 {
 	void	*mem;

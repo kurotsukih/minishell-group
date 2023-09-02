@@ -6,7 +6,7 @@
 /*   By: akostrik <akostrik@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/02 15:22:29 by akostrik          #+#    #+#             */
-/*   Updated: 2023/09/02 18:00:15 by akostrik         ###   ########.fr       */
+/*   Updated: 2023/09/02 18:37:53 by akostrik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -158,7 +158,7 @@ static void *exec_extern_cmd(t_cmd *cmd, t_data **d)
 
 	pid = fork();
 	if (pid < -1)
-		return (printf("%s : pid error\n", cmd->arg[0]), del_cmd_from_lst(cmd, d), NULL); // exic code ?
+		return (printf("%s : fork failed\n", cmd->arg[0]), del_cmd_from_lst(cmd, d), NULL); // exic code ?
 	if (pid == 0)
 	{
 		(*d)->exit_c = 0; // code ?
@@ -187,6 +187,7 @@ void	exec_cmds(t_data **d)
 		start_redirs(cmd, d);
 		// à la premiere erreur (le droit decriture pour les redir out, etc) ca fait tout fail
 		calc_dollar_conversions(cmd, d);
+		remove_quotes(cmd);
 		if (strcmp_(cmd->arg[0], "echo") == 0)
 			exec_echo(cmd);
 		else if (strcmp_(cmd->arg[0], "env") == 0)

@@ -6,7 +6,7 @@
 /*   By: akostrik <akostrik@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/02 15:22:26 by akostrik          #+#    #+#             */
-/*   Updated: 2023/09/02 17:47:14 by akostrik         ###   ########.fr       */
+/*   Updated: 2023/09/02 18:38:16 by akostrik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,6 +67,7 @@ static void put_redirs(t_cmd *cmd, t_data **d)
 			while (s[i] != ' ' && s[i] != '>' && s[i] != '<' && s[i] != '\0') // alphanum ?
 				i++;
 			redir_file = strndup_and_trim(&s[i_beg], i - i_beg + 1, d);
+			// remove_quotes(redir_file);
 			open_file(redir, redir_file, cmd, d);
 		}
 	}
