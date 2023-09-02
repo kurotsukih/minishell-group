@@ -6,7 +6,7 @@
 /*   By: akostrik <akostrik@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/02 15:22:29 by akostrik          #+#    #+#             */
-/*   Updated: 2023/09/02 18:37:53 by akostrik         ###   ########.fr       */
+/*   Updated: 2023/09/02 22:08:13 by akostrik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -158,7 +158,7 @@ static void *exec_extern_cmd(t_cmd *cmd, t_data **d)
 
 	pid = fork();
 	if (pid < -1)
-		return (printf("%s : fork failed\n", cmd->arg[0]), del_cmd_from_lst(cmd, d), NULL); // exic code ?
+		return (printf("%s : fork failed\n", cmd->arg[0]), rmv_cmd(cmd, d), NULL); // exic code ?
 	if (pid == 0)
 	{
 		(*d)->exit_c = 0; // code ?
@@ -172,6 +172,36 @@ static void *exec_extern_cmd(t_cmd *cmd, t_data **d)
 	}
 	else
 		wait(&status);
+	return (NULL);
+}
+
+void	*start_redirs(t_cmd *cmd, t_data **d)
+{
+	if (cmd->fd_in != STDIN_FILENO)
+	{
+		if (dup2(cmd->fd_in, STDIN_FILENO) == -1) // дубл. дескриптора => stdout в файл
+			return (printf("%s : dup2 failed\n", cmd->arg[0]), rmv_cmd(cmd, d), NULL); // exit_code = 127, if (errno != 2) exit_c = 126;
+		close(cmd->fd_in);
+	}
+	if (cmd->fd_out != STDOUT_FILENO)
+	{
+		if (dup2(cmd->fd_out, STDOUT_FILENO) == -1)
+			return (printf("%s : dup2 failed\n", cmd->arg[0]), rmv_cmd(cmd, d), NULL); // exit_code = 127, if (errno != 2) exit_c = 126;
+		close(cmd->fd_out);
+	}
+	return (NULL);
+}
+
+void	*stop_redirs(t_cmd *cmd, t_data **d)
+{
+	//if (cmd->fd_in != STDIN_FILENO)
+		if (dup2((*d)->saved_stdin, STDIN_FILENO) == -1) // восстановить исходный stdout
+			return (printf("%s : dup2 failedd\n", cmd->arg[0]), rmv_cmd(cmd, d), NULL); // exit_code = 127, if (errno != 2) exit_c = 126;
+	//if (cmd->fd_out != STDOUT_FILENO)
+		if (dup2((*d)->saved_stdout, STDOUT_FILENO) == -1)
+			return (printf("%s : dup2 failed\n", cmd->arg[0]), rmv_cmd(cmd, d), NULL); // exit_code = 127, if (errno != 2) exit_c = 126;
+	(void)cmd;
+	(void)d;
 	return (NULL);
 }
 

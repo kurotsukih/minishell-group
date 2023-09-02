@@ -6,7 +6,7 @@
 /*   By: akostrik <akostrik@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/02 15:22:39 by akostrik          #+#    #+#             */
-/*   Updated: 2023/09/02 17:58:25 by akostrik         ###   ########.fr       */
+/*   Updated: 2023/09/02 21:56:44 by akostrik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,9 +42,9 @@ void	*exec_cd(t_cmd *cmd, t_data **d)
 	{
 		dir = get_value_from_env("HOME", d);
 		if (dir == NULL)
-			return (printf("%s : variable HOME not found\n", cmd->arg[0]), del_cmd_from_lst(cmd, d), NULL); 	// exic code ?
+			return (printf("%s : variable HOME not found\n", cmd->arg[0]), rmv_cmd(cmd, d), NULL); 	// exic code ?
 		if (chdir(dir) == -1)
-			return (printf("%s : chdir failure\n", cmd->arg[0]), del_cmd_from_lst(cmd, d), NULL); 	// exic code ?
+			return (printf("%s : chdir failure\n", cmd->arg[0]), rmv_cmd(cmd, d), NULL); 	// exic code ?
 	}
 	if (dir != NULL)
 		free(dir);
@@ -57,7 +57,7 @@ void	*exec_pwd(t_cmd *cmd, t_data **d)
 
 	s = getcwd(NULL, 0);
 	if (s == NULL)
-		return (printf("%s : getcwd failed\n", cmd->arg[0]), del_cmd_from_lst(cmd, d), NULL); 	// exic code ?
+		return (printf("%s : getcwd failed\n", cmd->arg[0]), rmv_cmd(cmd, d), NULL); 	// exic code ?
 	printf("%s\n", s);
 	free(s);
 	return (NULL);

@@ -6,7 +6,7 @@
 /*   By: akostrik <akostrik@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/02 15:22:31 by akostrik          #+#    #+#             */
-/*   Updated: 2023/09/02 18:37:41 by akostrik         ###   ########.fr       */
+/*   Updated: 2023/09/02 21:57:06 by akostrik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,7 +65,7 @@ typedef struct		s_data
 
 void	parse(char *cmd_line, t_data **d);
 void	exec_cmds(t_data **d);
-void	del_cmd_from_lst(t_cmd *cmd, t_data **d);
+void	rmv_cmd(t_cmd *cmd, t_data **d);
 void	del_cmds(t_data **d);
 
 // builtins
@@ -88,8 +88,6 @@ void	calc_dollar_conversions(t_cmd *cmd, t_data **d);
 int		is_builtin(t_cmd *cmd);
 char	*path_(t_cmd *cmd, t_data **d);
 void	*open_file(char *redir, char *filename, t_cmd *cmd, t_data **d);
-void	*start_redirs(t_cmd *cmd, t_data **d);
-void 	*stop_redirs(t_cmd *cmd, t_data **d);
 void	remove_quotes(t_cmd *cmd);
 void	print_cmds(char *msg, t_data **d);
 
