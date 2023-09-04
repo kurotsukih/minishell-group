@@ -14,7 +14,7 @@
 // c: Le caractère délimiteur
 // Return Le tableau de nouvelles chaînes de caractères résultant du découpage
 // Return NULL si l’allocation échoue
-// fonctions autorisées : malloc, free
+// fonctions autorisées : malloc, fre e
 // Alloue (avec malloc(3)) et retourne un tableau de chaînes de caractères
 // obtenu en séparant ’s’ à l’aide du caractère ’c’, utilisé comme délimiteur
 // Le tableau doit être terminé par NULL

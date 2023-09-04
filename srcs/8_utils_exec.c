@@ -46,7 +46,7 @@ static char	*s_with_conversion_(char *old_s, int j, t_data **d)
 	while(++k < len_new_s)
 		new_s[k] = old_s[k + (int)ft_strlen(key) - (int)ft_strlen(val) + 1];
 	new_s[k] = '\0';
-	free(key);
+	free_(key);
 	return (new_s);
 }
 
@@ -65,7 +65,7 @@ void	calc_dollar_conversions(char *s, t_data **d)
 			else if (s[i] == '$')
 			{
 				s_with_conversion = s_with_conversion_(s, i, d);
-				free(s);
+				free_(s);
 				s = s_with_conversion;
 			}
 		}
@@ -185,7 +185,7 @@ char	*path_(t_data **d)
 			path = path2_(path, (*d)->arg[0], d);
 			if (access(path, X_OK) == 0)
 				return (path);
-			free(path);
+			free_(path);
 			i_beg = i + 1;
 		}
 	return (printf("%s : cmd not found\n", (*d)->arg[0]), NULL); 

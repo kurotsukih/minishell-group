@@ -101,6 +101,81 @@ static void	init_env(char **env_array, t_data **d)
 	}
 }
 
+int	parse(char *s, int len, t_data **d)
+{
+	int		i;
+	int		i_args;
+	int		i_ins;
+	int		i_outs;
+	char	*redir;
+	char	*file;
+	char	*delimitor;
+	int		fd;
+	int		mod;
+
+	calc_nb_args_ins_outs(s, len, d);
+	mod_(REINIT_QUOTES);
+	i = -1;
+	i_args = -1;
+	i_ins = -1;
+	i_outs = -1;
+	while (++i < len)
+	{
+		mod = mod_(s[i]);
+		if (mod == QUOTES0)
+		{
+			i += nb_spaces(&s[i]);
+			redir = redir_(&s[i]);
+			i += ft_strlen(redir);
+			file = NULL;
+			delimitor = NULL;
+			if (ft_strcmp(redir, "<") == 0)
+			{
+				file = alphanum_(&s[i], d);
+				(*d)->in[++i_ins] = open(file, O_RDONLY);
+				//if (!(*d)->in[i_ins]) return (-1)
+			}
+			else if (ft_strcmp(redir, "<<") == 0)
+			{
+				fd = open(TMP_FILE, O_WRONLY | O_CREAT | O_TRUNC, 0666);
+				if (!fd)
+					return (printf("%s : tmp file pb\n", (*d)->arg[0]), -1);
+				delimitor = alphanum_(&s[i], d);
+				heredoc_to_file(delimitor, fd);
+				(*d)->in[++i_ins] = open(TMP_FILE, O_RDONLY);
+				//if (!(*d)->in[i_ins]) return (-1)
+			}
+			else if (ft_strcmp(redir, ">") == 0)
+			{
+				file = alphanum_(&s[i], d);
+				(*d)->out[++i_outs] = open(file, O_WRONLY | O_CREAT | O_TRUNC, 0666);
+				//if (!(*d)->out[i_outs]) return (-1)
+			}
+			else if (ft_strcmp(redir, ">>") == 0)
+			{
+				file = alphanum_(&s[i], d);
+				(*d)->out[++i_outs] = open(file, O_WRONLY | O_CREAT | O_APPEND, 0666);
+				//if (!(*d)->out[i_outs]) return (-1)
+			}
+			else
+				(*d)->arg[++i_args] = alphanum_(&s[i], d);
+			i += len_alphanum(&s[i]);
+			free_(file);
+			free_(delimitor);
+		}
+	}
+	if(mod != QUOTES0)
+		return (printf("%s : unclosed quotes\n", s), FAILURE);
+	if ((*d)->nb_args == 0)
+		return (printf("empty command\n"), -1); // exit_code = 255
+	if (i_ins == 0)
+		((*d)->in)[0] = dup(STDIN_FILENO); // prv pipe
+	if (i_outs == 0)
+		((*d)->in)[0] = dup(STDOUT_FILENO); // nxt pipe
+	return (OK);
+}
+
+
 // arg[0] = prog name
 static int	treat_cmd_line(char *s, t_data **d)
 {
@@ -115,14 +190,13 @@ static int	treat_cmd_line(char *s, t_data **d)
 		if ((mod_(s[++i]) == QUOTES0 && s[i + 1] == '|') || s[i + 1] == '\0')
 		{
 			len = i - i_beg + 1;
-			if (parse(&s[i_beg], len, d))// ||
+			if (parse(&s[i_beg], len, d) == OK)// ||
 			// !remove_quotes(d) || // only for bultins? нужно? попробовать без
 			// !start_redirs(cmd, d))
 			// dollar converstions in ins? in heredoc? remove_quotes ?
 			{
 				exec(d);
 				// stop_redirs(cmd, d);
-				unlink(TMP_FILE);
 			}
 			if (s[i + 1] == '\0')
 				break;
@@ -144,6 +218,7 @@ int	main(int argc, char **argv, char **env_array)
 	(*d)->nb_args = 0;
 	(*d)->nb_ins = 0;
 	(*d)->nb_outs = 0;
+	(*d)->saved_stdin = dup(STDIN_FILENO);
 	(*d)->saved_stdout = dup(STDOUT_FILENO);
 	init_env(env_array, d);
 	// signal(SIGQUIT, SIG_IGN);
@@ -162,8 +237,7 @@ int	main(int argc, char **argv, char **env_array)
 		// }
 		add_history(cmd_line);
 		treat_cmd_line(cmd_line, d);
-		free(cmd_line);
+		free_(cmd_line);
 	}
-	// free_all_and_exit("", d->exit_code, d);
-	return 0;
+	return (/* free_all_and_exit("", d->exit_code, d)*/ OK);
 }

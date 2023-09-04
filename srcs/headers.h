@@ -33,6 +33,8 @@
 # define QUOTES1 1
 # define QUOTES2 2
 # define TMP_FILE "tmp"
+# define OK 0
+# define FAILURE -1
 
 extern int g_signal;
 
@@ -57,8 +59,6 @@ typedef struct		s_data
 	int				exit_c;
 }					t_data;
 
-void	calc_dollar_conversions(char *s, t_data **d);
-int		parse(char *s, int len, t_data **d);
 void	exec(t_data **d);
 void	print_cmd(char *msg, t_data **d);
 
@@ -73,6 +73,7 @@ int		exec_exit(t_data **d);   // 0           1     no ?
 
 // utils
 void	*malloc_(int size, t_data **d);
+void	free_(void *mem);
 void	sig_handler_main(int signal);
 void	sig_handler_fork(int signal);
 void	sig_handler_heredoc(int signal);
@@ -80,7 +81,9 @@ void	free_array(char **arr, int len);
 void	free_all_and_exit(char *msg, int exit_c, t_data **d); /// ***d ?
 
 // utils parse
-void calc_nb_args_nb_ins_nb_outs(char *s, int len, t_data **d);
+void	calc_nb_args_ins_outs(char *s, int len, t_data **d);
+void	calc_dollar_conversions(char *s, t_data **d);
+void	heredoc_to_file(char *delim, int fd);
 
 // utils exec
 int		is_builtin(t_data **d);
@@ -94,6 +97,9 @@ int		len_env_(t_data **d);
 char	*get_value_from_env(char *key, t_data **d);
 
 // utils str
+int		nb_spaces(char *s);
+char	*redir_(char *s);
+int		len_alphanum(char *s);
 char	*alphanum_(char *s, t_data **d);
 char	*strdup_(char *s, t_data **d);
 char	*strdup_and_erase_redirs(char *s0, t_data **d);

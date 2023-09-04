@@ -55,6 +55,12 @@ void	*malloc_(int size, t_data **d)
 	return (mem);
 }
 
+void free_(void *mem)
+{
+	if (mem != NULL)
+		free(mem);
+}
+
 void	free_all_and_exit(char *msg, int exit_c, t_data **d)
 {
 	if (msg == NULL)
@@ -71,6 +77,6 @@ void	free_array(char **arr, int len)
 
 	i = 0;
 	while (i < len)
-		free(arr[i]);
-	free(arr);
+		free_(arr[i]);
+	free_(arr);
 }

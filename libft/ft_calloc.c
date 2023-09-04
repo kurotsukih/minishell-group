@@ -15,7 +15,7 @@ Allocates memory for an array of nmemb elements of size bytes
 The memory is set to zero
 Returns a (suitably aligned for any built-in type) pointer to the memory
 Returns NULL on error
-If nmemb or size is 0, returns NULL or a unique pointer value passable to free()
+If nmemb or size is 0, returns NULL or a unique pointer value passable to fre e
 If the nmemb * size = integer overflow, returns an error
 NULL may also be returned by a successful call with nmemb or size equal to zero
 
