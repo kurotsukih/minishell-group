@@ -1,1 +1,14 @@
-33
+exec 2, (*d)->out[0] = 5, STDOUT_FILENO = 1
+exec 3, (*d)->out[0] = 5, STDOUT_FILENO = 1
+en.subject.pdf
+fr.subject.pdf
+in
+in2
+in3
+libft
+Makefile
+minishell
+out
+out2
+out3
+srcs

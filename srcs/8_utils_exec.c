@@ -138,34 +138,25 @@ static char	*path2_(char *s1, char *s2, t_data **d)
 	int		i;
 	int		s1_len;
 	int		s2_len;
-	char	*new_str;
+	char	*path;
 
 	s1_len = 0;
 	if (s1 != NULL)
-		s1_len = ft_strlen(s1);
+		s1_len = ft_strlen(s1); // 0 for NULL
 	s2_len = ft_strlen(s2);
-	new_str = (char *)malloc_(s1_len + s2_len + 2, d);
-	if (new_str == NULL)
+	path = (char *)malloc_(s1_len + s2_len + 2, d);
+	if (path == NULL)
 		return (NULL);
-	i = 0;
-	while (i < s1_len)
-	{
-		new_str[i] = s1[i];
-		i++;
-	}
+	i = -1;
+	while (++i < s1_len)
+		path[i] = s1[i];
 	if(s1 != NULL)
-	{
-		new_str[i] = '/';
-		i++;
-	}
-	i = 0;
-	while (i < s2_len)
-	{
-		new_str[s1_len + 1 + i] = s2[i];
-		i++;
-	}
-	new_str[s1_len + 1 + i] = '\0';
-	return (new_str);
+		path[i] = '/'; //new_str[i] = '/'
+	i = -1;
+	while (++i < s2_len)
+		path[s1_len + 1 + i] = s2[i];
+	path[s1_len + 1 + i] = '\0';
+	return (path);
 }
 
 char	*path_(t_data **d)
@@ -181,7 +172,7 @@ char	*path_(t_data **d)
 	while (++i < (int)ft_strlen(paths_str))
 		if (paths_str[i] == ':' || paths_str[i] == '\0')
 		{
-			path = strndup_and_trim(&(paths_str[i_beg]), i - i_beg, d);
+			path = strndup_and_trim(&(paths_str[i_beg]), i - i_beg, d); // alphanum
 			path = path2_(path, (*d)->arg[0], d);
 			if (access(path, X_OK) == 0)
 				return (path);

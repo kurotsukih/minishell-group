@@ -30,8 +30,8 @@ wait3 wait4 : resource usage information about the ft_wait_child_processes
 stat lstat fstat : file or file system status, information about a file
 unlink : call the unlink function to remove the specified file
 pip e : creates a pip e, a unidirectional data channel that can be used for interprocess communication.
-isatty : 1 if fd is an open file descriptor referring to a terminal; otherwise 0
-ttyname : pathname of the terminal device that is open on the file descriptor fd
+isatty : 1 if fd is an ope n file descriptor referring to a terminal; otherwise 0
+ttyname : pathname of the terminal device that is ope n on the file descriptor fd
 
 SIGIN T = the user types C-c
 SIGQUI T = SIGIN T, except that it’s controlled by C-\ + produces a core dump when it terminates the process, 
@@ -101,16 +101,14 @@ static void	init_env(char **env_array, t_data **d)
 	}
 }
 
-int	parse(char *s, int len, t_data **d)
+int	parse_cmd_line(char *s, int len, t_data **d)
 {
 	int		i;
 	int		i_args;
 	int		i_ins;
 	int		i_outs;
 	char	*redir;
-	char	*file;
-	char	*delimitor;
-	int		fd;
+	char	*alphanum;
 	int		mod;
 
 	calc_nb_args_ins_outs(s, len, d);
@@ -127,54 +125,42 @@ int	parse(char *s, int len, t_data **d)
 			i += nb_spaces(&s[i]);
 			redir = redir_(&s[i]);
 			i += ft_strlen(redir);
-			file = NULL;
-			delimitor = NULL;
+			alphanum = alphanum_(&s[i], d);
+			i += ft_strlen(alphanum);
 			if (ft_strcmp(redir, "<") == 0)
-			{
-				file = alphanum_(&s[i], d);
-				(*d)->in[++i_ins] = open(file, O_RDONLY);
+				(*d)->in[++i_ins] = open(alphanum, O_RDONLY);
 				//if (!(*d)->in[i_ins]) return (-1)
-			}
 			else if (ft_strcmp(redir, "<<") == 0)
 			{
-				fd = open(TMP_FILE, O_WRONLY | O_CREAT | O_TRUNC, 0666);
-				if (!fd)
-					return (printf("%s : tmp file pb\n", (*d)->arg[0]), -1);
-				delimitor = alphanum_(&s[i], d);
-				heredoc_to_file(delimitor, fd);
+				heredoc_to_file(alphanum, d);
 				(*d)->in[++i_ins] = open(TMP_FILE, O_RDONLY);
 				//if (!(*d)->in[i_ins]) return (-1)
 			}
 			else if (ft_strcmp(redir, ">") == 0)
 			{
-				file = alphanum_(&s[i], d);
-				(*d)->out[++i_outs] = open(file, O_WRONLY | O_CREAT | O_TRUNC, 0666);
-				//if (!(*d)->out[i_outs]) return (-1)
+				++i_outs;
+				printf("open %s\n", alphanum);
+				(*d)->out[i_outs] = open(alphanum, O_WRONLY | O_CREAT | O_TRUNC, 0666);
+				printf("opened %s\n", alphanum);
 			}
+				//if (!(*d)->out[i_outs]) return (-1)
 			else if (ft_strcmp(redir, ">>") == 0)
-			{
-				file = alphanum_(&s[i], d);
-				(*d)->out[++i_outs] = open(file, O_WRONLY | O_CREAT | O_APPEND, 0666);
+				(*d)->out[++i_outs] = open(alphanum, O_WRONLY | O_CREAT | O_APPEND, 0666);
 				//if (!(*d)->out[i_outs]) return (-1)
-			}
-			else
-				(*d)->arg[++i_args] = alphanum_(&s[i], d);
-			i += len_alphanum(&s[i]);
-			free_(file);
-			free_(delimitor);
+			else 
+				(*d)->arg[++i_args] = alphanum;
 		}
 	}
 	if(mod != QUOTES0)
-		return (printf("%s : unclosed quotes\n", s), FAILURE);
+		return (printf("%s : unclosed quotes\n", s), FAILURE); // free d
 	if ((*d)->nb_args == 0)
 		return (printf("empty command\n"), -1); // exit_code = 255
 	if (i_ins == 0)
 		((*d)->in)[0] = dup(STDIN_FILENO); // prv pipe
-	if (i_outs == 0)
-		((*d)->in)[0] = dup(STDOUT_FILENO); // nxt pipe
+	// if (i_outs == 0)
+	// 	((*d)->out)[0] = dup(STDOUT_FILENO); // nxt pipe
 	return (OK);
 }
-
 
 // arg[0] = prog name
 static int	treat_cmd_line(char *s, t_data **d)
@@ -184,26 +170,26 @@ static int	treat_cmd_line(char *s, t_data **d)
 	int	len;
 
 	mod_(REINIT_QUOTES);
-	i_beg = 0;
-	i = -1;
+	i = 0;
 	while (1)
-		if ((mod_(s[++i]) == QUOTES0 && s[i + 1] == '|') || s[i + 1] == '\0')
+	{
+		i_beg = i;
+		while (s[i] != '\0')
 		{
-			len = i - i_beg + 1;
-			if (parse(&s[i_beg], len, d) == OK)// ||
-			// !remove_quotes(d) || // only for bultins? нужно? попробовать без
-			// !start_redirs(cmd, d))
-			// dollar converstions in ins? in heredoc? remove_quotes ?
-			{
-				exec(d);
-				// stop_redirs(cmd, d);
-			}
-			if (s[i + 1] == '\0')
+			if (mod_(s[i]) == QUOTES0 && s[i] == '|')
 				break;
-			i_beg = i + 2;
 			i++;
 		}
-	return (0);
+		len = i - i_beg;
+		if (parse_cmd_line(&s[i_beg], len, d) == OK)// ||
+		// !remove_quotes(d) || // only for bultins? нужно? попробовать без
+		// dollar converstions in ins? in heredo c? remove_quotes ?
+			exec(d);
+		if (s[i] == '\0')
+			break;
+		i++;
+	}
+	return (OK);
 }
 
 int	main(int argc, char **argv, char **env_array)
@@ -215,9 +201,6 @@ int	main(int argc, char **argv, char **env_array)
 	(void)argv;
 	d = (t_data **)malloc_(sizeof(t_data *), NULL);
 	*d = (t_data *)malloc_(sizeof(t_data), d);
-	(*d)->nb_args = 0;
-	(*d)->nb_ins = 0;
-	(*d)->nb_outs = 0;
 	(*d)->saved_stdin = dup(STDIN_FILENO);
 	(*d)->saved_stdout = dup(STDOUT_FILENO);
 	init_env(env_array, d);

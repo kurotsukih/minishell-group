@@ -18,7 +18,7 @@ int	exec_export(t_data **d)
 	int		i;
 
 	if ((*d)->nb_args == 0)
-		return (exec_env(d), 0);
+		return (exec_env(d), OK);
 	exec_unset(d);
 	i = 0;
 	while (++i < (*d)->nb_args)
@@ -31,7 +31,7 @@ int	exec_export(t_data **d)
 			new_var->nxt = NULL;
 		*((*d)->env) = new_var;
 	}
-	return (0);
+	return (OK);
 }
 
 int	exec_unset(t_data **d)
@@ -42,9 +42,9 @@ int	exec_unset(t_data **d)
 	int		i;
 
 	if ((*d)->env == NULL)
-		return (0);
+		return( OK);
 	if ((*d)->nb_args == 1)
-		return (printf("unset : too few arguments\n"), 0);
+		return (printf("unset : too few arguments\n"), OK);
 	i = 0;
 	while (++i < (*d)->nb_args)
 	{
@@ -63,13 +63,13 @@ int	exec_unset(t_data **d)
 				else if (*((*d)->env) == var)
 					*((*d)->env) = var->nxt;
 				free_(var);
-				return (0);
+				return( OK);
 			}
 			prv = var;
 			var = var->nxt;
 		}
 	}
-	return (0);
+	return (OK);
 }
 
 int	exec_env(t_data **d)
@@ -78,9 +78,9 @@ int	exec_env(t_data **d)
 	int		i;
 
 	if ((*d)->env == NULL)
-		return (0);
+		return( OK);
 	if ((*d)->nb_args > 1)
-		return (printf("env : too many arguments\n"), 0);
+		return (printf("env : too many arguments\n"), OK);
 	var = *((*d)->env);
 	while (var != NULL)
 	{
@@ -92,18 +92,18 @@ int	exec_env(t_data **d)
 		}
 		var = var->nxt;
 	}
-	return (0);
+	return (OK);
 }
 
 int	exec_exit(t_data **d)
 {
 	if ((*d)->nb_args > 2)
-		return (printf("exit : too many arguments\n"), 0);
+		return (printf("exit : too many arguments\n"), OK);
 	if ((*d)->nb_args == 2 && !ft_atoi((*d)->arg[1]))
-		return (printf("exit : numeric arg. required\n"), 0);
+		return (printf("exit : numeric arg. required\n"), OK);
 	if ((*d)->nb_args == 2)
 		free_all_and_exit("", ft_atoi((*d)->arg[1]), d);
 	else
 		free_all_and_exit("", 0, d); // code = 0 ?
-	return (0);
+	return (OK);
 }

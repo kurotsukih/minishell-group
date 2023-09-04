@@ -100,7 +100,7 @@ int	exec_echo(t_data **d)
 		if (option_n == 0)
 			write(fd, "\n", 1);
 	}
-	return (0);
+	return (OK);
 }
 
 int	exec_cd(t_data **d)
@@ -117,16 +117,16 @@ int	exec_cd(t_data **d)
 		res = chdir(dir);
 		free_(dir);
 		if (res == -1)
-			return (printf("cd : chdir failure\n"), 0); 	// exic code ?
+			return (printf("cd : chdir failure\n"), OK); 	// exic code ?
 	}
 	else if ((*d)->nb_args == 2)
 	{
 		if (chdir((*d)->arg[1]) == -1)
-			return (printf("cd : chdir failure\n"), 0); 	// exic code ?
+			return (printf("cd : chdir failure\n"), OK); 	// exic code ?
 	}
 	else
-		return (printf("cd : too many arguments\n"), 0);
-	return (0);
+		return (printf("cd : too many arguments\n"), OK);
+	return( OK);
 }
 
 int	exec_pwd(t_data **d)
@@ -137,12 +137,14 @@ int	exec_pwd(t_data **d)
 	if ((*d)->nb_args == 1)
 	{
 		s = getcwd(NULL, 0);
-		printf("s = %s\n", s);
 		if (s == NULL)
 			return (printf("pwd : getcwd failed\n"), OK); 	// exic code ?
 		i = -1;
 		while(++i < (*d)->nb_outs)
+		{
 			write((*d)->out[i], s, ft_strlen(s));
+			write((*d)->out[i], "\n", 1);
+		}
 		free_(s);
 	}
 	else
@@ -166,9 +168,6 @@ static int	exec_extern_cmd(t_data **d)
 	j = -1;
 	while (++j < (*d)->nb_outs)
 	{
-		if (dup2((*d)->out[j], STDOUT_FILENO) == -1)
-			return (printf("%s : dup2 pb\n", (*d)->arg[0]), 0); // exit_code = 127, if (errno != 2) exit_c = 126;
-		close((*d)->out[j]);
 		pid = fork();
 		if (pid < -1)
 			return (printf("%s : fork pb\n", (*d)->arg[0]), -1); // fre e all and exit ?
@@ -178,17 +177,29 @@ static int	exec_extern_cmd(t_data **d)
 			// len_env = len_env_(d);
 			execve(path, (*d)->arg, env_array); //if env_array == NULL ? // every execve substitue le processus ???!!!
 			// free_env_array(env_array, len_env); no executed ?
+
 		}
 		else
 			wait(&status);
-		if (dup2((*d)->saved_stdout, STDOUT_FILENO) == -1)
-			return (printf("%s : dup2 pb\n", (*d)->arg[0]), 0);
 	}
-	return (0);
+	return (OK);
 }
 
-void	exec(t_data **d)
+int	exec(t_data **d)
 {
+	// int fd= ope n("outfile", O_CREAT|OTRUNC|O_WRONLY, 0544);  // ope n возвращает какой-то ФД 
+	// dup2(fd,1);   // Связываем 1 (STDOUT) с "outfile" через fd
+	// close(fd);   // Освобождаем fd
+	// execlp("grep", "str", "infile",NULL);   // Запускаем программу наследующую STDOUT -> "outfile"
+
+	print_cmd("exec", d);
+	printf("exec 1, (*d)->out[0] = %d, STDOUT_FILENO = %d\n", (*d)->out[0], STDOUT_FILENO);
+	if (dup2((*d)->out[0], STDOUT_FILENO) == -1)
+		return (printf("%s : dup2 pb\n", (*d)->arg[0]), OK); // exit_code = 127, if (errno != 2) exit_c = 126;
+	printf("exec 2, (*d)->out[0] = %d, STDOUT_FILENO = %d\n", (*d)->out[0], STDOUT_FILENO);
+	close((*d)->out[0]);
+	printf("exec 3, (*d)->out[0] = %d, STDOUT_FILENO = %d\n", (*d)->out[0], STDOUT_FILENO);
+
 	if (strcmp_((*d)->arg[0], "echo") == 0)
 		exec_echo(d);
 	else if (strcmp_((*d)->arg[0], "cd") == 0)
@@ -205,5 +216,8 @@ void	exec(t_data **d)
 		exec_exit(d);
 	else
 		exec_extern_cmd(d);
+	if (dup2((*d)->saved_stdout, STDOUT_FILENO) == -1)
+		return (printf("%s : dup2 pb\n", (*d)->arg[0]), OK);
 	unlink(TMP_FILE);
+	return (OK);
 }

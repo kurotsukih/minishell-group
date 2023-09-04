@@ -80,3 +80,37 @@ void	free_array(char **arr, int len)
 		free_(arr[i]);
 	free_(arr);
 }
+
+void	print_cmd(char *msg, t_data **d)
+{
+	int		i;
+
+	printf("%d args ", (*d)->nb_args);
+	if ((*d)->arg != NULL)
+	{
+		i = -1;
+		while (++i < (*d)->nb_args)
+			printf("%s ", (*d)->arg[i]);
+	}
+	else
+		printf("args = NULL");
+	printf(" : %d ins ", (*d)->nb_ins);
+	if ((*d)->in != NULL)
+	{
+		i = -1;
+		while (++i < (*d)->nb_ins)
+			printf("%d : ", (*d)->in[i]);
+	}
+	else
+		printf("ins = NULL");
+	printf(" : %d outs ", (*d)->nb_outs);
+	if ((*d)->out != NULL)
+	{
+		i = -1;
+		while (++i < (*d)->nb_outs)
+			printf("%d : ", (*d)->out[i]);
+	}
+	else
+		printf("outs = NULL");
+	printf(" (%s)\n", msg);
+}

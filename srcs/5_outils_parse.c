@@ -33,7 +33,7 @@ int	len_alphanum(char *s)
 	int	i;
 
 	if ((s[0] < 'a' || s[0] > 'z') && (s[0] < 'A' && s[0] > 'Z'))
-		return (0);
+		return( OK);
 	i = -1;
 	while ((s[++i] >= '0' && s[i] < '9') || (s[i] >= 'a' && s[i] < 'z') || (s[i] >= 'A' && s[i] < 'Z') || s[i] == '_')
 		;
@@ -80,6 +80,9 @@ void calc_nb_args_ins_outs(char *s, int len, t_data **d)
 	int		i;
 	char	*redir;
 
+	(*d)->nb_args = 0;
+	(*d)->nb_ins = 0;
+	(*d)->nb_outs = 0;
 	mod_(REINIT_QUOTES);
 	i = -1;
 	while (++i < len)
@@ -104,12 +107,26 @@ void calc_nb_args_ins_outs(char *s, int len, t_data **d)
 	(*d)->arg = (char **)malloc_(((*d)->nb_args + 1) * sizeof(char *), d);
 	(*d)->in = (int *)malloc_((*d)->nb_ins * sizeof(int), d);
 	(*d)->out = (int *)malloc_((*d)->nb_outs * sizeof(int), d);
+	i = -1;
+	while (++i < (*d)->nb_args + 1)
+		(*d)->arg[i] = NULL;
+	i = -1;
+	while (++i < (*d)->nb_ins)
+		(*d)->in[i] = 0; // dup ?
+	i = -1;
+	while (++i < (*d)->nb_outs)
+		(*d)->out[i] = 1;
+
 }
 
-void	heredoc_to_file(char *delim, int fd)
+int	heredoc_to_file(char *delim, t_data **d)
 {
 	char	*line;
+	int		fd;
 
+	fd = open(TMP_FILE, O_WRONLY | O_CREAT | O_TRUNC, 0666);
+	//if (!fd)
+		// free all and exit ? return (printf("%s : tmp file pb\n", (*d)->arg[0]), -1); return OK
 	line = NULL;
 	while (1)
 	{
@@ -120,41 +137,16 @@ void	heredoc_to_file(char *delim, int fd)
 		write(fd, "\n", 1);
 		free_(line);
 	}
+	(void)d; //
+	return (OK);
+// void	ft_close_heredoc(int fd, int fd_cpy)
+// {s
+// 	close(fd);
+// 	dup2(fd_cpy, STDIN_FILENO);
+// 	close(fd_cpy);
+// }
 }
 
-void print_cmd(char *msg, t_data **d)
-{
-	int		i;
-
-	printf("%d args ", (*d)->nb_args);
-	if ((*d)->arg != NULL)
-	{
-		i = -1;
-		while (++i < (*d)->nb_args)
-			printf("%s ", (*d)->arg[i]);
-	}
-	else
-		printf("args = NULL");
-	printf(" : %d ins ", (*d)->nb_ins);
-	if ((*d)->in != NULL)
-	{
-		i = -1;
-		while (++i < (*d)->nb_ins)
-			printf("%d : ", (*d)->in[i]);
-	}
-	else
-		printf("ins = NULL");
-	printf(" : %d outs ", (*d)->nb_outs);
-	if ((*d)->out != NULL)
-	{
-		i = -1;
-		while (++i < (*d)->nb_outs)
-			printf("%d : ", (*d)->out[i]);
-	}
-	else
-		printf("outs = NULL");
-	printf(" : %s\n", msg);
-}
 
 // void rmv_cmd(t_cmd *cmd, t_data **d)
 // {

@@ -94,14 +94,14 @@ char	*strndup_and_trim(char *src, int len, t_data **d)
 char	*strdup_(char *s, t_data **d)
 {
 	size_t	i;
-	char	*cpy;
+	char	*dup;
 
-	cpy = (char *)malloc_(ft_strlen(s) + 1, d);
+	dup = (char *)malloc_(ft_strlen(s) + 1, d);
 	i = -1;
 	while (s[++i] != '\0')
-		cpy[i] = s[i];
-	cpy[i] = '\0';
-	return (cpy);
+		dup[i] = s[i];
+	dup[i] = '\0';
+	return (dup);
 }
 
 int	strcmp_(char *s1, char *s2)
@@ -115,7 +115,7 @@ int	strcmp_(char *s1, char *s2)
 			return ((unsigned char)s1[i] - (unsigned char)s2[i]);
 		i++;
 	}
-	return (0);
+	return( OK);
 }
 
 int	unclosed_quotes(char *s)
