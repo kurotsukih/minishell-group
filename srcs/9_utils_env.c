@@ -12,6 +12,25 @@
 
 #include "headers.h"
 
+void	init_env(char **env_array, t_data **d)
+{
+	int		i;
+	t_env	*new;
+
+	(*d)->env = (t_env **)malloc_(sizeof(t_env *), d);
+	*((*d)->env) = NULL;
+	i = -1;
+	while (1)
+	{
+		new = (t_env *)malloc_(sizeof(t_env), d);
+		new->var = env_array[++i];
+		if (new->var == NULL)
+			break ; 
+		new->nxt = *((*d)->env);
+		*((*d)->env) = new;
+	}
+}
+
 char *key_(char *s, t_data **d)
 {
 	char	*key;

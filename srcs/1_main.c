@@ -82,93 +82,75 @@ pour les process zombie j'ai utilisé la macro sigaction avec SIGCHLD et SA_NOCL
 
 int g_signal = 0;
 
-static void	init_env(char **env_array, t_data **d)
+int parse_1_token(char *s, int *i, t_data **d)
 {
-	int		i;
-	t_env	*new;
-
-	(*d)->env = (t_env **)malloc_(sizeof(t_env *), d);
-	*((*d)->env) = NULL;
-	i = -1;
-	while (1)
-	{
-		new = (t_env *)malloc_(sizeof(t_env), d);
-		new->var = env_array[++i];
-		if (new->var == NULL)
-			break ; 
-		new->nxt = *((*d)->env);
-		*((*d)->env) = new;
-	}
-}
-
-int	parse_cmd_line(char *s, int len, t_data **d)
-{
-	int		i;
-	int		i_args;
-	int		i_ins;
-	int		i_outs;
 	char	*redir;
 	char	*alphanum;
+
+	(*i) += nb_spaces(&s[*i]);
+	redir = redir_(&s[*i]);
+	(*i) += ft_strlen(redir);
+	alphanum = alphanum_(&s[*i], d);
+	(*i) += ft_strlen(alphanum);
+	if (ft_strcmp(redir, "<") == 0)
+		(*d)->in[++((*d)->i_ins)] = open(alphanum, O_RDONLY);
+		//if (!(*d)->in[i_ins]) return (FAILURE)
+	else if (ft_strcmp(redir, "<<") == 0)
+	{
+		heredoc_to_file(alphanum, d);
+		(*d)->in[++((*d)->i_ins)] = open(TMP_FILE, O_RDONLY);
+		//if (!(*d)->in[i_ins]) return (FAILURE)
+	}
+	else if (ft_strcmp(redir, ">") == 0)
+		(*d)->out[++((*d)->i_outs)] = open(alphanum, O_WRONLY | O_CREAT | O_TRUNC, 0666);
+		//if (!(*d)->out[i_outs]) return (FAILURE)
+	else if (ft_strcmp(redir, ">>") == 0)
+		(*d)->out[++((*d)->i_outs)] = open(alphanum, O_WRONLY | O_CREAT | O_APPEND, 0666);
+		//if (!(*d)->out[i_outs]) return (FAILURE)	
+	else
+		(*d)->arg[++((*d)->i_args)] = alphanum;
+	// !remove_quotes(d) || // only for bultins? нужно? попробовать без
+	return (OK);
+}
+
+static int	parse_1_cmd(char *s, int len, t_data **d)
+{
+	int		i;
 	int		mod;
 
 	calc_nb_args_ins_outs(s, len, d);
 	mod_(REINIT_QUOTES);
 	i = -1;
-	i_args = -1;
-	i_ins = -1;
-	i_outs = -1;
 	while (++i < len)
 	{
 		mod = mod_(s[i]);
 		if (mod == QUOTES0)
-		{
-			i += nb_spaces(&s[i]);
-			redir = redir_(&s[i]);
-			i += ft_strlen(redir);
-			alphanum = alphanum_(&s[i], d);
-			i += ft_strlen(alphanum);
-			if (ft_strcmp(redir, "<") == 0)
-				(*d)->in[++i_ins] = open(alphanum, O_RDONLY);
-				//if (!(*d)->in[i_ins]) return (-1)
-			else if (ft_strcmp(redir, "<<") == 0)
-			{
-				heredoc_to_file(alphanum, d);
-				(*d)->in[++i_ins] = open(TMP_FILE, O_RDONLY);
-				//if (!(*d)->in[i_ins]) return (-1)
-			}
-			else if (ft_strcmp(redir, ">") == 0)
-				(*d)->out[++i_outs] = open(alphanum, O_WRONLY | O_CREAT | O_TRUNC, 0666);
-				//if (!(*d)->out[i_outs]) return (-1)
-			else if (ft_strcmp(redir, ">>") == 0)
-				(*d)->out[++i_outs] = open(alphanum, O_WRONLY | O_CREAT | O_APPEND, 0666);
-				//if (!(*d)->out[i_outs]) return (-1)
-			else 
-				(*d)->arg[++i_args] = alphanum;
-		}
+			if (parse_1_token(s, &i, d) == FAILURE)
+				return (FAILURE);
 	}
 	if(mod != QUOTES0)
 		return (printf("%s : unclosed quotes\n", s), FAILURE); // free d
-	if ((*d)->nb_args == 0)
-		return (printf("empty command\n"), -1); // exit_code = 255
-	if (i_ins == -1)
-		((*d)->in)[0] = dup(STDIN_FILENO); // prv pipe
-	if (i_outs == -1)
-	{
-		printf("no outs\n");
+	if ((*d)->nb_args == -1)
+		return (printf("empty command\n"), FAILURE); // exit_code = 255
+	if ((*d)->i_ins == -1)
+		((*d)->in)[0] = dup(STDIN_FILENO); // prv pipe if ! dup  return return (FAILURE) ?
+	if ((*d)->i_outs == -1)
 		((*d)->out)[0] = dup(STDOUT_FILENO); // nxt pipe
-	}
 	return (OK);
 }
 
 // arg[0] = prog name
-static int	treat_cmd_line(char *s, t_data **d)
+static int	parse_and_exec_cmd_line(char *s, t_data **d)
 {
 	int	i_beg;
 	int	i;
 	int	len;
 
-	mod_(REINIT_QUOTES);
+	// mod_(REINIT_QUOTES);
 	i = 0;
+	(*d)->i_args = -1;
+	(*d)->i_ins = -1;
+	(*d)->i_outs = -1;
 	while (1)
 	{
 		i_beg = i;
@@ -179,10 +161,9 @@ static int	treat_cmd_line(char *s, t_data **d)
 			i++;
 		}
 		len = i - i_beg;
-		if (parse_cmd_line(&s[i_beg], len, d) == OK)// ||
-		// !remove_quotes(d) || // only for bultins? нужно? попробовать без
+		if (parse_1_cmd(&s[i_beg], len, d) == OK)// ||
 		// dollar converstions in ins? in heredo c? remove_quotes ?
-			exec(d);
+			exec_1_cmd(d);
 		if (s[i] == '\0')
 			break;
 		i++;
@@ -197,7 +178,7 @@ int	main(int argc, char **argv, char **env_array)
 
 	(void)argc;
 	(void)argv;
-	d = (t_data **)malloc_(sizeof(t_data *), NULL);
+	d = (t_data **)malloc_(sizeof(t_data *), NULL); // func init_d
 	*d = (t_data *)malloc_(sizeof(t_data), d);
 	(*d)->saved_stdin = dup(STDIN_FILENO);
 	(*d)->saved_stdout = dup(STDOUT_FILENO);
@@ -217,7 +198,7 @@ int	main(int argc, char **argv, char **env_array)
 		// 	continue;
 		// }
 		add_history(cmd_line);
-		treat_cmd_line(cmd_line, d);
+		parse_and_exec_cmd_line(cmd_line, d);
 		free_(cmd_line);
 	}
 	return (/* free_all_and_exit("", d->exit_code, d)*/ OK);

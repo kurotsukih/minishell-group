@@ -142,8 +142,9 @@ int	exec_pwd(t_data **d)
 		i = -1;
 		while(++i < (*d)->nb_outs)
 		{
-			write((*d)->out[i], s, ft_strlen(s));
-			write((*d)->out[i], "\n", 1);
+			printf("%s\n", s);
+			// write((*d)->out[i], s, ft_strlen(s));
+			// write((*d)->out[i], "\n", 1);
 		}
 		free_(s);
 	}
@@ -185,11 +186,9 @@ static int	exec_extern_cmd(t_data **d)
 	return (OK);
 }
 
-int	exec(t_data **d)
+int	exec_1_cmd(t_data **d)
 {
-	print_cmd("exec", d);
-	printf("exec, (*d)->out[0] = %d, STDOUT_FILENO = %d\n", (*d)->out[0], STDOUT_FILENO);
-	if (dup2((*d)->out[0], STDOUT_FILENO) == -1)
+	if (dup2((*d)->in[0], STDIN_FILENO) == -1 || dup2((*d)->out[0], STDOUT_FILENO) == -1)
 		return (printf("%s : dup2 pb\n", (*d)->arg[0]), OK); // exit_code = 127, if (errno != 2) exit_c = 126;
 	close((*d)->out[0]);
 	if (strcmp_((*d)->arg[0], "echo") == 0)
@@ -208,7 +207,7 @@ int	exec(t_data **d)
 		exec_exit(d);
 	else
 		exec_extern_cmd(d);
-	if (dup2((*d)->saved_stdout, STDOUT_FILENO) == -1)
+	if (dup2((*d)->saved_stdin, STDIN_FILENO) == -1 || dup2((*d)->saved_stdout, STDOUT_FILENO) == -1)
 		return (printf("%s : dup2 pb\n", (*d)->arg[0]), OK);
 	unlink(TMP_FILE);
 	return (OK);

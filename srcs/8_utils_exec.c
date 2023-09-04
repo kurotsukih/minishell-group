@@ -12,17 +12,19 @@
 
 #include "headers.h"
 
-int	is_builtin(t_data **d)
-{
-	return (\
-	strcmp_((*d)->arg[0], "cd") == 0 || \
-	strcmp_((*d)->arg[0], "exit") == 0 || \
-	strcmp_((*d)->arg[0], "export") == 0 || \
-	strcmp_((*d)->arg[0], "unset") == 0 || \
-	strcmp_((*d)->arg[0], "echo") == 0 || \
-	strcmp_((*d)->arg[0], "pwd") == 0 || \
-	strcmp_((*d)->arg[0], "env") == 0);
-}
+/*
+// int	is_builtin(t_data **d)
+// {
+// 	return (\
+// 	strcmp_((*d)->arg[0], "cd") == 0 || \
+// 	strcmp_((*d)->arg[0], "exit") == 0 || \
+// 	strcmp_((*d)->arg[0], "export") == 0 || \
+// 	strcmp_((*d)->arg[0], "unset") == 0 || \
+// 	strcmp_((*d)->arg[0], "echo") == 0 || \
+// 	strcmp_((*d)->arg[0], "pwd") == 0 || \
+// 	strcmp_((*d)->arg[0], "env") == 0);
+// }
+*/
 
 static char	*s_with_conversion_(char *old_s, int j, t_data **d)
 {

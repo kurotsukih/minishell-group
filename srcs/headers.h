@@ -62,7 +62,7 @@ typedef struct		s_env
 // Фактическое закрытие файла произойдёт тогда, когда на него не будет ссылаться ни один ФД
 
 // dup возвращает первый свободный номер ФД
-// а dup2 позволяет явно указать номер нового ФД.
+// а dup2 указать номер нового ФД
 typedef struct		s_data
 {
 	t_env			**env;
@@ -72,6 +72,9 @@ typedef struct		s_data
 	int				*in;
 	int				nb_outs;
 	int				*out;
+	int				i_args;
+	int				i_ins;
+	int				i_outs;
 	int				saved_stdin;
 	int				saved_stdout;
 	int				exit_c;
@@ -83,7 +86,7 @@ void	calc_dollar_conversions(char *s, t_data **d);
 int		heredoc_to_file(char *delim, t_data **d);
 
 // exec and utils exec                       min args    max   accept <in
-int		exec(t_data **d);
+int		exec_1_cmd(t_data **d);
 int		exec_echo(t_data **d);   // 0           ...   no ?
 int		exec_cd(t_data **d);     // 0           1     no ?
 int		exec_pwd(t_data **d);    // 0           0     no
@@ -95,6 +98,7 @@ int		is_builtin(t_data **d);
 char	*path_(t_data **d);
 
 // utils env
+void	init_env(char **env_array, t_data **d);
 char	*key_(char *s, t_data **d);
 char 	*val_(char *s, t_data **d);
 char	**env_to_array(t_data **d);
