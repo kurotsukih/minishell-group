@@ -187,19 +187,11 @@ static int	exec_extern_cmd(t_data **d)
 
 int	exec(t_data **d)
 {
-	// int fd= ope n("outfile", O_CREAT|OTRUNC|O_WRONLY, 0544);  // ope n возвращает какой-то ФД 
-	// dup2(fd,1);   // Связываем 1 (STDOUT) с "outfile" через fd
-	// close(fd);   // Освобождаем fd
-	// execlp("grep", "str", "infile",NULL);   // Запускаем программу наследующую STDOUT -> "outfile"
-
 	print_cmd("exec", d);
-	printf("exec 1, (*d)->out[0] = %d, STDOUT_FILENO = %d\n", (*d)->out[0], STDOUT_FILENO);
+	printf("exec, (*d)->out[0] = %d, STDOUT_FILENO = %d\n", (*d)->out[0], STDOUT_FILENO);
 	if (dup2((*d)->out[0], STDOUT_FILENO) == -1)
 		return (printf("%s : dup2 pb\n", (*d)->arg[0]), OK); // exit_code = 127, if (errno != 2) exit_c = 126;
-	printf("exec 2, (*d)->out[0] = %d, STDOUT_FILENO = %d\n", (*d)->out[0], STDOUT_FILENO);
 	close((*d)->out[0]);
-	printf("exec 3, (*d)->out[0] = %d, STDOUT_FILENO = %d\n", (*d)->out[0], STDOUT_FILENO);
-
 	if (strcmp_((*d)->arg[0], "echo") == 0)
 		exec_echo(d);
 	else if (strcmp_((*d)->arg[0], "cd") == 0)

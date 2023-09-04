@@ -1,5 +1,3 @@
-exec 2, (*d)->out[0] = 5, STDOUT_FILENO = 1
-exec 3, (*d)->out[0] = 5, STDOUT_FILENO = 1
 en.subject.pdf
 fr.subject.pdf
 in

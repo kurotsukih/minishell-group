@@ -137,12 +137,7 @@ int	parse_cmd_line(char *s, int len, t_data **d)
 				//if (!(*d)->in[i_ins]) return (-1)
 			}
 			else if (ft_strcmp(redir, ">") == 0)
-			{
-				++i_outs;
-				printf("open %s\n", alphanum);
-				(*d)->out[i_outs] = open(alphanum, O_WRONLY | O_CREAT | O_TRUNC, 0666);
-				printf("opened %s\n", alphanum);
-			}
+				(*d)->out[++i_outs] = open(alphanum, O_WRONLY | O_CREAT | O_TRUNC, 0666);
 				//if (!(*d)->out[i_outs]) return (-1)
 			else if (ft_strcmp(redir, ">>") == 0)
 				(*d)->out[++i_outs] = open(alphanum, O_WRONLY | O_CREAT | O_APPEND, 0666);
@@ -155,10 +150,13 @@ int	parse_cmd_line(char *s, int len, t_data **d)
 		return (printf("%s : unclosed quotes\n", s), FAILURE); // free d
 	if ((*d)->nb_args == 0)
 		return (printf("empty command\n"), -1); // exit_code = 255
-	if (i_ins == 0)
+	if (i_ins == -1)
 		((*d)->in)[0] = dup(STDIN_FILENO); // prv pipe
-	// if (i_outs == 0)
-	// 	((*d)->out)[0] = dup(STDOUT_FILENO); // nxt pipe
+	if (i_outs == -1)
+	{
+		printf("no outs\n");
+		((*d)->out)[0] = dup(STDOUT_FILENO); // nxt pipe
+	}
 	return (OK);
 }
 
