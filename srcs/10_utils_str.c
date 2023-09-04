@@ -57,8 +57,7 @@ char	*strndup_and_trim(char *src, int len, t_data **d)
 // 				s[i++] = ' ';
 // 			while(s[i] == ' ')
 // 				i++;
-// 			while(mod_(s[i]) == QUOTES0 && \
-// 				(s[i] != ' ' && s[i] != '>' && s[i] != '<' && s[i] != '\0'))
+// 			while(mod_(s[i]) == QUOTES0 && (s[i] != ' ' && s[i] != '>' && s[i] != '<' && s[i] != '\0'))
 // 				s[i++] = ' ';
 // 		}
 // 		else
@@ -83,8 +82,7 @@ char	*strndup_and_trim(char *src, int len, t_data **d)
 // 				i++;
 // 			while(s[i] == ' ')
 // 				i++;
-// 			while(mod_(s[i]) == QUOTES0 && \
-// 				(s[i] != ' ' && s[i] != '>' && s[i] != '<' && s[i] != '\0'))
+// 			while(mod_(s[i]) == QUOTES0 && (s[i] != ' ' && s[i] != '>' && s[i] != '<' && s[i] != '\0'))
 // 				i++;
 // 		}
 // 		else

@@ -78,7 +78,7 @@ static int	exec_extern_cmd(t_data **d)
 	int		pid;
 	char	*path;
 	char	**env_array;
-	int		len_env;
+	// int		len_env;
 	int		status;
 	int		j;
 
@@ -98,7 +98,7 @@ static int	exec_extern_cmd(t_data **d)
 		if (pid == 0)
 		{
 			env_array = env_to_array(d);
-			len_env = len_env_(d);
+			// len_env = len_env_(d);
 			execve(path, (*d)->arg, env_array); //if env_array == NULL ? // every execve substitue le processus ???!!!
 			// free_env_array(env_array, len_env); no executed ?
 		}

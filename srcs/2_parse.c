@@ -35,9 +35,9 @@ static int	len_alphanum(char *s)
 	if ((s[0] < 'a' || s[0] > 'z') && (s[0] < 'A' && s[0] > 'Z'))
 		return (0);
 	i = -1;
-	while ((s[++i] >= '0' && s[i] < '9') \
-		|| (s[i] >= 'a' && s[i] < 'z') || (s[i] >= 'A' && s[i] < 'Z') || s[i] == '_')
+	while ((s[++i] >= '0' && s[i] < '9') || (s[i] >= 'a' && s[i] < 'z') || (s[i] >= 'A' && s[i] < 'Z') || s[i] == '_')
 		;
+	printf("len alphanum %s retuen %d\n", s, i);
 	return (i);
 }
 
@@ -76,14 +76,13 @@ void calc_nb_args_ins_outs(char *s, int len, t_data **d)
 	int		i;
 	char	*redir;
 
-	(*d)->nb_args = 0;
-	(*d)->nb_ins = 0;
-	(*d)->nb_outs = 0;
+	printf("calc_nb_args_ins_outs %s\n", s);
 	mod_(REINIT_QUOTES);
 	i = -1;
 	while (++i < len)
 		if (mod_(s[i]) == QUOTES0)
 		{
+			printf("1) i=%d\n", i);
 			i += nb_spaces(&s[i]);
 			redir = redir_(&s[i]);
 			if (ft_strcmp(redir, "<") == 0 || ft_strcmp(redir, "<<") == 0)
@@ -91,12 +90,21 @@ void calc_nb_args_ins_outs(char *s, int len, t_data **d)
 			else if (ft_strcmp(redir, ">") == 0 || ft_strcmp(redir, ">>") == 0)
 				((*d)->nb_outs)++;
 			else
+			{
 				((*d)->nb_args)++;
-			i += ft_strlen(redir) + nb_spaces(&s[i]) + len_alphanum(&s[i]);
+				printf("2) i=%d, nb_args = %d\n", i, (*d)->nb_args);
+			}
+			printf("3) strlen = %d\n", (int)ft_strlen(redir));
+			i += ft_strlen(redir);
+			printf("4) nb spaces = %d\n", nb_spaces(&s[i]));
+			i += nb_spaces(&s[i]);
+			printf("5) i = %d, len_alphanum = %d\n", i, len_alphanum(&s[i]));
+			i += len_alphanum(&s[i]);
+			printf("6) i=%d\n", i);
 		}
 	(*d)->arg = (char **)malloc_(((*d)->nb_args + 1) * sizeof(char *), d);
-	(*d)->in = (int *)malloc_(((*d)->nb_ins + 1) * sizeof(int), d);
-	(*d)->out = (int *)malloc_(((*d)->nb_outs + 1) * sizeof(int), d);
+	(*d)->in = (int *)malloc_((*d)->nb_ins * sizeof(int), d);
+	(*d)->out = (int *)malloc_((*d)->nb_outs * sizeof(int), d);
 }
 
 static void	heredoc_to_file(char *delim, int fd)
@@ -115,6 +123,7 @@ static void	heredoc_to_file(char *delim, int fd)
 	}
 }
 
+
 int	parse(char *s, int len, t_data **d)
 {
 	int		i;
@@ -127,7 +136,9 @@ int	parse(char *s, int len, t_data **d)
 	int		fd;
 	int		mod;
 
+	print_cmd("", d);
 	calc_nb_args_ins_outs(s, len, d);
+	print_cmd("", d);
 	mod_(REINIT_QUOTES);
 	i = -1;
 	i_args = -1;
@@ -141,6 +152,7 @@ int	parse(char *s, int len, t_data **d)
 			i += nb_spaces(&s[i]);
 			redir = redir_(&s[i]);
 			file = NULL;
+			delimitor = NULL;
 			if (ft_strcmp(redir, "<") == 0)
 			{
 				i += nb_spaces(&s[i]) + ft_strlen(redir);
@@ -188,33 +200,39 @@ int	parse(char *s, int len, t_data **d)
 	return (0);
 }
 
-// void print_cmds(char *msg, t_data **d)
-// {
-// 	int		i;
-// 	t_cmd	*cmd;
+void print_cmd(char *msg, t_data **d)
+{
+	int		i;
 
-// 	printf("CMDST %s %14p:\n  ", msg, (*d)->cmds);
-// 	if ((*d)->cmds == NULL || *((*d)->cmds) == NULL)
-// 	{
-// 		printf("empty\n");
-// 		return ;
-// 	}
-// 	cmd = *((*d)->cmds);
-// 	while (cmd != NULL)
-// 	{
-// 		if (cmd->arg != NULL)
-// 		{
-// 			i = -1;
-// 			while (++i < cmd->nb_args)
-// 				printf("%s : ", cmd->arg[i]);
-// 		}
-// 		else
-// 			printf("args = NULL");
-// 		printf(" fd_in = %d, fd_out = %d\n", cmd->fd_in, cmd->fd_out);
-// 		cmd = cmd->nxt;
-// 	}
-// 	printf("\n");
-// }
+	printf("%d args ", (*d)->nb_args);
+	if ((*d)->arg != NULL)
+	{
+		i = -1;
+		while (++i < (*d)->nb_args)
+			printf("%s ", (*d)->arg[i]);
+	}
+	else
+		printf("args = NULL");
+	printf(" : %d ins ", (*d)->nb_ins);
+	if ((*d)->in != NULL)
+	{
+		i = -1;
+		while (++i < (*d)->nb_ins)
+			printf("%d : ", (*d)->in[i]);
+	}
+	else
+		printf("ins = NULL");
+	printf(" : %d outs ", (*d)->nb_outs);
+	if ((*d)->out != NULL)
+	{
+		i = -1;
+		while (++i < (*d)->nb_outs)
+			printf("%d : ", (*d)->out[i]);
+	}
+	else
+		printf("outs = NULL");
+	printf(" : %s\n", msg);
+}
 
 // void rmv_cmd(t_cmd *cmd, t_data **d)
 // {
@@ -268,8 +286,7 @@ int	parse(char *s, int len, t_data **d)
 // 	nb_args = 0;
 // 	i = -1;
 // 	while (++i < len)
-// 		if (mod_(s[i]) == QUOTES0 && s[i] != ' ' && (s[i + 1] == ' ' || \
-// 			s[i + 1] == '\0' || s[i + 1] == '\'' || s[i + 1] == '\"' || i == len - 1))
+// 		if (mod_(s[i]) == QUOTES0 && s[i] != ' ' && (s[i + 1] == ' ' || s[i + 1] == '\0' || s[i + 1] == '\'' || s[i + 1] == '\"' || i == len - 1))
 // 				nb_args++;
 // 	free(s);
 // 	return (nb_args);

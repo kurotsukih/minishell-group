@@ -101,16 +101,6 @@ static void	init_env(char **env_array, t_data **d)
 	}
 }
 
-static void	init_d(t_data ***d, char **env_array) // **d ?
-{
-	*d = (t_data **)malloc_(sizeof(t_data *), *d);
-	**d = (t_data *)malloc_(sizeof(t_data), *d);
-	init_env(env_array, *d);
-	(**d)->saved_stdout = dup(STDOUT_FILENO);
-	// signal(SIGQUIT, SIG_IGN);
-	// signal(SIGINT, &sig_handler_main);
-}
-
 // arg[0] = prog name
 static int	treat_cmd_line(char *s, t_data **d)
 {
@@ -125,10 +115,10 @@ static int	treat_cmd_line(char *s, t_data **d)
 		if ((mod_(s[++i]) == QUOTES0 && s[i + 1] == '|') || s[i + 1] == '\0')
 		{
 			len = i - i_beg + 1;
-			if (parse(&s[i], len, d))// ||
-					// !remove_quotes(d) || // only for bultins? нужно? попробовать без
-					// !start_redirs(cmd, d))
-					// dollar converstions in ins? in heredoc? remove_quotes ?
+			if (parse(&s[i_beg], len, d))// ||
+			// !remove_quotes(d) || // only for bultins? нужно? попробовать без
+			// !start_redirs(cmd, d))
+			// dollar converstions in ins? in heredoc? remove_quotes ?
 			{
 				exec(d);
 				// stop_redirs(cmd, d);
@@ -149,7 +139,15 @@ int	main(int argc, char **argv, char **env_array)
 
 	(void)argc;
 	(void)argv;
-	init_d(&d, env_array);
+	d = (t_data **)malloc_(sizeof(t_data *), NULL);
+	*d = (t_data *)malloc_(sizeof(t_data), d);
+	(*d)->nb_args = 0;
+	(*d)->nb_ins = 0;
+	(*d)->nb_outs = 0;
+	(*d)->saved_stdout = dup(STDOUT_FILENO);
+	init_env(env_array, d);
+	// signal(SIGQUIT, SIG_IGN);
+	// signal(SIGINT, &sig_handler_main);
 	while (1)
 	{
 		cmd_line = NULL;

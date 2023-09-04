@@ -57,9 +57,10 @@ typedef struct		s_data
 	int				exit_c;
 }					t_data;
 
-void		calc_dollar_conversions(char *s, t_data **d);
+void	calc_dollar_conversions(char *s, t_data **d);
 int		parse(char *s, int len, t_data **d);
 void	exec(t_data **d);
+void	print_cmd(char *msg, t_data **d);
 
 // builtins                     min args    max   accept <in
 int		exec_echo(t_data **d);   // 0           ...   no ?
