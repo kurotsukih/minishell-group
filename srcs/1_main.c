@@ -6,7 +6,7 @@
 /*   By: akostrik <akostrik@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/02 15:22:16 by akostrik          #+#    #+#             */
-/*   Updated: 2023/09/03 01:12:13 by akostrik         ###   ########.fr       */
+/*   Updated: 2023/09/04 02:16:09 by akostrik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ print f writ e access ope n read close
 fork wai t  wai tpid  wai t3  wai t4 
 signa l sigaction sigemptyset sigaddset kill
 exit
-getcwd chdir stat lstat fstat unlink execv e dup dup2 pipe
+getcwd chdir stat lstat fstat unlink execv e du p du p2 pip e
 ope ndir readdir closedir
 strerro r perro r
 isatty ttyname ttyslot ioctl
@@ -29,7 +29,7 @@ tcsetattr tcgetattr tgetent tgetflag tgetnum tgetstr tgoto tputs
 wait3 wait4 : resource usage information about the ft_wait_child_processes
 stat lstat fstat : file or file system status, information about a file
 unlink : call the unlink function to remove the specified file
-pipe : creates a pipe, a unidirectional data channel that can be used for interprocess communication.
+pip e : creates a pip e, a unidirectional data channel that can be used for interprocess communication.
 isatty : 1 if fd is an open file descriptor referring to a terminal; otherwise 0
 ttyname : pathname of the terminal device that is open on the file descriptor fd
 
@@ -73,11 +73,16 @@ WTERMSIG(status) = le numéro du signal
 pour les process zombie j'ai utilisé la macro sigaction avec SIGCHLD et SA_NOCLDWAIT
 */
 
+// >out1 >out1+ >> out2 < in >> out2+ < in+ <in++
+// extern cmd change the env ? getenv() setenv() putenv() unsetenv()
+// if env variable has many values (like PATH)
+// à la premiere erreur (le droit decriture pour les redir out, etc) ca fait tout fail
+
 #include "headers.h"
 
 int g_signal = 0;
 
-static void	put_env(char **env_array, t_data **d)
+static void	init_env(char **env_array, t_data **d)
 {
 	int		i;
 	t_env	*new;
@@ -100,14 +105,41 @@ static void	init_d(t_data ***d, char **env_array) // **d ?
 {
 	*d = (t_data **)malloc_(sizeof(t_data *), *d);
 	**d = (t_data *)malloc_(sizeof(t_data), *d);
-	(**d)->cmds = (t_cmd **)malloc_(sizeof(t_cmd *), *d);
-	*((**d)->cmds) = NULL;
-	(**d)->curr_cmd = NULL;
-	(**d)->saved_stdin = dup(STDIN_FILENO); // another descriptor stdout
+	init_env(env_array, *d);
 	(**d)->saved_stdout = dup(STDOUT_FILENO);
-	put_env(env_array, *d);
 	// signal(SIGQUIT, SIG_IGN);
 	// signal(SIGINT, &sig_handler_main);
+}
+
+// arg[0] = prog name
+static int	treat_cmd_line(char *s, t_data **d)
+{
+	int	i_beg;
+	int	i;
+	int	len;
+
+	mod_(REINIT_QUOTES);
+	i_beg = 0;
+	i = -1;
+	while (1)
+		if ((mod_(s[++i]) == QUOTES0 && s[i + 1] == '|') || s[i + 1] == '\0')
+		{
+			len = i - i_beg + 1;
+			if (parse(&s[i], len, d))// ||
+					// !remove_quotes(d) || // only for bultins? нужно? попробовать без
+					// !start_redirs(cmd, d))
+					// dollar converstions in ins? in heredoc? remove_quotes ?
+			{
+				exec(d);
+				// stop_redirs(cmd, d);
+				unlink(TMP_FILE);
+			}
+			if (s[i + 1] == '\0')
+				break;
+			i_beg = i + 2;
+			i++;
+		}
+	return (0);
 }
 
 int	main(int argc, char **argv, char **env_array)
@@ -118,9 +150,9 @@ int	main(int argc, char **argv, char **env_array)
 	(void)argc;
 	(void)argv;
 	init_d(&d, env_array);
-	cmd_line = NULL;
 	while (1)
 	{
+		cmd_line = NULL;
 		cmd_line = readline("$");
 		if (cmd_line == NULL) // EOF
 			break ;
@@ -131,13 +163,9 @@ int	main(int argc, char **argv, char **env_array)
 		// 	continue;
 		// }
 		add_history(cmd_line);
-		parse(cmd_line, d);
-		verif_args(d);
-		// print_cmds("", d);
-		exec_cmds(d);
-		rmv_cmds(d);
+		treat_cmd_line(cmd_line, d);
 		free(cmd_line);
 	}
-	close((*d)->saved_stdout);
-	return 0; //(d->exit_code);
+	// free_all_and_exit("", d->exit_code, d);
+	return 0;
 }

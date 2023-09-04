@@ -6,7 +6,7 @@
 /*   By: akostrik <akostrik@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/02 15:22:29 by akostrik          #+#    #+#             */
-/*   Updated: 2023/09/03 01:00:15 by akostrik         ###   ########.fr       */
+/*   Updated: 2023/09/04 02:12:45 by akostrik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,92 +73,59 @@
 // 	ft_wait_child_processes(num, pid);
 // }
 
-// if extern cmd change the env ?
-
-static void *exec_extern_cmd(t_cmd *cmd, t_data **d)
+static int	exec_extern_cmd(t_data **d)
 {
 	int		pid;
-	int		status;
+	char	*path;
 	char	**env_array;
 	int		len_env;
-	char	*path;
+	int		status;
+	int		j;
 
-	pid = fork();
-	if (pid < -1)
-		return (printf("%s : fork pb\n", cmd->arg[0]), rmv_cmd(cmd, d), NULL);
-	if (pid == 0)
+	path = path_(d); // un chemin relatif ou absolu ?
+	if (path == NULL)
+		path = ".";
+
+	j = -1;
+	while (++j < (*d)->nb_outs)
 	{
-		(*d)->exit_c = 0; // code ?
-		env_array = env_to_array(d);
-		len_env = len_env_(d);
-		path = path_(cmd, d);
-		if (path == NULL)
-			path = ".";
-		execve(path, cmd->arg, env_array); //if env_array != NULL ?
-		// free_env_array(env_array, len_env); no executed ?
-	}
-	else
-		wait(&status);
-	return (NULL);
-}
-
-void	*start_redirs(t_cmd *cmd, t_data **d)
-{
-	if (cmd->fd_in != STDIN_FILENO)
-	{
-		if (dup2(cmd->fd_in, STDIN_FILENO) == -1) // дубл. дескриптора => stdout в файл
-			return (printf("%s : dup2 pb\n", cmd->arg[0]), rmv_cmd(cmd, d), NULL); // exit_code = 127, if (errno != 2) exit_c = 126;
-		close(cmd->fd_in);
-	}
-	if (cmd->fd_out != STDOUT_FILENO)
-	{
-		if (dup2(cmd->fd_out, STDOUT_FILENO) == -1)
-			return (printf("%s : dup2 pb\n", cmd->arg[0]), rmv_cmd(cmd, d), NULL); // exit_code = 127, if (errno != 2) exit_c = 126;
-		close(cmd->fd_out);
-	}
-	return (NULL);
-}
-
-void	*stop_redirs(t_cmd *cmd, t_data **d)
-{
-	if (dup2((*d)->saved_stdin, STDIN_FILENO) == -1) // восстановить исходный stdout
-		return (printf("%s : dup2 pb\n", cmd->arg[0]), rmv_cmd(cmd, d), NULL); // exit_code = 127, if (errno != 2) exit_c = 126;
-	if (dup2((*d)->saved_stdout, STDOUT_FILENO) == -1)
-		return (printf("%s : dup2 pb\n", cmd->arg[0]), rmv_cmd(cmd, d), NULL); // exit_code = 127, if (errno != 2) exit_c = 126;
-	return (NULL);
-}
-
-void	exec_cmds(t_data **d)
-{
-	t_cmd	*cmd;
-
-	cmd = *((*d)->cmds);
-	while (cmd != NULL)
-	{
-		(*d)->curr_cmd = cmd; // not used ?
-		// à la premiere erreur (le droit decriture pour les redir out, etc) ca fait tout fail
-		calc_dollar_conversions(cmd, d);
-		remove_quotes(cmd);
-		start_redirs(cmd, d);
-		if (strcmp_(cmd->arg[0], "echo") == 0)
-			exec_echo(cmd);
-		else if (strcmp_(cmd->arg[0], "env") == 0)
-			exec_env(d);
-		else if (strcmp_(cmd->arg[0], "pwd") == 0)
-			exec_pwd(cmd, d);
-		else if (strcmp_(cmd->arg[0], "cd") == 0)
-			exec_cd(cmd, d);
-		else if (strcmp_(cmd->arg[0], "export") == 0)
-			exec_export(cmd, d);
-		else if (strcmp_(cmd->arg[0], "unset") == 0)
-			exec_unset(cmd, d);
-		else if (strcmp_(cmd->arg[0], "exit") == 0)
-			exec_exit(cmd, d);
+		if (dup2((*d)->out[j], STDOUT_FILENO) == -1)
+			return (printf("%s : dup2 pb\n", (*d)->arg[0]), 0); // exit_code = 127, if (errno != 2) exit_c = 126;
+		close((*d)->out[j]);
+		pid = fork();
+		if (pid < -1)
+			return (printf("%s : fork pb\n", (*d)->arg[0]), -1); // free all and exit ?
+		if (pid == 0)
+		{
+			env_array = env_to_array(d);
+			len_env = len_env_(d);
+			execve(path, (*d)->arg, env_array); //if env_array == NULL ? // every execve substitue le processus ???!!!
+			// free_env_array(env_array, len_env); no executed ?
+		}
 		else
-			exec_extern_cmd(cmd, d);
-		stop_redirs(cmd, d);
-		if (unlink(TMP_FILE) == -1)
-			; //printf("pb remove tmp file\n");
-		cmd = cmd->nxt;
+			wait(&status);
+		if (dup2((*d)->saved_stdout, STDOUT_FILENO) == -1)
+			return (printf("%s : dup2 pb\n", (*d)->arg[0]), 0);
 	}
+	return (0);
+}
+
+void	exec(t_data **d)
+{
+	if (strcmp_((*d)->arg[0], "echo") == 0)
+		exec_echo(d);
+	else if (strcmp_((*d)->arg[0], "env") == 0)
+		exec_env(d);
+	else if (strcmp_((*d)->arg[0], "pwd") == 0)
+		exec_pwd(d);
+	else if (strcmp_((*d)->arg[0], "cd") == 0)
+		exec_cd(d);
+	else if (strcmp_((*d)->arg[0], "export") == 0)
+		exec_export(d);
+	else if (strcmp_((*d)->arg[0], "unset") == 0)
+		exec_unset(d);
+	else if (strcmp_((*d)->arg[0], "exit") == 0)
+		exec_exit(d);
+	else
+		exec_extern_cmd(d);
 }

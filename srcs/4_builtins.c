@@ -6,86 +6,111 @@
 /*   By: akostrik <akostrik@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/02 15:22:39 by akostrik          #+#    #+#             */
-/*   Updated: 2023/09/02 21:56:44 by akostrik         ###   ########.fr       */
+/*   Updated: 2023/09/04 02:13:30 by akostrik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "headers.h"
 
-void	*exec_echo(t_cmd *cmd)
+int	exec_echo(t_data **d)
 {
 	int	option_n;
 	int	i;
+	int	j;
+	int	fd;
 
 	option_n = 0;
-	i = 0;
-	while (++i < cmd->nb_args)
-	{
-		if (strcmp(cmd->arg[i], "-n") == 0)
+	j = -1;
+	while (++j < (*d)->nb_args)
+		if (strcmp((*d)->arg[j], "-n") == 0)
 			option_n = 1;
-		else if (i < cmd->nb_args - 1)
-			printf("%s ", cmd->arg[i]);
-		else
-			printf("%s", cmd->arg[i]);
+	i = -1;
+	while(++i < (*d)->nb_outs)
+	{
+		fd = (*d)->out[i];
+		j = -1;
+		while (++j < (*d)->nb_args)
+			if (strcmp((*d)->arg[j], "-n") != 0)
+			{
+				write(fd, (*d)->arg[j], ft_strlen((*d)->arg[j]));
+				if (i < (*d)->nb_args - 1)
+					write(fd, " ", 1);
+			}
+		if (option_n == 0)
+			write(fd, "\n", 1);
 	}
-	if (option_n == 0)
-		printf("\n");
-	return (NULL);
+	return (0);
 }
 
-void	*exec_cd(t_cmd *cmd, t_data **d)
+int	exec_cd(t_data **d)
 {
 	char	*dir;
+	int		res;
 
-	dir = NULL;
-	if (cmd->nb_args == 1)
+	if ((*d)->nb_args == 1)
 	{
+		dir = NULL;
 		dir = get_value_from_env("HOME", d);
 		if (dir == NULL)
-			return (printf("%s : variable HOME not found\n", cmd->arg[0]), rmv_cmd(cmd, d), NULL); 	// exic code ?
-		if (chdir(dir) == -1)
-			return (printf("%s : chdir failure\n", cmd->arg[0]), rmv_cmd(cmd, d), NULL); 	// exic code ?
-	}
-	if (dir != NULL)
+			return (printf("cd : variable HOME not found\n"), 0); 	// exic code ?
+		res = chdir(dir);
 		free(dir);
-	return (NULL);
+		if (res == -1)
+			return (printf("cd : chdir failure\n"), 0); 	// exic code ?
+	}
+	else if ((*d)->nb_args == 2)
+	{
+		if (chdir((*d)->arg[1]) == -1)
+			return (printf("cd : chdir failure\n"), 0); 	// exic code ?
+	}
+	else
+		return (printf("cd : too many arguments\n"), 0);
+	return (0);
 }
 
-void	*exec_pwd(t_cmd *cmd, t_data **d)
+int	exec_pwd(t_data **d)
 {
 	char	*s;
+	int		i;
 
-	s = getcwd(NULL, 0);
-	if (s == NULL)
-		return (printf("%s : getcwd failed\n", cmd->arg[0]), rmv_cmd(cmd, d), NULL); 	// exic code ?
-	printf("%s\n", s);
-	free(s);
-	return (NULL);
+	if ((*d)->nb_args == 1)
+	{
+		s = getcwd(NULL, 0);
+		if (s == NULL)
+			return (printf("pwd : getcwd failed\n"), 0); 	// exic code ?
+		i = -1;
+		while(++i < (*d)->nb_outs)
+			write((*d)->out[i], s, ft_strlen(s));
+		free(s);
+	}
+	else
+		return (printf("pwd : too many arguments\n"), 0);
+	return (0);
 }
 
-void	*exec_export(t_cmd *cmd, t_data **d)
+int	exec_export(t_data **d)
 {
 	t_env	*new_var;
 	int		i;
 
-	if (cmd->nb_args == 0)
-		return (exec_env(d), NULL);
-	exec_unset(cmd, d);
+	if ((*d)->nb_args == 0)
+		return (exec_env(d), 0);
+	exec_unset(d);
 	i = 0;
-	while (++i < cmd->nb_args)
+	while (++i < (*d)->nb_args)
 	{
 		new_var = (t_env *)malloc_(sizeof(t_env), d);
-		new_var->var = strdup_(cmd->arg[i], d);
+		new_var->var = strdup_((*d)->arg[i], d);
 		if ((*d)->env != NULL)
 			new_var->nxt = *((*d)->env);
 		else
 			new_var->nxt = NULL;
 		*((*d)->env) = new_var;
 	}
-	return (NULL);
+	return (0);
 }
 
-void	*exec_unset(t_cmd *cmd, t_data **d)
+int	exec_unset(t_data **d)
 {
 	t_env	*var;
 	t_env	*prv;
@@ -93,9 +118,11 @@ void	*exec_unset(t_cmd *cmd, t_data **d)
 	int		i;
 
 	if ((*d)->env == NULL)
-		return (NULL);
+		return (0);
+	if ((*d)->nb_args == 1)
+		return (printf("unset : too few arguments\n"), 0);
 	i = 0;
-	while (++i < cmd->nb_args)
+	while (++i < (*d)->nb_args)
 	{
 		prv = NULL;
 		var = *((*d)->env);
@@ -104,7 +131,7 @@ void	*exec_unset(t_cmd *cmd, t_data **d)
 			key = key_(var->var, d);
 			if (key == NULL)
 				continue ;
-			if (strcmp_(key, cmd->arg[i]) == 0)
+			if (strcmp_(key, (*d)->arg[i]) == 0)
 			{
 				free(var->var);
 				if (prv != NULL)
@@ -112,12 +139,12 @@ void	*exec_unset(t_cmd *cmd, t_data **d)
 				else if (*((*d)->env) == var)
 					*((*d)->env) = var->nxt;
 				free(var);
-				return (NULL);
+				return (0);
 			}
 			prv = var;
 			var = var->nxt;
 		}
 	}
-	return (NULL);
+	return (0);
 }
 

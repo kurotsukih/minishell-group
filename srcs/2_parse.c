@@ -5,188 +5,273 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: akostrik <akostrik@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/09/02 15:22:26 by akostrik          #+#    #+#             */
-/*   Updated: 2023/09/03 00:57:42 by akostrik         ###   ########.fr       */
+/*   Created: 2023/09/02 15:22:47 by akostrik          #+#    #+#             */
+/*   Updated: 2023/09/04 02:12:29 by akostrik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "headers.h"
 
-// >out1 >out1+ >> out2 < in >> out2+ < in+ <in++
-static void put_full_cmd_to_arg0_1(char *full_cmd, int len, t_data **d)
+static char	*redir_(char *s)
 {
-	t_cmd *cmd;
-	t_cmd *last;
-	int i;
+	if (s[0]== '\0')
+		return (NULL);
+	if (s[0] == '>' && s[1] != '>')
+		return (">");
+	if (s[0] == '<' && s[1] != '<')
+		return ("<");
+	if (s[0] == '>' && s[1] == '>')
+		return (">>");
+	if (s[0] == '<' && s[1] == '<')
+		return ("<<");
+	else
+		return (NULL);
+}
 
-	init_cmd(&cmd, d);
-	(*d)->curr_cmd = cmd;
-	cmd->nb_args = nb_args_(full_cmd, len, d);
-	cmd->arg = (char **)malloc_((cmd->nb_args + 1) * sizeof(char *), d);
-	cmd->arg[0] = (char *)malloc_(len + 1, d);
+static int	len_alphanum(char *s)
+{
+	int	i;
+
+	if ((s[0] < 'a' || s[0] > 'z') && (s[0] < 'A' && s[0] > 'Z'))
+		return (0);
+	i = -1;
+	while ((s[++i] >= '0' && s[i] < '9') \
+		|| (s[i] >= 'a' && s[i] < 'z') || (s[i] >= 'A' && s[i] < 'Z') || s[i] == '_')
+		;
+	return (i);
+}
+
+char	*alphanum_(char *s, t_data **d)
+{
+	int		i;
+	char	*alphanum;
+
+	if ((s[0] < 'a' || s[0] > 'z') && (s[0] < 'A' && s[0] > 'Z'))
+		return (NULL);
+	i = -1;
+	while ((s[++i] >= '0' && s[i] < '9') \
+		|| (s[i] >= 'a' && s[i] < 'z') || (s[i] >= 'A' && s[i] < 'Z') || s[i] == '_')
+		;
+	alphanum = (char *)malloc_(i + 1, d);
+	i = -1;
+	while ((s[++i] >= '0' && s[i] < '9') \
+		|| (s[i] >= 'a' && s[i] < 'z') || (s[i] >= 'A' && s[i] < 'Z') || s[i] == '_')
+		alphanum[i] = s[i];
+	alphanum[i] = '\0';
+	return (alphanum);
+}
+
+static int	nb_spaces(char *s)
+{
+	int	i;
+
 	i = 0;
-	while (++i < cmd->nb_args + 1)
-		cmd->arg[i] = NULL;
+	while (s[i] == ' ')
+		i++;
+	return (i);
+}
+
+void calc_nb_args_ins_outs(char *s, int len, t_data **d)
+{
+	int		i;
+	char	*redir;
+
+	(*d)->nb_args = 0;
+	(*d)->nb_ins = 0;
+	(*d)->nb_outs = 0;
+	mod_(REINIT_QUOTES);
 	i = -1;
 	while (++i < len)
-		cmd->arg[0][i] = full_cmd[i];
-	cmd->arg[0][i] = '\0';
-	if (*((*d)->cmds) == NULL)
-		*((*d)->cmds) = cmd;
-	else
-	{
-		last = *((*d)->cmds);
-		while (last != NULL && last->nxt != NULL)
-			last = last->nxt;
-		last->nxt = cmd;
-		cmd->prv = last;
-	}
-}
-
-void	*open_file(char *redir, char *file, t_cmd *cmd, t_data **d)
-{
-	//if ((**d)->saved_stdin == -1)
-	if (file != NULL && ft_strlen(file) == 0)
-			return (printf("%s : err syntaxe\n", cmd->arg[0]), rmv_cmd(cmd, d), NULL);
-	if (strcmp_(redir, "<") == 0)
-	{
-		if (cmd->fd_in != STDIN_FILENO)
-			close(cmd->fd_in);
-		cmd->fd_in = open(file, O_RDONLY);
-		if (!cmd->fd_in)
-			return (printf("%s : open file pb\n", cmd->arg[0]), rmv_cmd(cmd, d), NULL);
-	}
-	else if (strcmp_(redir, "<<") == 0)
-	{
-		heredoc_to_tmp_file(file, cmd, d); // delimitor = file
-		if (cmd->fd_in != STDIN_FILENO)
-			close(cmd->fd_in);
-		cmd->fd_in = open(TMP_FILE, O_RDONLY);
-		if (!cmd->fd_in)
-			return (printf("%s : open file pb\n", cmd->arg[0]), rmv_cmd(cmd, d), NULL);
-	}
-	else if (strcmp_(redir, "| >") == 0 && cmd->prv != NULL)
-	{
-		// if (cmd->fd_in != STDIN_FILENO)
-		// 	close(cmd->fd_in);
-		cmd->fd_in = cmd->prv->fd_pipe[0];
-		if (!cmd->fd_in)
-			return (printf("%s : pipe pb\n", cmd->arg[0]), rmv_cmd(cmd, d), NULL);
-	}
-	else if (strcmp_(redir, ">") == 0)
-	{
-		if (cmd->fd_out != STDIN_FILENO)
-			close(cmd->fd_out);
-		cmd->fd_out = open(file, O_WRONLY | O_CREAT | O_TRUNC, 0666);
-		if (!cmd->fd_out)
-			return (printf("%s : open file pb\n", cmd->arg[0]), rmv_cmd(cmd, d), NULL);
-	}
-	else if (strcmp_(redir, ">>") == 0)
-	{
-		if (cmd->fd_out != STDIN_FILENO)
-			close(cmd->fd_out);
-		cmd->fd_out = open(file, O_WRONLY | O_CREAT | O_APPEND, 0666);
-		if (!cmd->fd_out)
-			return (printf("%s : open file pb\n", cmd->arg[0]), rmv_cmd(cmd, d), NULL);
-	}
-	else if (strcmp_(redir, "> |") == 0 && cmd->nxt != NULL)
-	{
-		if (cmd->fd_out != STDIN_FILENO)
-			close(cmd->fd_out);
-		cmd->fd_out = cmd->fd_pipe[1];
-		if (!cmd->fd_out)
-			return (printf("%s : pipe pb\n", cmd->arg[0]), rmv_cmd(cmd, d), NULL);
-		// if (cmd->fd_out != -1 && cmd->fd_out != STDOUT_FILENO)
-		// 	close(cmd->fd_out);
-	}
-	return (NULL);
-}
-
-static void put_redirs(t_cmd *cmd, t_data **d)
-{
-	char *s;
-	int i;
-	int i_beg;
-	char *redir;
-	char *file;
-
-	open_file("| >", NULL, cmd, d);
-	mod_(REINIT_QUOTES);
-	s = strdup_and_erase_args_except_redirs(cmd->arg[0], d);
-	i = -1;
-	while (s[++i] != '\0')
-	{
-		redir = redir_(&s[i]);
-		if (mod_(s[i]) == QUOTES0 && ft_strlen(redir) > 0)
+		if (mod_(s[i]) == QUOTES0)
 		{
-			i += ft_strlen(redir);
-			i_beg = i;
-			while (s[i] == ' ')
-				i++;
-			while (s[i] != ' ' && s[i] != '>' && s[i] != '<' && s[i] != '\0') // alphanum ?
-				i++;
-			file = strndup_and_trim(&s[i_beg], i - i_beg + 1, d);
-			// remove_quotes(file);
-			open_file(redir, file, cmd, d);
-		}
-		open_file("> |", NULL, cmd, d);
-	}
-}
-
-static void put_args(t_cmd *cmd, t_data **d)
-{
-	char	*s;
-	int		i;
-	int		i_beg;
-	int		i_end_arg0;
-	int		k;
-
-	if (cmd->nb_args == 0)
-		return ;
-	mod_(REINIT_QUOTES);
-	i_beg = 0;
-	k = -1;
-	i = -1;
-	s = strdup_and_erase_redirs(cmd->arg[0], d);
-	while (s[++i] != '\0')
-		if (mod_(s[i]) == QUOTES0 && s[i] != ' ' && (s[i + 1] == ' ' \
-			|| s[i + 1] == '\0' || s[i + 1] == '\'' || s[i + 1] == '\"'))
-		{
-			if (++k == 0)
-				i_end_arg0 = i + 1;
+			i += nb_spaces(&s[i]);
+			redir = redir_(&s[i]);
+			if (ft_strcmp(redir, "<") == 0 || ft_strcmp(redir, "<<") == 0)
+				((*d)->nb_ins)++;
+			else if (ft_strcmp(redir, ">") == 0 || ft_strcmp(redir, ">>") == 0)
+				((*d)->nb_outs)++;
 			else
-				cmd->arg[k] = strndup_and_trim(&s[i_beg], i - i_beg + 1, d);
-			i_beg = i + 1;
+				((*d)->nb_args)++;
+			i += ft_strlen(redir) + nb_spaces(&s[i]) + len_alphanum(&s[i]);
 		}
-	free(s);
-	cmd->arg[0][i_end_arg0] = '\0';
-	s = strndup_and_trim(cmd->arg[0], ft_strlen(cmd->arg[0]), d); // strdup_and_trim
-	free(cmd->arg[0]);
-	cmd->arg[0] = s;
-	cmd->arg[cmd->nb_args] = NULL;
+	(*d)->arg = (char **)malloc_(((*d)->nb_args + 1) * sizeof(char *), d);
+	(*d)->in = (int *)malloc_(((*d)->nb_ins + 1) * sizeof(int), d);
+	(*d)->out = (int *)malloc_(((*d)->nb_outs + 1) * sizeof(int), d);
 }
 
-void	*parse(char *s, t_data **d)
+static void	heredoc_to_file(char *delim, int fd)
 {
-	int i_beg;
-	int i;
+	char	*line;
 
-	mod_(REINIT_QUOTES);
-	i_beg = 0;
-	i = -1;
+	line = NULL;
 	while (1)
-		if ((mod_(s[++i]) == QUOTES0 && s[i + 1] == '|') || s[i + 1] == '\0')
-		{
-			put_full_cmd_to_arg0_1(&s[i_beg], i - i_beg + 1, d);
-			if (pipe((*d)->curr_cmd->fd_pipe) == -1)
-				return (free_all_and_exit("", -1, d), NULL); // no need of pipe for the last cmd
-			put_redirs((*d)->curr_cmd, d);
-			put_args((*d)->curr_cmd, d);
-			if (s[i + 1] == '\0') // ++i
-				break;
-			i++;
-			i_beg = i + 1;
-		}
-	(*d)->curr_cmd = NULL;
-	return (NULL);
+	{
+		line = readline(">");
+		if (line == NULL || strcmp_(line, delim) == 0)
+			break ;
+		write(fd, line, ft_strlen(line));
+		write(fd, "\n", 1);
+		free(line);
+	}
 }
+
+int	parse(char *s, int len, t_data **d)
+{
+	int		i;
+	int		i_args;
+	int		i_ins;
+	int		i_outs;
+	char	*redir;
+	char	*file;
+	char	*delimitor;
+	int		fd;
+	int		mod;
+
+	calc_nb_args_ins_outs(s, len, d);
+	mod_(REINIT_QUOTES);
+	i = -1;
+	i_args = -1;
+	i_ins = -1;
+	i_outs = -1;
+	while (++i < len)
+	{
+		mod = mod_(s[i]);
+		if (mod == QUOTES0)
+		{
+			i += nb_spaces(&s[i]);
+			redir = redir_(&s[i]);
+			file = NULL;
+			if (ft_strcmp(redir, "<") == 0)
+			{
+				i += nb_spaces(&s[i]) + ft_strlen(redir);
+				file = alphanum_(&s[i], d);
+				(*d)->in[++i_ins] = open(file, O_RDONLY);
+				//if (!(*d)->in[i_ins]) return (-1)
+				free(file);
+			}
+			else if (ft_strcmp(redir, "<<") == 0)
+			{
+				i += nb_spaces(&s[i]) + ft_strlen(redir);
+				fd = open(TMP_FILE, O_WRONLY | O_CREAT | O_TRUNC, 0666);
+				if (!fd)
+					return (printf("%s : tmp file pb\n", (*d)->arg[0]), -1);
+				delimitor = alphanum_(&s[i], d);
+				heredoc_to_file(delimitor, fd);
+				(*d)->in[++i_ins] = open(TMP_FILE, O_RDONLY);
+				//if (!(*d)->in[i_ins]) return (-1)
+				free(delimitor);
+			}
+			else if (ft_strcmp(redir, ">") == 0)
+			{
+				i += nb_spaces(&s[i]) + ft_strlen(redir);
+				file = alphanum_(&s[i], d);
+				(*d)->out[++i_outs] = open(file, O_WRONLY | O_CREAT | O_TRUNC, 0666);
+				//if (!(*d)->out[i_outs]) return (-1)
+				free(file);
+			}
+			else if (ft_strcmp(redir, ">>") == 0)
+			{
+				i += nb_spaces(&s[i]) + ft_strlen(redir);
+				file = alphanum_(&s[i], d);
+				(*d)->out[++i_outs] = open(file, O_WRONLY | O_CREAT | O_APPEND, 0666);
+				//if (!(*d)->out[i_outs]) return (-1)
+				free(file);
+			}
+			else
+				(*d)->arg[i_args++] = alphanum_(&s[i], d);
+		}
+	}
+	if(mod != QUOTES0)
+		return (printf("%s : unclosed quotes\n", s), -1);
+	if ((*d)->nb_args == 0)
+		return (printf("empty command\n"), -1); // exit_code = 255
+	return (0);
+}
+
+// void print_cmds(char *msg, t_data **d)
+// {
+// 	int		i;
+// 	t_cmd	*cmd;
+
+// 	printf("CMDST %s %14p:\n  ", msg, (*d)->cmds);
+// 	if ((*d)->cmds == NULL || *((*d)->cmds) == NULL)
+// 	{
+// 		printf("empty\n");
+// 		return ;
+// 	}
+// 	cmd = *((*d)->cmds);
+// 	while (cmd != NULL)
+// 	{
+// 		if (cmd->arg != NULL)
+// 		{
+// 			i = -1;
+// 			while (++i < cmd->nb_args)
+// 				printf("%s : ", cmd->arg[i]);
+// 		}
+// 		else
+// 			printf("args = NULL");
+// 		printf(" fd_in = %d, fd_out = %d\n", cmd->fd_in, cmd->fd_out);
+// 		cmd = cmd->nxt;
+// 	}
+// 	printf("\n");
+// }
+
+// void rmv_cmd(t_cmd *cmd, t_data **d)
+// {
+// 	int		i;
+// 	t_cmd	*to_free;
+
+// 	if (cmd == NULL)
+// 		return ;
+// 	i = -1;
+// 	while(++i < cmd->nb_args)
+// 	{
+// 		free(cmd->arg[i]);
+// 		cmd->arg[i] = NULL;
+// 	}
+// 	free(cmd->arg);
+// 	cmd->arg = NULL;
+// 	to_free = cmd;
+// 	if (cmd->nxt != NULL)
+// 		cmd->nxt->prv = cmd->prv;
+// 	if (cmd->prv == NULL)
+// 		*((*d)->cmds) = cmd->nxt;
+// 	else
+// 		cmd->prv->nxt = cmd->nxt;
+// 	free(to_free); // &to_free ?
+// 	close(cmd->fd_in);
+// 	close(cmd->fd_out); // close pipe
+// 	(*d)->curr_cmd = NULL;
+// 	to_free = NULL;
+// }
+
+// void	rmv_cmds(t_data **d)
+// {
+// 	t_cmd	*cmd;
+
+// 	cmd = *((*d)->cmds);
+// 	while(cmd != NULL)
+// 	{
+// 		rmv_cmd(cmd, d);
+// 		cmd = cmd->nxt;
+// 	}
+// }
+
+// int	nb_args_(char *s0, int len, t_data **d)
+// {
+// 	int		nb_args;
+// 	int		i;
+// 	char	*s;
+
+// 	s = strdup_and_erase_redirs(s0, d);
+// 	mod_(REINIT_QUOTES);
+// 	nb_args = 0;
+// 	i = -1;
+// 	while (++i < len)
+// 		if (mod_(s[i]) == QUOTES0 && s[i] != ' ' && (s[i + 1] == ' ' || \
+// 			s[i + 1] == '\0' || s[i + 1] == '\'' || s[i + 1] == '\"' || i == len - 1))
+// 				nb_args++;
+// 	free(s);
+// 	return (nb_args);
+// }
+

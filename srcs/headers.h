@@ -6,7 +6,7 @@
 /*   By: akostrik <akostrik@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/02 15:22:31 by akostrik          #+#    #+#             */
-/*   Updated: 2023/09/03 00:55:36 by akostrik         ###   ########.fr       */
+/*   Updated: 2023/09/04 02:15:55 by akostrik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,18 +36,6 @@
 
 extern int g_signal;
 
-// arg[0] = prog name
-typedef struct 		s_cmd
-{
-	char			**arg;
-	int				nb_args;
-	int				fd_in;
-	int				fd_out;
-	int				fd_pipe[2];
-	struct s_cmd	*nxt;
-	struct s_cmd	*prv; // not used ?
-}					t_cmd;
-
 typedef struct		s_env
 {
 	char			*var;
@@ -57,27 +45,30 @@ typedef struct		s_env
 // *cmd = currectly traited cmd
 typedef struct		s_data
 {
-	t_cmd			**cmds;
-	t_cmd			*curr_cmd;
 	t_env			**env;
-	int				exit_c;
+	int				nb_args;
+	char			**arg;
+	int				nb_ins;
+	int				*in;
+	int				nb_outs;
+	int				*out;
 	int				saved_stdin;
 	int				saved_stdout;
+	int				exit_c;
 }					t_data;
 
-void	*parse(char *s, t_data **d);
-void	exec_cmds(t_data **d);
-void	rmv_cmd(t_cmd *cmd, t_data **d);
-void	rmv_cmds(t_data **d);
+void		calc_dollar_conversions(char *s, t_data **d);
+int		parse(char *s, int len, t_data **d);
+void	exec(t_data **d);
 
-// builtins
-void	*exec_echo(t_cmd *cmd);
-void	*exec_cd(t_cmd *cmd, t_data **d);
-void	*exec_pwd(t_cmd *cmd, t_data **d);
-void	*exec_export(t_cmd *cmd, t_data **d);
-void	*exec_unset(t_cmd *cmd, t_data **d);
-void	*exec_env(t_data **d); 
-void	*exec_exit(t_cmd *cmd, t_data **d);
+// builtins                     min args    max   accept <in
+int		exec_echo(t_data **d);   // 0           ...   no ?
+int		exec_cd(t_data **d);     // 0           1     no ?
+int		exec_pwd(t_data **d);    // 0           0     no
+int		exec_export(t_data **d); // 0           ...   no ?
+int		exec_unset(t_data **d);  // 1           ...   no ?
+int		exec_env(t_data **d);    // 0           0     no
+int		exec_exit(t_data **d);   // 0           1     no ?
 
 // utils
 void	*malloc_(int size, t_data **d);
@@ -87,19 +78,12 @@ void	sig_handler_heredoc(int signal);
 void	free_array(char **arr, int len);
 void	free_all_and_exit(char *msg, int exit_c, t_data **d); /// ***d ?
 
-// utils cmd
-void	init_cmd(t_cmd **new, t_data **d);
-int		nb_args_(char *s, int len, t_data **d);
-int		mod_(char c);
-void	verif_args(t_data **d);
-int		there_are_unclosed_quotes(t_cmd *cmd);
-void	calc_dollar_conversions(t_cmd *cmd, t_data **d);
-int		is_builtin(t_cmd *cmd);
-char	*path_(t_cmd *cmd, t_data **d);
-void	*open_file(char *redir, char *filename, t_cmd *cmd, t_data **d);
-void	remove_quotes(t_cmd *cmd);
-void	*heredoc_to_tmp_file(char *delim, t_cmd *cmd, t_data **d);
-void	print_cmds(char *msg, t_data **d);
+// utils parse
+void calc_nb_args_nb_ins_nb_outs(char *s, int len, t_data **d);
+
+// utils exec
+int		is_builtin(t_data **d);
+char	*path_(t_data **d);
 
 // utils env
 char	*key_(char *s, t_data **d);
@@ -115,6 +99,7 @@ char	*strdup_and_erase_redirs(char *s0, t_data **d);
 char	*strdup_and_erase_args_except_redirs(char *s0, t_data **d);
 char	*strndup_and_trim(char *srs, int len, t_data **d);
 int		strcmp_(char *s1, char *s2);
-char	*redir_(char *s);
+int		mod_(char c);
+int		unclosed_quotes(char *s);
 
 #endif
