@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   4_builtins.c                                       :+:      :+:    :+:   */
+/*   3_exec.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: akostrik <akostrik@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/02 15:22:39 by akostrik          #+#    #+#             */
-/*   Updated: 2023/09/04 02:13:30 by akostrik         ###   ########.fr       */
+/*   Updated: 2023/09/05 21:03:11 by akostrik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,6 @@ int	exec_pwd(t_data **d)
 {
 	char	*s;
 
-	// print_cmd("pwd", d);
 	if ((*d)->nb_args > 1)
 		return (err_cmd("pwd : too many arguments", -1, d));
 	s = getcwd(NULL, 0);
@@ -33,6 +32,7 @@ int	exec_export(t_data **d)
 	t_env	*new_var;
 	int		i;
 
+	print_cmd("exec export", d);
 	if ((*d)->nb_args == 0)
 		return (exec_env(d), OK);
 	exec_unset(d);

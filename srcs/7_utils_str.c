@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   10_utils_str.c                                     :+:      :+:    :+:   */
+/*   7_utils_str.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: akostrik <akostrik@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/02 15:22:52 by akostrik          #+#    #+#             */
-/*   Updated: 2023/09/04 02:16:23 by akostrik         ###   ########.fr       */
+/*   Updated: 2023/09/05 18:29:52 by akostrik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,18 +73,6 @@ int	strcmp_(char *s1, char *s2)
 	return( OK);
 }
 
-int	unclosed_quotes(char *s)
-{
-	int		mod;
-	int		i;
-
-	mod_(REINIT_QUOTES);
-	i = -1;
-	while (s[++i] != '\0')
-		mod = mod_(s[i]);
-	return (mod != QUOTES0);
-}
-
 int	mod_(char c)
 {
 	static char	mod = QUOTES0;
@@ -101,3 +89,15 @@ int	mod_(char c)
 		mod = QUOTES0;
 	return (mod);
 }
+
+// int	unclosed_quotes(char *s)
+// {
+// 	int		mod;
+// 	int		i;
+
+// 	mod_(REINIT_QUOTES);
+// 	i = -1;
+// 	while (s[++i] != '\0')
+// 		mod = mod_(s[i]);
+// 	return (mod != QUOTES0);
+// }

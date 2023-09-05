@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   3_exec.c                                           :+:      :+:    :+:   */
+/*   2_exec.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: akostrik <akostrik@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/02 15:22:29 by akostrik          #+#    #+#             */
-/*   Updated: 2023/09/04 02:12:45 by akostrik         ###   ########.fr       */
+/*   Updated: 2023/09/05 21:04:08 by akostrik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,11 +85,12 @@ static int	exec_extern_cmd(t_data **d)
 	return (OK);
 }
 
-static int	exec_1_cmd_to_1_out(int i, t_data **d)
+static int	exec_1_cmd_1_out(int i, t_data **d)
 {
+	print_cmd("exec_1_cmd_1_out", d);
 	if (dup2((*d)->out[i], STDOUT_FILENO) == -1)
-		return (err_cmd("dup2 pb", -1, d));
-	close((*d)->out[i]);
+		return (err_cmd("dup2 stdout pb", -1, d));
+	close((*d)->out[i]); // ?
 	if (strcmp_((*d)->arg[0], "echo") == 0)
 		exec_echo(d);
 	else if (strcmp_((*d)->arg[0], "cd") == 0)
@@ -106,23 +107,24 @@ static int	exec_1_cmd_to_1_out(int i, t_data **d)
 		exec_exit(d);
 	else
 		exec_extern_cmd(d);
-	unlink(TMP_FILE);
 	if (dup2((*d)->saved_stdout, STDOUT_FILENO) == -1)
-		return (err_cmd("dup2 pb", -1, d));
+		return (err_cmd("dup2 stdout pb", -1, d));
+	unlink(TMP_FILE);
 	return (OK);
 }
 
-int	exec_1_cmd_to_all_outs(t_data **d)
+int	exec_1_cmd(t_data **d)
 {
 	int	i;
 
+	print_cmd("exec_1_cmd", d);
 	if (dup2((*d)->in, STDIN_FILENO) == -1)
-		return (err_cmd("dup2 pb", -1, d));
-	close((*d)->in);
+		return (err_cmd("dup2 start stdin pb", -1, d));
+	// close((*d)->in); ??? creates problems (only for the 2nd cmd-line !???)
 	i = -1;
 	while (++i < (*d)->nb_outs)
-		exec_1_cmd_to_1_out(i, d);
+		exec_1_cmd_1_out(i, d);
 	if (dup2((*d)->saved_stdin, STDIN_FILENO) == -1)
-		return (err_cmd("dup2 pb", -1, d));
+		return (err_cmd("dup2 end stdin pb", -1, d));
 	return (OK);
 }

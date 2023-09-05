@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   8_utils_exec.c                                     :+:      :+:    :+:   */
+/*   5_utils_exec.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: akostrik <akostrik@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/02 15:22:47 by akostrik          #+#    #+#             */
-/*   Updated: 2023/09/04 02:15:48 by akostrik         ###   ########.fr       */
+/*   Updated: 2023/09/05 21:40:09 by akostrik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,38 +26,38 @@
 // }
 */
 
-static char	*doll_conversion_(char *old_s, int j, t_data **d)
+static char	*dedollarized_1(char *old_s, int i, t_data **d)
 {
-	char	*doll_conversion;
+	char	*dedollarized;
 	int		len;
 	char	*key;
 	char	*val;
 	int		k;
 
-	key = alphanum_(&(old_s[j + 1]), d);
+	key = alphanum_(&(old_s[i + 1]), d);
 	val = get_value_from_env(key, d);
 	if (val == NULL)
 		return (err_cmd("doll conversion not found", -1, d), NULL);
 	len = ft_strlen(old_s) - ft_strlen(key) + ft_strlen(val);
-	doll_conversion = (char*)malloc_(len + 1, d);
+	dedollarized = (char*)malloc_(len + 1, d);
 	k = -1;
-	while (++k < j)
-		doll_conversion[k] = old_s[k];
-	k--; //
-	while (++k < j + (int)ft_strlen(val))
-		doll_conversion[k] = val[k - j];
+	while (++k < i)
+		dedollarized[k] = old_s[k];
+	k--;
+	while (++k < i + (int)ft_strlen(val))
+		dedollarized[k] = val[k - i];
 	k--;
 	while(++k < len)
-		doll_conversion[k] = old_s[k + (int)ft_strlen(key) - (int)ft_strlen(val) + 1];
-	doll_conversion[k] = '\0';
+		dedollarized[k] = old_s[k + (int)ft_strlen(key) - (int)ft_strlen(val) + 1];
+	dedollarized[k] = '\0';
 	free_(key);
-	return (doll_conversion);
+	return (dedollarized);
 }
 
-char	*doll_conversions_(char *s, t_data **d)
+char	*dedollarized_(char *s, t_data **d)
 {
 // if fails ?
-	char	*doll_conversions;
+	char	*dedollarized;
 	int		i;
 
 	mod_(REINIT_QUOTES);
@@ -69,9 +69,9 @@ char	*doll_conversions_(char *s, t_data **d)
 				{} // (ft_itoa(exit_code));
 			else if (s[i] == '$')
 			{
-				doll_conversions = doll_conversion_(s, i, d);
+				dedollarized = dedollarized_1(s, i, d);
 				free_(s);
-				s = doll_conversions;
+				s = dedollarized;
 			}
 		}
 	return (s);

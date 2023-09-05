@@ -6,7 +6,7 @@
 /*   By: akostrik <akostrik@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/02 15:22:31 by akostrik          #+#    #+#             */
-/*   Updated: 2023/09/04 02:15:55 by akostrik         ###   ########.fr       */
+/*   Updated: 2023/09/05 21:43:23 by akostrik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,13 +57,13 @@ typedef struct		s_env
 // потому вынесена в виртуальный Inode.
 
 // в момент запуска программы открыты ФД 0, 1 и 2
-// Другие ФД так же могут быть открыты, это не регламентируется
-// При выделении нового ФД при вызове open, pipe, dup, ... выбирается наименьший свободный ФД
+// Другие ФД могут быть открыты, это не регламентируется
+// При выделении нового ФД при вызове open, pipe, du p, ... выбирается наименьший свободный ФД
 
-// Процесс может создавать новые ФД, которые будут ссылками на ту же структуру данных в ядре, что и оригинальный ФД и соответственно те же флаги и позицию чтения/записи. Закрытие ФД уменьшает количество ссылок на открытый файл
+// Процесс может создавать новые ФД, которые будут ссылками на ту же структуру данных в ядре, что и оригинальный ФД, те же флаги, позицию чтения/записи. Закрытие ФД уменьшает количество ссылок на открытый файл
 // Фактическое закрытие файла произойдёт тогда, когда на него не будет ссылаться ни один ФД
 
-// dup возвращает первый свободный номер ФД
+// du p возвращает первый свободный номер ФД
 // а dup2 указать номер нового ФД
 typedef struct		s_data
 {
@@ -78,15 +78,20 @@ typedef struct		s_data
 	int				i_args;
 	int				i_outs;
 	int				in;
-}					t_data;
+}						t_data;
 
 // utils parse
 void	calc_nb_args_and_outs(char *s, int len, t_data **d);
 int		heredoc_to_file(char *delim, t_data **d);
-char	*doll_conversions_(char *s, t_data **d);
+int		len_spaces(char *s);
+char	*redir_(char *s);
+char	*alphanum_(char *s, t_data **d);
+char	*token_(char *s, t_data **d);
+int		len_token(char *s, t_data **d);
+char	*dedollarized_(char *s, t_data **d);
 
 // exec and utils exec                       min args    max   accept <in
-int		exec_1_cmd_to_all_outs(t_data **d);
+int		exec_1_cmd(t_data **d);
 int		exec_echo(t_data **d);   // 0           ...   no ?
 int		exec_cd(t_data **d);     // 0           1     no ?
 int		exec_pwd(t_data **d);    // 0           0     no
@@ -105,17 +110,10 @@ int		len_env_(t_data **d);
 char	*get_value_from_env(char *key, t_data **d);
 
 // utils str
-int		nb_spaces(char *s);
-char	*redir_(char *s);
-int		len_alphanum(char *s);
-char	*alphanum_(char *s, t_data **d);
 char	*strdup_(char *s, t_data **d);
-char	*strdup_and_erase_redirs(char *s0, t_data **d);
-char	*strdup_and_erase_args_except_redirs(char *s0, t_data **d);
 char	*strndup_and_trim(char *srs, int len, t_data **d);
 int		strcmp_(char *s1, char *s2);
 int		mod_(char c);
-int		unclosed_quotes(char *s);
 
 // general utils
 void	*malloc_(int size, t_data **d);

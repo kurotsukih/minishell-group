@@ -6,7 +6,7 @@
 /*   By: akostrik <akostrik@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/02 15:22:16 by akostrik          #+#    #+#             */
-/*   Updated: 2023/09/04 02:16:09 by akostrik         ###   ########.fr       */
+/*   Updated: 2023/09/05 21:22:55 by akostrik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -112,6 +112,7 @@ static void	init(t_data ***d, char **env)
 {
 	*d = (t_data **)malloc_(sizeof(t_data *), NULL);
 	**d = (t_data *)malloc_(sizeof(t_data), *d);
+	(**d)->in = -1;
 	(**d)->saved_stdin = dup(STDIN_FILENO);
 	(**d)->saved_stdout = dup(STDOUT_FILENO);
 	init_env(env, *d);
@@ -119,26 +120,24 @@ static void	init(t_data ***d, char **env)
 	// signal(SIGINT, &sig_handler_main);
 }
 
-int	save_alphanum_and_open_file(char *redir, char *alphanum, t_data **d)
+int	put_token_to_d(char *redir, char *token, t_data **d)
 {
-	alphanum = doll_conversions_(alphanum, d);
-	// alphanum = remove_quotes(alphanum, d); ?
 	if (strcmp_(redir, "<") == 0)
-		(*d)->in = open(alphanum, O_RDONLY);
+		(*d)->in = open(token, O_RDONLY);
 	else if (strcmp_(redir, "<<") == 0)
 	{
-		heredoc_to_file(alphanum, d);
+		heredoc_to_file(token, d);
 		(*d)->in = open(TMP_FILE, O_RDONLY);
 	}
 	else if (strcmp_(redir, ">") == 0)
-		(*d)->out[++((*d)->i_outs)] = open(alphanum, O_WRONLY | O_CREAT | O_TRUNC, 0666);
+		(*d)->out[++((*d)->i_outs)] = open(token, O_WRONLY | O_CREAT | O_TRUNC, 0666);
 	else if (strcmp_(redir, ">>") == 0)
-		(*d)->out[++((*d)->i_outs)] = open(alphanum, O_WRONLY | O_CREAT | O_APPEND, 0666);
+		(*d)->out[++((*d)->i_outs)] = open(token, O_WRONLY | O_CREAT | O_APPEND, 0666);
 	else
-		(*d)->arg[++((*d)->i_args)] = alphanum;
-	// if (redir[0] == '<' && !(*d)->in)
+		(*d)->arg[++((*d)->i_args)] = token;
+	// if (redir[0] == '<' && (*d)->in == -1)
 	//	return (err_cmd("file open pb", -1, d));
-	// if (redir[0] == '>' && !(*d)->out[(*d)->i_outs])
+	// if (redir[0] == '>' && (*d)->out[(*d)->i_outs] == -1)
 	// 	return (err_cmd("file open pb", -1, d));
 	return (OK);
 }
@@ -148,12 +147,12 @@ static int	parse_1_cmd(char *s, int len, t_data **d)
 	int		i;
 	int		mod;
 	char	*redir;
-	char	*alphanum;
+	char	*token;
 
 	(*d)->i_args = -1;
 	(*d)->i_outs = -1;
-	(*d)->in = -1;
 	calc_nb_args_and_outs(s, len, d);
+	print_cmd("after calc_nb_args_and_outs", d);
 	mod_(REINIT_QUOTES);
 	i = 0;
 	while (i < len)
@@ -161,25 +160,31 @@ static int	parse_1_cmd(char *s, int len, t_data **d)
 		mod = mod_(s[i]);
 		if (mod == QUOTES0)
 		{
-			i += nb_spaces(&s[i]);
+			i += len_spaces(&s[i]);
 			redir = redir_(&s[i]);
 			i += ft_strlen(redir);
-			i += nb_spaces(&s[i]);
-			alphanum = alphanum_(&s[i], d); // quotes ?
-			i += ft_strlen(alphanum) - 1;
-			if (save_alphanum_and_open_file(redir, alphanum, d) == FAILURE)
+			i += len_spaces(&s[i]);
+			token = token_(&s[i], d);
+			if (token == NULL)
+				return (FAILURE);
+			i += ft_strlen(token) - 1;
+			if (put_token_to_d(redir, token, d) == FAILURE)
 				return (FAILURE);
 		}
 		i++;
 	}
 	if(mod != QUOTES0)
 		return (err_cmd("unclosed quotes", -1, d));
-			if ((*d)->nb_args == -1)
+	if ((*d)->nb_args == -1)
 		return (err_cmd("empty command", -1, d));
 	if ((*d)->i_outs == -1)
 		((*d)->out)[0] = dup(STDOUT_FILENO); // nxt pipe
 	if ((*d)->in == -1)
-		(*d)->in = dup(STDIN_FILENO); // prv pipe if ! dup  return return (FAILURE) ?
+	{
+		(*d)->in = dup(STDIN_FILENO); // prv pipe if
+		if ((*d)->in == -1)
+			return (err_cmd("dup in failure", -1, d));
+	}
 	return (OK);
 }
 
@@ -203,8 +208,8 @@ static int	parse_and_exec_cmd_line(char *s, t_data **d)
 		len = i - i_beg;
 		if (parse_1_cmd(&s[i_beg], len, d) == OK)// ||
 		{
-			print_cmd("", d);
-			exec_1_cmd_to_all_outs(d);
+			print_cmd("call exec_1_cmd", d);
+			exec_1_cmd(d);
 		}
 		if (s[i] == '\0')
 			break;

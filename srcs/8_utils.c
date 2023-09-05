@@ -1,48 +1,48 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   6_utils.c                                          :+:      :+:    :+:   */
+/*   8_utils.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: akostrik <akostrik@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/02 15:22:55 by akostrik          #+#    #+#             */
-/*   Updated: 2023/09/04 02:13:58 by akostrik         ###   ########.fr       */
+/*   Updated: 2023/09/05 20:41:32 by akostrik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "headers.h"
 
-void	sig_handler_main(int signal)
-{
-	if (signal == SIGINT)
-	{
-		write(1, "\n", 1);
-		rl_on_new_line();
-		rl_replace_line("", 0);
-		rl_redisplay();
-		g_signal = 1;
-	}
-}
+// void	sig_handler_main(int signal)
+// {
+// 	if (signal == SIGINT)
+// 	{
+// 		write(1, "\n", 1);
+// 		rl_on_new_line();
+// 		rl_replace_line("", 0);
+// 		rl_redisplay();
+// 		g_signal = 1;
+// 	}
+// }
 
-void	sig_handler_heredoc(int signal)
-{
-	if (signal == SIGINT)
-	{
-		write(1, "\n", 1);
-		rl_replace_line("", 0);
-		rl_redisplay();
-		close(STDIN_FILENO);
-		g_signal = 1;
-	}
-}
+// void	sig_handler_heredoc(int signal)
+// {
+// 	if (signal == SIGINT)
+// 	{
+// 		write(1, "\n", 1);
+// 		rl_replace_line("", 0);
+// 		rl_redisplay();
+// 		clos e(STDIN_FILENO);
+// 		g_signal = 1;
+// 	}
+// }
 
-void	sig_handler_fork(int signal)
-{
-	if (signal == SIGINT)
-		exit(130);
-	if (signal == SIGQUIT)
-		exit(131);
-}
+// void	sig_handler_fork(int signal)
+// {
+// 	if (signal == SIGINT)
+// 		exit(130);
+// 	if (signal == SIGQUIT)
+// 		exit(131);
+// }
 
 void	*malloc_(int size, t_data **d)
 {
@@ -63,22 +63,21 @@ void free_(void *mem)
 
 void	free_all_and_exit(char *msg, int exit_c, t_data **d)
 {
-	if (msg == NULL)
-		msg = "";
-	write(2, msg, ft_strlen(msg));
-	write(2, "\n", 1);
-	free_2_array((*d)->arg, (*d)->nb_args);
-	free((*d)->out);
+	err_cmd(msg, exit_c, d);
 	//fre e list (*d)->env;
+	close((*d)->saved_stdin); // ?
+	close((*d)->saved_stdout); // ?
 	exit(exit_c);
 }
 
 int		err_cmd(char *msg, int exit_c, t_data **d)
 {
+	if (msg == NULL)
+		msg = "";
 	write(2, msg, ft_strlen(msg));
 	write(2, "\n", 1);
-	free_2_array((*d)->arg, (*d)->nb_args);
-	free((*d)->out);
+	//free_2_array((*d)->arg, (*d)->nb_args);
+	free_((*d)->out);
 	(*d)->exit_c = exit_c;
 	return (FAILURE);
 }
