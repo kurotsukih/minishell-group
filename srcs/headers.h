@@ -82,8 +82,8 @@ typedef struct		s_data
 
 // utils parse
 void	calc_nb_args_and_outs(char *s, int len, t_data **d);
-void	calc_dollar_conversions(char *s, t_data **d);
 int		heredoc_to_file(char *delim, t_data **d);
+char	*s_with_conversions(char *s, t_data **d);
 
 // exec and utils exec                       min args    max   accept <in
 int		exec_1_cmd_to_all_outs(t_data **d);

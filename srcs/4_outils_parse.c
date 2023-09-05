@@ -137,6 +137,5 @@ int	heredoc_to_file(char *delim, t_data **d)
 		free_(line);
 	}
 	close(fd);
-	(void)d; //
 	return (OK);
 }

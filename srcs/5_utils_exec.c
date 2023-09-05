@@ -28,31 +28,31 @@
 
 static char	*s_with_conversion_(char *old_s, int j, t_data **d)
 {
-	char	*new_s;
-	int		len_new_s;
+	char	*s_with_conversion;
+	int		len;
 	char	*key;
 	char	*val;
 	int		k;
 
 	key = alphanum_(&(old_s[j + 1]), d);
 	val = get_value_from_env(key, d);
-	len_new_s = ft_strlen(old_s) - ft_strlen(key) + ft_strlen(val);
-	new_s = (char*)malloc_(len_new_s + 1, d);
+	len = ft_strlen(old_s) - ft_strlen(key) + ft_strlen(val);
+	s_with_conversion = (char*)malloc_(len + 1, d);
 	k = -1;
 	while (++k < j)
-		new_s[k] = old_s[k];
+		s_with_conversion[k] = old_s[k];
 	k--; //
 	while (++k < j + (int)ft_strlen(val))
-		new_s[k] = val[k - j];
+		s_with_conversion[k] = val[k - j];
 	k--;
-	while(++k < len_new_s)
-		new_s[k] = old_s[k + (int)ft_strlen(key) - (int)ft_strlen(val) + 1];
-	new_s[k] = '\0';
+	while(++k < len)
+		s_with_conversion[k] = old_s[k + (int)ft_strlen(key) - (int)ft_strlen(val) + 1];
+	s_with_conversion[k] = '\0';
 	free_(key);
-	return (new_s);
+	return (s_with_conversion);
 }
 
-void	calc_dollar_conversions(char *s, t_data **d)
+char	*s_with_conversions(char *s, t_data **d)
 {
 	char	*s_with_conversion;
 	int		i;
@@ -71,6 +71,7 @@ void	calc_dollar_conversions(char *s, t_data **d)
 				s = s_with_conversion;
 			}
 		}
+	return (s);
 }
 
 static char	*path2_(char *s1, char *s2, t_data **d)

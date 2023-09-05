@@ -108,6 +108,17 @@ extern cmd change the env ?
 
 int g_signal = 0;
 
+static void	init(t_data ***d, char **env)
+{
+	*d = (t_data **)malloc_(sizeof(t_data *), NULL);
+	**d = (t_data *)malloc_(sizeof(t_data), *d);
+	(**d)->saved_stdin = dup(STDIN_FILENO);
+	(**d)->saved_stdout = dup(STDOUT_FILENO);
+	init_env(env, *d);
+	// signal(SIGQUIT, SIG_IGN);
+	// signal(SIGINT, &sig_handler_main);
+}
+
 int	save_alphanum_and_open_file(char *redir, char *alphanum, t_data **d)
 {
 	if (strcmp_(redir, "<") == 0)
@@ -180,7 +191,6 @@ static int	parse_and_exec_cmd_line(char *s, t_data **d)
 	int	i;
 	int	len;
 
-	// mod_(REINIT_QUOTES);
 	i = 0;
 	while (1)
 	{
@@ -193,7 +203,7 @@ static int	parse_and_exec_cmd_line(char *s, t_data **d)
 		}
 		len = i - i_beg;
 		if (parse_1_cmd(&s[i_beg], len, d) == OK)// ||
-		// dollar converstions in ins? in heredo c? remove_quotes ?
+		// dollar converstions in in? in heredoc? remove_quotes ?
 		{
 			print_cmd("", d);
 			exec_1_cmd_to_all_outs(d);
@@ -205,20 +215,14 @@ static int	parse_and_exec_cmd_line(char *s, t_data **d)
 	return (OK);
 }
 
-int	main(int argc, char **argv, char **env_array)
+int	main(int argc, char **argv, char **env)
 {
 	char	*cmd_line;
 	t_data	**d;
 
 	(void)argc;
 	(void)argv;
-	d = (t_data **)malloc_(sizeof(t_data *), NULL); // func init_d
-	*d = (t_data *)malloc_(sizeof(t_data), d);
-	(*d)->saved_stdin = dup(STDIN_FILENO);
-	(*d)->saved_stdout = dup(STDOUT_FILENO);
-	init_env(env_array, d);
-	// signal(SIGQUIT, SIG_IGN);
-	// signal(SIGINT, &sig_handler_main);
+	init(&d, env);
 	while (1)
 	{
 		cmd_line = NULL;
@@ -228,7 +232,7 @@ int	main(int argc, char **argv, char **env_array)
 		// if (g_signal == 1)
 		// {
 		// 	g_signal = 0;
-		// 	d->exit_code = 130;
+		// 	(d*)->exit_code = 130;
 		// 	continue;
 		// }
 		add_history(cmd_line);

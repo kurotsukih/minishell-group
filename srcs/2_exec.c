@@ -32,7 +32,6 @@ int	exec_echo(t_data **d)
 	}
 	if (option_n == YES)
 		write(1, "\n", 1);
-	// fflush(stdout); /// !
 	return (OK);
 }
 
@@ -74,7 +73,6 @@ static int	exec_extern_cmd(t_data **d)
 	pid = fork();
 	if (pid < -1)
 		return (err_cmd("fork pb", -1, d)); // fre e all and exit ?
-
 	if (pid == 0)
 	{
 		env_array = env_to_array(d);
