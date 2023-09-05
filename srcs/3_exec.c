@@ -12,6 +12,26 @@
 
 #include "headers.h"
 
+int	exec_pwd(t_data **d)
+{
+	char	*s;
+	int		i;
+
+	if ((*d)->nb_args == 1)
+	{
+		s = getcwd(NULL, 0);
+		if (s == NULL)
+			return (printf("pwd : getcwd failed\n"), OK); 	// exic code ?
+		i = -1;
+		while(++i < (*d)->nb_outs)
+			printf("%s\n", s);
+		free_(s);
+	}
+	else
+		return (printf("pwd : too many arguments\n"), OK);
+	return (OK);
+}
+
 int	exec_export(t_data **d)
 {
 	t_env	*new_var;
@@ -86,10 +106,7 @@ int	exec_env(t_data **d)
 	{
 		i = -1;
 		while(++i < (*d)->nb_outs)
-		{
-			write((*d)->out[i], var->var, ft_strlen(var->var));
-			write((*d)->out[i], "\n", 1);
-		}
+			printf("%s\n", var->var);
 		var = var->nxt;
 	}
 	return (OK);

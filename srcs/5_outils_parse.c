@@ -134,7 +134,7 @@ int	heredoc_to_file(char *delim, t_data **d)
 		if (line == NULL || strcmp_(line, delim) == 0)
 			break ;
 		write(fd, line, ft_strlen(line));
-		write(fd, "\n", 1);
+		write(fd, " ", 1);
 		free_(line);
 	}
 	(void)d; //
@@ -146,63 +146,3 @@ int	heredoc_to_file(char *delim, t_data **d)
 // 	close(fd_cpy);
 // }
 }
-
-
-// void rmv_cmd(t_cmd *cmd, t_data **d)
-// {
-// 	int		i;
-// 	t_cmd	*to_free;
-
-// 	if (cmd == NULL)
-// 		return ;
-// 	i = -1;
-// 	while(++i < cmd->nb_args)
-// 	{
-// 		free(cmd->arg[i]);
-// 		cmd->arg[i] = NULL;
-// 	}
-// 	free(cmd->arg);
-// 	cmd->arg = NULL;
-// 	to_free = cmd;
-// 	if (cmd->nxt != NULL)
-// 		cmd->nxt->prv = cmd->prv;
-// 	if (cmd->prv == NULL)
-// 		*((*d)->cmds) = cmd->nxt;
-// 	else
-// 		cmd->prv->nxt = cmd->nxt;
-// 	free(to_free); // &to_free ?
-// 	close(cmd->fd_in);
-// 	close(cmd->fd_out); // close pipe
-// 	(*d)->curr_cmd = NULL;
-// 	to_free = NULL;
-// }
-
-// void	rmv_cmds(t_data **d)
-// {
-// 	t_cmd	*cmd;
-
-// 	cmd = *((*d)->cmds);
-// 	while(cmd != NULL)
-// 	{
-// 		rmv_cmd(cmd, d);
-// 		cmd = cmd->nxt;
-// 	}
-// }
-
-// int	nb_args_(char *s0, int len, t_data **d)
-// {
-// 	int		nb_args;
-// 	int		i;
-// 	char	*s;
-
-// 	s = strdup_and_erase_redirs(s0, d);
-// 	mod_(REINIT_QUOTES);
-// 	nb_args = 0;
-// 	i = -1;
-// 	while (++i < len)
-// 		if (mod_(s[i]) == QUOTES0 && s[i] != ' ' && (s[i + 1] == ' ' || s[i + 1] == '\0' || s[i + 1] == '\'' || s[i + 1] == '\"' || i == len - 1))
-// 				nb_args++;
-// 	free(s);
-// 	return (nb_args);
-// }
-

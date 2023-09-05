@@ -90,8 +90,10 @@ int parse_1_token(char *s, int *i, t_data **d)
 	(*i) += nb_spaces(&s[*i]);
 	redir = redir_(&s[*i]);
 	(*i) += ft_strlen(redir);
+	(*i) += nb_spaces(&s[*i]);
 	alphanum = alphanum_(&s[*i], d);
-	(*i) += ft_strlen(alphanum);
+	printf("redir = %s, alphanum = %s\n", redir, alphanum);
+	(*i) += ft_strlen(alphanum) - 1;
 	if (ft_strcmp(redir, "<") == 0)
 		(*d)->in[++((*d)->i_ins)] = open(alphanum, O_RDONLY);
 		//if (!(*d)->in[i_ins]) return (FAILURE)
@@ -118,15 +120,19 @@ static int	parse_1_cmd(char *s, int len, t_data **d)
 	int		i;
 	int		mod;
 
+	(*d)->i_args = -1;
+	(*d)->i_ins = -1;
+	(*d)->i_outs = -1;
 	calc_nb_args_ins_outs(s, len, d);
 	mod_(REINIT_QUOTES);
-	i = -1;
-	while (++i < len)
+	i = 0;
+	while (i < len)
 	{
 		mod = mod_(s[i]);
 		if (mod == QUOTES0)
 			if (parse_1_token(s, &i, d) == FAILURE)
 				return (FAILURE);
+		i++;
 	}
 	if(mod != QUOTES0)
 		return (printf("%s : unclosed quotes\n", s), FAILURE); // free d
@@ -148,9 +154,6 @@ static int	parse_and_exec_cmd_line(char *s, t_data **d)
 
 	// mod_(REINIT_QUOTES);
 	i = 0;
-	(*d)->i_args = -1;
-	(*d)->i_ins = -1;
-	(*d)->i_outs = -1;
 	while (1)
 	{
 		i_beg = i;
@@ -163,7 +166,7 @@ static int	parse_and_exec_cmd_line(char *s, t_data **d)
 		len = i - i_beg;
 		if (parse_1_cmd(&s[i_beg], len, d) == OK)// ||
 		// dollar converstions in ins? in heredo c? remove_quotes ?
-			exec_1_cmd(d);
+			exec_1_cmd_to_all_outs(d);
 		if (s[i] == '\0')
 			break;
 		i++;

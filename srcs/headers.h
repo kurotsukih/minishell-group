@@ -35,6 +35,8 @@
 # define TMP_FILE "tmp"
 # define OK 0
 # define FAILURE -1
+# define YES 1
+# define NO 0
 
 extern int g_signal;
 
@@ -86,7 +88,7 @@ void	calc_dollar_conversions(char *s, t_data **d);
 int		heredoc_to_file(char *delim, t_data **d);
 
 // exec and utils exec                       min args    max   accept <in
-int		exec_1_cmd(t_data **d);
+void	exec_1_cmd_to_all_outs(t_data **d);
 int		exec_echo(t_data **d);   // 0           ...   no ?
 int		exec_cd(t_data **d);     // 0           1     no ?
 int		exec_pwd(t_data **d);    // 0           0     no
@@ -94,7 +96,6 @@ int		exec_export(t_data **d); // 0           ...   no ?
 int		exec_unset(t_data **d);  // 1           ...   no ?
 int		exec_env(t_data **d);    // 0           0     no
 int		exec_exit(t_data **d);   // 0           1     no ?
-int		is_builtin(t_data **d);
 char	*path_(t_data **d);
 
 // utils env

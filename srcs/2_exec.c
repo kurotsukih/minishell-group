@@ -77,29 +77,20 @@ int	exec_echo(t_data **d)
 {
 	int	option_n;
 	int	i;
-	int	j;
-	int	fd;
 
-	option_n = 0;
-	j = -1;
-	while (++j < (*d)->nb_args)
-		if (strcmp((*d)->arg[j], "-n") == 0)
-			option_n = 1;
+	option_n = NO;
 	i = -1;
-	while(++i < (*d)->nb_outs)
-	{
-		fd = (*d)->out[i];
-		j = -1;
-		while (++j < (*d)->nb_args)
-			if (strcmp((*d)->arg[j], "-n") != 0)
+	while (++i < (*d)->nb_args)
+		if (strcmp((*d)->arg[i], "-n") == 0)
+			option_n = YES;
+		else
 			{
-				write(fd, (*d)->arg[j], ft_strlen((*d)->arg[j]));
+				printf("%s", (*d)->arg[i]);
 				if (i < (*d)->nb_args - 1)
-					write(fd, " ", 1);
+					printf(" ");
 			}
-		if (option_n == 0)
-			write(fd, "\n", 1);
-	}
+	if (option_n == YES)
+		printf("\n");
 	return (OK);
 }
 
@@ -126,30 +117,6 @@ int	exec_cd(t_data **d)
 	}
 	else
 		return (printf("cd : too many arguments\n"), OK);
-	return( OK);
-}
-
-int	exec_pwd(t_data **d)
-{
-	char	*s;
-	int		i;
-
-	if ((*d)->nb_args == 1)
-	{
-		s = getcwd(NULL, 0);
-		if (s == NULL)
-			return (printf("pwd : getcwd failed\n"), OK); 	// exic code ?
-		i = -1;
-		while(++i < (*d)->nb_outs)
-		{
-			printf("%s\n", s);
-			// write((*d)->out[i], s, ft_strlen(s));
-			// write((*d)->out[i], "\n", 1);
-		}
-		free_(s);
-	}
-	else
-		return (printf("pwd : too many arguments\n"), OK);
 	return (OK);
 }
 
@@ -186,11 +153,12 @@ static int	exec_extern_cmd(t_data **d)
 	return (OK);
 }
 
-int	exec_1_cmd(t_data **d)
+static int	exec_1_cmd_to_1_out(int i, t_data **d)
 {
-	if (dup2((*d)->in[0], STDIN_FILENO) == -1 || dup2((*d)->out[0], STDOUT_FILENO) == -1)
+	if (dup2((*d)->in[0], STDIN_FILENO) == -1 || dup2((*d)->out[i], STDOUT_FILENO) == -1)
 		return (printf("%s : dup2 pb\n", (*d)->arg[0]), OK); // exit_code = 127, if (errno != 2) exit_c = 126;
-	close((*d)->out[0]);
+	close((*d)->in[0]);
+	close((*d)->out[i]);
 	if (strcmp_((*d)->arg[0], "echo") == 0)
 		exec_echo(d);
 	else if (strcmp_((*d)->arg[0], "cd") == 0)
@@ -211,4 +179,13 @@ int	exec_1_cmd(t_data **d)
 		return (printf("%s : dup2 pb\n", (*d)->arg[0]), OK);
 	unlink(TMP_FILE);
 	return (OK);
+}
+
+void	exec_1_cmd_to_all_outs(t_data **d)
+{
+	int	i;
+
+	i = -1;
+	while (++i < (*d)->nb_outs)
+		exec_1_cmd_to_1_out(i, d);
 }
