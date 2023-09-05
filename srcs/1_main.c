@@ -11,21 +11,6 @@
 /* ************************************************************************** */
 
 /*
-после "cat файл", "cat файл | cat -e" : double fre e detected in tcache 2
-
-readline rl_clear_history, rl_on_new_line rl_replace_line rl_redisplay, add_history,
-mallo c fre e
-print f writ e access ope n read close
-fork wai t  wai tpid  wai t3  wai t4 
-signa l sigaction sigemptyset sigaddset kill
-exit
-getcwd chdir stat lstat fstat unlink execv e du p du p2 pip e
-ope ndir readdir closedir
-strerro r perro r
-isatty ttyname ttyslot ioctl
-geten v 
-tcsetattr tcgetattr tgetent tgetflag tgetnum tgetstr tgoto tputs
-
 wait3 wait4 : resource usage information about the ft_wait_child_processes
 stat lstat fstat : file or file system status, information about a file
 unlink : call the unlink function to remove the specified file
@@ -37,22 +22,40 @@ SIGIN T = the user types C-c
 SIGQUI T = SIGIN T, except that it’s controlled by C-\ + produces a core dump when it terminates the process, 
 CTRL-\ causes a program to terminate and dump core
 
-cd : $PWD change
-
 si on met pas les wai tpid juste apres l'execution de la commande et 
 qu'on les met a la fin dans une boucle il y a beaucoup de commandes 
 avec des pipes qui ne fonctionnent plus correctement, par exemple ls|wc fait une boucle infini
 
-double quotes insdide simple ones ?
+pour les process zombie j'ai utilisé la macro sigaction avec SIGCHLD et SA_NOCLDWAIT
 
-" $ " is ok ?
+à la premiere erreur (le droit decriture pour les redir out, etc) ca fait tout fail
 
-a="s -la"   > l$a -> ls -la
-$a=" "      > ls$a-la$a"Makefile" -> ls -la Makefile 
+execve creates a new process with the same ope n file descriptors as the parent
 
-wc -l < infile
-wc -l < infile > outfile
+//// REDIRS
+les redir se font ds lordre
+les redir peuvent etre située n'importe ou par rapport a la commande et ses eventuels arguments
+pour ce qui est des redir out ca cree un fichier
 
+>out1 >out2 > out3 < in >> out2 < in+ <in++
+out1 et 2 sont vide vu qu'ils ont été créés puis finalement la ligne de cmd indique un autre fichier d'output (???)
+
+mm logique pr les redirs in, à la premiere erreur (le droit decriture pour les redir out, etc) ca fait tout fail
+
+heredo c = redir in, mais au lieu de rediriger le contenu d'un fichier ds le stdin ca redirige un input 
+le fichier qui répresent le heredo c peut etre implementé en tant que fichier temp, qui se delete a la fin de la cmd
+
+<<lol bash
+echo ahah
+exit 12
+> lol
+je demande a lancer bash en redirigeant un heredo c dans le stdin
+le fichier qu'il represente contiendra tout ce que je rentre en input jusqu'a une ligne = "lol"
+la cmd lance bash, puis dans ce bash execute echo ahah puis exit 12,
+on reviens au shell d'origine
+echo $? affiche 12
+
+//// CODES
 1	  les erreurs générales, comme une division par zéro
 2	  mauvaise utilisation de commandes intégrées, d'après la documentation de Bash
 126	la commande appelée ne peut s'exécuter, problème de droits ou commande non exécutable
@@ -61,6 +64,8 @@ wc -l < infile > outfile
 128+n	128 + le numéro du signal
 130	terminé avec Ctrl-C (130 = 128 + 2)
 255	code de sortie en dehors de la limite par ex exit -1
+126 команда найдена, но не может быть выполнена
+127 команда не найдена, дочерний процесс, созданный для ее выполнения, возвращает 127
 
 le fils s'est terminé normalement, exit(3), _exit(2), retour de main() :
 WIFEXITED(status)   = true
@@ -70,33 +75,52 @@ le fils s'est terminé à cause d'un signal:
 WIFSIGNALED(status) = vrai 
 WTERMSIG(status) = le numéro du signal
 
-pour les process zombie j'ai utilisé la macro sigaction avec SIGCHLD et SA_NOCLDWAIT
-*/
+//// TESTS
+double quotes insdide simple ones 
+" $ "
+export a="s -la" | l$a
+export $a=" " |ls$a-la$a"Makefile"
+wc -l < infile
+wc -l < infile > outfile
+extern cmd change the env ?
+2 heredocs
 
-// >out1 >out1+ >> out2 < in >> out2+ < in+ <in++
-// extern cmd change the env ? getenv() setenv() putenv() unsetenv()
-// if env variable has many values (like PATH)
-// à la premiere erreur (le droit decriture pour les redir out, etc) ca fait tout fail
+// int	exec_command(t_node *n)
+// {
+// 	while (cmd != NULL)
+// 	{
+// 		pid = fork();
+// 		exit_c = 0;
+// 		if (pid == 0)
+// 		{
+//			exit_c = exec_program(cmd, d->env, n);
+//			exit_c = ft_find_path(cmd->args, env, &path);
+//			execve(...);
+//			pid = (exit(exit_c), 0);
+//		}
+// 		cmd = cmd -> nxt;
+// 	}
+// 	ft_wait_child_processes(num, pid);
+// }
+*/
 
 #include "headers.h"
 
 int g_signal = 0;
 
-int	save_arg_or_in_or_out(char *redir, char *alphanum, t_data **d)
+int	save_alphanum_and_open_file(char *redir, char *alphanum, t_data **d)
 {
-	// printf("save_arg_or_in_or_out %s %s\n", redir, alphanum);
 	if (ft_strcmp(redir, "<") == 0)
-		(*d)->in[++((*d)->i_ins)] = open(alphanum, O_RDONLY);
-		//if (!(*d)->in[i_ins]) return (FAILURE)
+		(*d)->in = open(alphanum, O_RDONLY);
+		//if (!(*d)->in) return (FAILURE)
 	else if (ft_strcmp(redir, "<<") == 0)
 	{
 		heredoc_to_file(alphanum, d);
-		(*d)->in[++((*d)->i_ins)] = open(TMP_FILE, O_RDONLY);
-		//if (!(*d)->in[i_ins]) return (FAILURE)
+		(*d)->in = open(TMP_FILE, O_RDONLY);
+		//if (!(*d)->in) return (FAILURE)
 	}
 	else if (ft_strcmp(redir, ">") == 0)
 	{
-		// printf("out[%d]  = open %s\n", (*d)->i_outs + 1, alphanum);
 		(*d)->out[++((*d)->i_outs)] = open(alphanum, O_WRONLY | O_CREAT | O_TRUNC, 0666);
 		//if (!(*d)->out[i_outs]) return (FAILURE)
 	}
@@ -117,9 +141,9 @@ static int	parse_1_cmd(char *s, int len, t_data **d)
 	char	*alphanum;
 
 	(*d)->i_args = -1;
-	(*d)->i_ins = -1;
 	(*d)->i_outs = -1;
-	calc_nb_args_ins_outs(s, len, d);
+	(*d)->in = -1;
+	calc_nb_args_and_outs(s, len, d);
 	mod_(REINIT_QUOTES);
 	i = 0;
 	while (i < len)
@@ -131,9 +155,9 @@ static int	parse_1_cmd(char *s, int len, t_data **d)
 			redir = redir_(&s[i]);
 			i += ft_strlen(redir);
 			i += nb_spaces(&s[i]);
-			alphanum = alphanum_(&s[i], d);
+			alphanum = alphanum_(&s[i], d); // quotes ?
 			i += ft_strlen(alphanum) - 1;
-			if (save_arg_or_in_or_out(redir, alphanum, d) == FAILURE)
+			if (save_alphanum_and_open_file(redir, alphanum, d) == FAILURE)
 				return (FAILURE);
 		}
 		i++;
@@ -142,10 +166,10 @@ static int	parse_1_cmd(char *s, int len, t_data **d)
 		return (printf("%s : unclosed quotes\n", s), FAILURE); // free d
 	if ((*d)->nb_args == -1)
 		return (printf("empty command\n"), FAILURE); // exit_code = 255
-	if ((*d)->i_ins == -1)
-		((*d)->in)[0] = dup(STDIN_FILENO); // prv pipe if ! dup  return return (FAILURE) ?
 	if ((*d)->i_outs == -1)
 		((*d)->out)[0] = dup(STDOUT_FILENO); // nxt pipe
+	if ((*d)->in == -1)
+		(*d)->in = dup(STDIN_FILENO); // prv pipe if ! dup  return return (FAILURE) ?
 	return (OK);
 }
 

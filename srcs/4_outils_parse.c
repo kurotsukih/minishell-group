@@ -75,13 +75,12 @@ int	nb_spaces(char *s)
 	return (i);
 }
 
-void calc_nb_args_ins_outs(char *s, int len, t_data **d)
+void calc_nb_args_and_outs(char *s, int len, t_data **d)
 {
 	int		i;
 	char	*redir;
 
 	(*d)->nb_args = 0;
-	(*d)->nb_ins = 0;
 	(*d)->nb_outs = 0;
 	mod_(REINIT_QUOTES);
 	i = -1;
@@ -90,29 +89,23 @@ void calc_nb_args_ins_outs(char *s, int len, t_data **d)
 		{
 			i += nb_spaces(&s[i]);
 			redir = redir_(&s[i]);
-			if (ft_strcmp(redir, "<") == 0 || ft_strcmp(redir, "<<") == 0)
-				((*d)->nb_ins)++;
-			else if (ft_strcmp(redir, ">") == 0 || ft_strcmp(redir, ">>") == 0)
+			if (ft_strcmp(redir, ">") == 0 || ft_strcmp(redir, ">>") == 0)
 				((*d)->nb_outs)++;
+			else if (ft_strcmp(redir, "<") == 0 || ft_strcmp(redir, "<<") == 0)
+				;
 			else
 				((*d)->nb_args)++;
 			i += ft_strlen(redir);
 			i += nb_spaces(&s[i]);
 			i += len_alphanum(&s[i]);
 		}
-	if ((*d)->nb_ins == 0)
-		(*d)->nb_ins = 1;
 	if ((*d)->nb_outs == 0)
 		(*d)->nb_outs = 1;
 	(*d)->arg = (char **)malloc_(((*d)->nb_args + 1) * sizeof(char *), d);
-	(*d)->in = (int *)malloc_((*d)->nb_ins * sizeof(int), d);
 	(*d)->out = (int *)malloc_((*d)->nb_outs * sizeof(int), d);
 	i = -1;
 	while (++i < (*d)->nb_args + 1)
 		(*d)->arg[i] = NULL;
-	i = -1;
-	while (++i < (*d)->nb_ins)
-		(*d)->in[i] = 0; // dup ?
 	i = -1;
 	while (++i < (*d)->nb_outs)
 		(*d)->out[i] = 1;

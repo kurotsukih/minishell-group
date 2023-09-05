@@ -71,7 +71,7 @@ void	free_all_and_exit(char *msg, int exit_c, t_data **d)
 	exit(exit_c);
 }
 
-void	free_array(char **arr, int len)
+void	free_2_array(char **arr, int len)
 {
 	int	i;
 
@@ -94,16 +94,7 @@ void	print_cmd(char *msg, t_data **d)
 	}
 	else
 		printf("args = NULL");
-	printf(" : %d ins ", (*d)->nb_ins);
-	if ((*d)->in != NULL)
-	{
-		i = -1;
-		while (++i < (*d)->nb_ins)
-			printf("%d : ", (*d)->in[i]);
-	}
-	else
-		printf("ins = NULL");
-	printf(" : %d outs ", (*d)->nb_outs);
+	printf(" : in %d :  %d outs ", (*d)->in, (*d)->nb_outs);
 	if ((*d)->out != NULL)
 	{
 		i = -1;

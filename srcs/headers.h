@@ -68,22 +68,20 @@ typedef struct		s_env
 typedef struct		s_data
 {
 	t_env			**env;
-	int				nb_args;
-	char			**arg;
-	int				nb_ins;
-	int				*in;
-	int				nb_outs;
-	int				*out;
-	int				i_args;
-	int				i_ins;
-	int				i_outs;
 	int				saved_stdin;
 	int				saved_stdout;
 	int				exit_c;
+	int				nb_args;
+	int				nb_outs;
+	char			**arg;
+	int				*out;
+	int				i_args;
+	int				i_outs;
+	int				in;
 }					t_data;
 
 // utils parse
-void	calc_nb_args_ins_outs(char *s, int len, t_data **d);
+void	calc_nb_args_and_outs(char *s, int len, t_data **d);
 void	calc_dollar_conversions(char *s, t_data **d);
 int		heredoc_to_file(char *delim, t_data **d);
 
@@ -122,7 +120,7 @@ int		unclosed_quotes(char *s);
 // general utils
 void	*malloc_(int size, t_data **d);
 void	free_(void *mem);
-void	free_array(char **arr, int len);
+void	free_2_array(char **arr, int len);
 void	free_all_and_exit(char *msg, int exit_c, t_data **d); /// ***d ?
 void	print_cmd(char *msg, t_data **d);
 void	sig_handler_main(int signal);
