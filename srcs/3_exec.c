@@ -113,8 +113,8 @@ int	exec_exit(t_data **d)
 	if ((*d)->nb_args == 2 && !ft_atoi((*d)->arg[1]))
 		return (err_cmd("exit : numeric arg. required", -1, d));
 	if ((*d)->nb_args == 2)
-		err_prog_free_all_exit("", ft_atoi((*d)->arg[1]), d);
+		free_all_and_exit("", ft_atoi((*d)->arg[1]), d);
 	else
-		err_prog_free_all_exit("", 0, d); // code = 0 ?
+		free_all_and_exit("", (*d)->exit_c, d);
 	return (OK);
 }

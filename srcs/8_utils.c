@@ -51,7 +51,7 @@ void	*malloc_(int size, t_data **d)
 	mem = NULL;
 	mem = (void *)malloc(size * sizeof(char));
 	if (mem == NULL)
-		err_prog_free_all_exit("malloc failure", -1, d);
+		free_all_and_exit("malloc failure", -1, d);
 	return (mem);
 }
 
@@ -61,7 +61,7 @@ void free_(void *mem)
 		free(mem);
 }
 
-void	err_prog_free_all_exit(char *msg, int exit_c, t_data **d)
+void	free_all_and_exit(char *msg, int exit_c, t_data **d)
 {
 	if (msg == NULL)
 		msg = "";
@@ -69,7 +69,7 @@ void	err_prog_free_all_exit(char *msg, int exit_c, t_data **d)
 	write(2, "\n", 1);
 	free_2_array((*d)->arg, (*d)->nb_args);
 	free((*d)->out);
-	//free list (*d)->env;
+	//fre e list (*d)->env;
 	exit(exit_c);
 }
 

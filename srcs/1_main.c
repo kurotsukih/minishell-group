@@ -235,5 +235,6 @@ int	main(int argc, char **argv, char **env_array)
 		parse_and_exec_cmd_line(cmd_line, d);
 		free_(cmd_line);
 	}
-	return (/* free_all_and_exit("", d->exit_code, d)*/ OK);
+	free_all_and_exit("", 0, d);
+	return (OK); // ?
 }
