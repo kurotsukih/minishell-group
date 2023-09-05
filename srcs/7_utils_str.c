@@ -101,39 +101,3 @@ int	mod_(char c)
 		mod = QUOTES0;
 	return (mod);
 }
-
-// static void	remove_quotes_str(char *str)
-// {
-// 	char	mode;
-// 	int		i;
-// 	int		j;
-
-// 	i = 0;
-// 	j = 0;
-// 	mode = QUOTES0;
-// 	while (str[i])
-// 	{
-// 		if (mode == QUOTES0 && str[i] == '\'')
-// 			mode = QUOTES1;
-// 		else if (mode == QUOTES1 && str[i] == '\'')
-// 			mode = QUOTES0;
-// 		else if (mode == QUOTES0 && str[i] == '\"')
-// 			mode = QUOTES2;
-// 		else if (mode == QUOTES2 && str[i] == '\"')
-// 			mode = QUOTES0;
-// 		else
-// 			str[j++] = str[i];
-// 		i++;
-// 	}
-// 	while (j != i)
-// 		str[j++] = '\0';
-// }
-
-// void	remove_quotes(t_cmd *cmd)
-// {
-// 	int		i;
-
-// 	i = -1; // 0 ?
-// 	while (++i < cmd->nb_args)
-// 		remove_quotes_str(cmd->arg[i]);
-// }

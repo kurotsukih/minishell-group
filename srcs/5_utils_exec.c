@@ -26,9 +26,9 @@
 // }
 */
 
-static char	*s_with_conversion_(char *old_s, int j, t_data **d)
+static char	*doll_conversion_(char *old_s, int j, t_data **d)
 {
-	char	*s_with_conversion;
+	char	*doll_conversion;
 	int		len;
 	char	*key;
 	char	*val;
@@ -36,25 +36,28 @@ static char	*s_with_conversion_(char *old_s, int j, t_data **d)
 
 	key = alphanum_(&(old_s[j + 1]), d);
 	val = get_value_from_env(key, d);
+	if (val == NULL)
+		return (err_cmd("doll conversion not found", -1, d), NULL);
 	len = ft_strlen(old_s) - ft_strlen(key) + ft_strlen(val);
-	s_with_conversion = (char*)malloc_(len + 1, d);
+	doll_conversion = (char*)malloc_(len + 1, d);
 	k = -1;
 	while (++k < j)
-		s_with_conversion[k] = old_s[k];
+		doll_conversion[k] = old_s[k];
 	k--; //
 	while (++k < j + (int)ft_strlen(val))
-		s_with_conversion[k] = val[k - j];
+		doll_conversion[k] = val[k - j];
 	k--;
 	while(++k < len)
-		s_with_conversion[k] = old_s[k + (int)ft_strlen(key) - (int)ft_strlen(val) + 1];
-	s_with_conversion[k] = '\0';
+		doll_conversion[k] = old_s[k + (int)ft_strlen(key) - (int)ft_strlen(val) + 1];
+	doll_conversion[k] = '\0';
 	free_(key);
-	return (s_with_conversion);
+	return (doll_conversion);
 }
 
-char	*s_with_conversions(char *s, t_data **d)
+char	*doll_conversions_(char *s, t_data **d)
 {
-	char	*s_with_conversion;
+// if fails ?
+	char	*doll_conversions;
 	int		i;
 
 	mod_(REINIT_QUOTES);
@@ -66,9 +69,9 @@ char	*s_with_conversions(char *s, t_data **d)
 				{} // (ft_itoa(exit_code));
 			else if (s[i] == '$')
 			{
-				s_with_conversion = s_with_conversion_(s, i, d);
+				doll_conversions = doll_conversion_(s, i, d);
 				free_(s);
-				s = s_with_conversion;
+				s = doll_conversions;
 			}
 		}
 	return (s);
@@ -86,8 +89,6 @@ static char	*path2_(char *s1, char *s2, t_data **d)
 		s1_len = ft_strlen(s1); // 0 for NULL
 	s2_len = ft_strlen(s2);
 	path = (char *)malloc_(s1_len + s2_len + 2, d);
-	if (path == NULL)
-		return (NULL);
 	i = -1;
 	while (++i < s1_len)
 		path[i] = s1[i];

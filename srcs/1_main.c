@@ -76,7 +76,7 @@ WIFSIGNALED(status) = vrai
 WTERMSIG(status) = le numéro du signal
 
 //// TESTS
-double quotes insdide simple ones 
+double quote s insdide simple ones 
 " $ "
 export a="s -la" | l$a
 export $a=" " |ls$a-la$a"Makefile"
@@ -121,26 +121,25 @@ static void	init(t_data ***d, char **env)
 
 int	save_alphanum_and_open_file(char *redir, char *alphanum, t_data **d)
 {
+	alphanum = doll_conversions_(alphanum, d);
+	// alphanum = remove_quotes(alphanum, d); ?
 	if (strcmp_(redir, "<") == 0)
 		(*d)->in = open(alphanum, O_RDONLY);
-		//if (!(*d)->in) return (FAILURE)
 	else if (strcmp_(redir, "<<") == 0)
 	{
 		heredoc_to_file(alphanum, d);
 		(*d)->in = open(TMP_FILE, O_RDONLY);
-		//if (!(*d)->in) return (FAILURE)
 	}
 	else if (strcmp_(redir, ">") == 0)
-	{
 		(*d)->out[++((*d)->i_outs)] = open(alphanum, O_WRONLY | O_CREAT | O_TRUNC, 0666);
-		//if (!(*d)->out[i_outs]) return (FAILURE)
-	}
 	else if (strcmp_(redir, ">>") == 0)
 		(*d)->out[++((*d)->i_outs)] = open(alphanum, O_WRONLY | O_CREAT | O_APPEND, 0666);
-		//if (!(*d)->out[i_outs]) return (FAILURE)	
 	else
 		(*d)->arg[++((*d)->i_args)] = alphanum;
-	// !remove_quotes(d) || // only for bultins? нужно? попробовать без
+	// if (redir[0] == '<' && !(*d)->in)
+	//	return (err_cmd("file open pb", -1, d));
+	// if (redir[0] == '>' && !(*d)->out[(*d)->i_outs])
+	// 	return (err_cmd("file open pb", -1, d));
 	return (OK);
 }
 
@@ -203,7 +202,6 @@ static int	parse_and_exec_cmd_line(char *s, t_data **d)
 		}
 		len = i - i_beg;
 		if (parse_1_cmd(&s[i_beg], len, d) == OK)// ||
-		// dollar converstions in in? in heredoc? remove_quotes ?
 		{
 			print_cmd("", d);
 			exec_1_cmd_to_all_outs(d);
