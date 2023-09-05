@@ -73,68 +73,6 @@ void	calc_dollar_conversions(char *s, t_data **d)
 		}
 }
 
-// int	calc_dollar_conversions(t_cmd *cmd, t_data **d)
-// {
-// 	char	*s_with_doll_conversion;
-// 	int		i;
-// 	int		j;
-
-// 	(*d)->curr_cmd = cmd;
-// 	i = 0;
-// 	while(++i < cmd->nb_args)
-// 		if (cmd->arg[i][0] != '\'')
-// 		{
-// 			j = -1;
-// 			while (cmd->arg[i][++j] != '\0' && cmd->arg[i][j + 1] != '\0')
-// 			{
-// 				// if (cmd->arg[i][j] == '$' && cmd->arg[i][j + 1] == '?')
-// 				// 	(ft_itoa(exit_code));
-// 				if (cmd->arg[i][j] == '$')
-// 				{
-// 					s_with_doll_conversion = s_with_doll_conversion_(cmd->arg[i], j, d);
-// 					free(cmd->arg[i]);
-// 					cmd->arg[i] = s_with_doll_conversion;
-// 				}
-// 			}
-// 		}
-// }
-
-// static void	remove_quotes_str(char *str)
-// {
-// 	char	mode;
-// 	int		i;
-// 	int		j;
-
-// 	i = 0;
-// 	j = 0;
-// 	mode = QUOTES0;
-// 	while (str[i])
-// 	{
-// 		if (mode == QUOTES0 && str[i] == '\'')
-// 			mode = QUOTES1;
-// 		else if (mode == QUOTES1 && str[i] == '\'')
-// 			mode = QUOTES0;
-// 		else if (mode == QUOTES0 && str[i] == '\"')
-// 			mode = QUOTES2;
-// 		else if (mode == QUOTES2 && str[i] == '\"')
-// 			mode = QUOTES0;
-// 		else
-// 			str[j++] = str[i];
-// 		i++;
-// 	}
-// 	while (j != i)
-// 		str[j++] = '\0';
-// }
-
-// void	remove_quotes(t_cmd *cmd)
-// {
-// 	int		i;
-
-// 	i = -1; // 0 ?
-// 	while (++i < cmd->nb_args)
-// 		remove_quotes_str(cmd->arg[i]);
-// }
-
 static char	*path2_(char *s1, char *s2, t_data **d)
 {
 	int		i;

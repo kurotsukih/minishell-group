@@ -40,57 +40,6 @@ char	*strndup_and_trim(char *src, int len, t_data **d)
 	return (dest);
 }
 
-// char	*strdup_and_erase_redirs(char *s0, t_data **d) // len useful
-// {
-// 	int		i;
-// 	char	*s;
-
-// 	i = 0;
-// 	mod_(REINIT_QUOTES);
-// 	s = strdup_(s0, d);
-// 	while (s[i] != '\0')
-// 	{
-// 		if (mod_(s[i]) == QUOTES0 && ft_strlen(redir_(&s[i])) > 0)
-// 		{
-// 			s[i++] = ' ';
-// 			if (s[i] == '>' || s[i] == '<')
-// 				s[i++] = ' ';
-// 			while(s[i] == ' ')
-// 				i++;
-// 			while(mod_(s[i]) == QUOTES0 && (s[i] != ' ' && s[i] != '>' && s[i] != '<' && s[i] != '\0'))
-// 				s[i++] = ' ';
-// 		}
-// 		else
-// 			i++;
-// 	}
-// 	return (s);
-// }
-
-// char	*strdup_and_erase_args_except_redirs(char *s0, t_data **d) // enlever len
-// {
-// 	int		i;
-// 	char	*s;
-
-// 	i = 0;
-// 	mod_(REINIT_QUOTES);
-// 	s = strdup_(s0, d);
-// 	while (s[i] != '\0')
-// 	{	
-// 		if (mod_(s[i]) == QUOTES0 && ft_strlen(redir_(&s[i])) > 0)
-// 		{
-// 			if (s[i] == '>' || s[i] == '<')
-// 				i++;
-// 			while(s[i] == ' ')
-// 				i++;
-// 			while(mod_(s[i]) == QUOTES0 && (s[i] != ' ' && s[i] != '>' && s[i] != '<' && s[i] != '\0'))
-// 				i++;
-// 		}
-// 		else
-// 			s[i++] = ' ';
-// 	}
-// 	return (s);
-// }
-
 char	*strdup_(char *s, t_data **d)
 {
 	size_t	i;
@@ -108,6 +57,12 @@ int	strcmp_(char *s1, char *s2)
 {
 	int	i;
 
+	if (s1 == NULL && s2 != NULL)
+		return (-1); // ?
+	if (s1 != NULL && s2 == NULL)
+		return (1); // ?
+	if (s1 == NULL && s2 == NULL)
+		return (0); // ?
 	i = 0;
 	while (s1[i] != '\0'|| s2[i] != '\0')
 	{
@@ -146,3 +101,39 @@ int	mod_(char c)
 		mod = QUOTES0;
 	return (mod);
 }
+
+// static void	remove_quotes_str(char *str)
+// {
+// 	char	mode;
+// 	int		i;
+// 	int		j;
+
+// 	i = 0;
+// 	j = 0;
+// 	mode = QUOTES0;
+// 	while (str[i])
+// 	{
+// 		if (mode == QUOTES0 && str[i] == '\'')
+// 			mode = QUOTES1;
+// 		else if (mode == QUOTES1 && str[i] == '\'')
+// 			mode = QUOTES0;
+// 		else if (mode == QUOTES0 && str[i] == '\"')
+// 			mode = QUOTES2;
+// 		else if (mode == QUOTES2 && str[i] == '\"')
+// 			mode = QUOTES0;
+// 		else
+// 			str[j++] = str[i];
+// 		i++;
+// 	}
+// 	while (j != i)
+// 		str[j++] = '\0';
+// }
+
+// void	remove_quotes(t_cmd *cmd)
+// {
+// 	int		i;
+
+// 	i = -1; // 0 ?
+// 	while (++i < cmd->nb_args)
+// 		remove_quotes_str(cmd->arg[i]);
+// }

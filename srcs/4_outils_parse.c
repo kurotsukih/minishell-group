@@ -89,15 +89,15 @@ void calc_nb_args_and_outs(char *s, int len, t_data **d)
 		{
 			i += nb_spaces(&s[i]);
 			redir = redir_(&s[i]);
-			if (ft_strcmp(redir, ">") == 0 || ft_strcmp(redir, ">>") == 0)
+			if (strcmp_(redir, ">") == 0 || strcmp_(redir, ">>") == 0)
 				((*d)->nb_outs)++;
-			else if (ft_strcmp(redir, "<") == 0 || ft_strcmp(redir, "<<") == 0)
+			else if (strcmp_(redir, "<") == 0 || strcmp_(redir, "<<") == 0)
 				;
 			else
 				((*d)->nb_args)++;
 			i += ft_strlen(redir);
 			i += nb_spaces(&s[i]);
-			i += len_alphanum(&s[i]);
+			i += len_alphanum(&s[i]) - 1;
 		}
 	if ((*d)->nb_outs == 0)
 		(*d)->nb_outs = 1;
@@ -130,12 +130,7 @@ int	heredoc_to_file(char *delim, t_data **d)
 		write(fd, " ", 1);
 		free_(line);
 	}
+	close(fd);
 	(void)d; //
 	return (OK);
-// void	ft_close_heredoc(int fd, int fd_cpy)
-// {s
-// 	close(fd);
-// 	dup2(fd_cpy, STDIN_FILENO);
-// 	close(fd_cpy);
-// }
 }

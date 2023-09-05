@@ -16,16 +16,14 @@ int	exec_pwd(t_data **d)
 {
 	char	*s;
 
-	if ((*d)->nb_args == 1)
-	{
-		s = getcwd(NULL, 0);
-		if (s == NULL)
-			return (printf("pwd : getcwd failed\n"), OK); 	// exic code ?
-		printf("%s\n", s);
-		free_(s);
-	}
-	else
+	print_cmd("pwd", d);
+	if ((*d)->nb_args > 1)
 		return (printf("pwd : too many arguments\n"), OK);
+	s = getcwd(NULL, 0);
+	if (s == NULL)
+		return (printf("pwd : getcwd failed\n"), OK); 	// exic code ?
+	printf("%s\n", s);
+	free_(s);
 	return (OK);
 }
 

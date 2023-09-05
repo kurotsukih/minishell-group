@@ -11,7 +11,7 @@
 /* ************************************************************************** */
 
 /*
-wait3 wait4 : resource usage information about the ft_wait_child_processes
+wait3 wait4 : resource usage information about the f t_wait_child_processes
 stat lstat fstat : file or file system status, information about a file
 unlink : call the unlink function to remove the specified file
 pip e : creates a pip e, a unidirectional data channel that can be used for interprocess communication.
@@ -94,13 +94,13 @@ extern cmd change the env ?
 // 		if (pid == 0)
 // 		{
 //			exit_c = exec_program(cmd, d->env, n);
-//			exit_c = ft_find_path(cmd->args, env, &path);
+//			exit_c = f t_find_path(cmd->args, env, &path);
 //			execve(...);
 //			pid = (exit(exit_c), 0);
 //		}
 // 		cmd = cmd -> nxt;
 // 	}
-// 	ft_wait_child_processes(num, pid);
+// 	f t_wait_child_processes(num, pid);
 // }
 */
 
@@ -110,21 +110,21 @@ int g_signal = 0;
 
 int	save_alphanum_and_open_file(char *redir, char *alphanum, t_data **d)
 {
-	if (ft_strcmp(redir, "<") == 0)
+	if (strcmp_(redir, "<") == 0)
 		(*d)->in = open(alphanum, O_RDONLY);
 		//if (!(*d)->in) return (FAILURE)
-	else if (ft_strcmp(redir, "<<") == 0)
+	else if (strcmp_(redir, "<<") == 0)
 	{
 		heredoc_to_file(alphanum, d);
 		(*d)->in = open(TMP_FILE, O_RDONLY);
 		//if (!(*d)->in) return (FAILURE)
 	}
-	else if (ft_strcmp(redir, ">") == 0)
+	else if (strcmp_(redir, ">") == 0)
 	{
 		(*d)->out[++((*d)->i_outs)] = open(alphanum, O_WRONLY | O_CREAT | O_TRUNC, 0666);
 		//if (!(*d)->out[i_outs]) return (FAILURE)
 	}
-	else if (ft_strcmp(redir, ">>") == 0)
+	else if (strcmp_(redir, ">>") == 0)
 		(*d)->out[++((*d)->i_outs)] = open(alphanum, O_WRONLY | O_CREAT | O_APPEND, 0666);
 		//if (!(*d)->out[i_outs]) return (FAILURE)	
 	else
@@ -194,7 +194,10 @@ static int	parse_and_exec_cmd_line(char *s, t_data **d)
 		len = i - i_beg;
 		if (parse_1_cmd(&s[i_beg], len, d) == OK)// ||
 		// dollar converstions in ins? in heredo c? remove_quotes ?
+		{
+			print_cmd("", d);
 			exec_1_cmd_to_all_outs(d);
+		}
 		if (s[i] == '\0')
 			break;
 		i++;

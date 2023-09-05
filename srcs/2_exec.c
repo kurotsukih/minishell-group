@@ -18,9 +18,9 @@ int	exec_echo(t_data **d)
 	int	i;
 
 	option_n = NO;
-	i = -1;
+	i = 0;
 	while (++i < (*d)->nb_args)
-		if (strcmp((*d)->arg[i], "-n") == 0)
+		if (strcmp_((*d)->arg[i], "-n") == 0)
 			option_n = YES;
 		else
 			{
@@ -38,24 +38,22 @@ int	exec_cd(t_data **d)
 	char	*dir;
 	int		res;
 
+	if ((*d)->nb_args > 2)
+		return (printf("cd : too many arguments\n"), OK);
 	if ((*d)->nb_args == 1)
 	{
 		dir = NULL;
 		dir = get_value_from_env("HOME", d);
 		if (dir == NULL)
-			return (printf("cd : variable HOME not found\n"), 0); 	// exic code ?
+			return (printf("cd : variable HOME not found\n"), OK); 	// exic code ?
 		res = chdir(dir);
 		free_(dir);
 		if (res == -1)
 			return (printf("cd : chdir failure\n"), OK); 	// exic code ?
+		return (OK);
 	}
-	else if ((*d)->nb_args == 2)
-	{
-		if (chdir((*d)->arg[1]) == -1)
-			return (printf("cd : chdir failure\n"), OK); 	// exic code ?
-	}
-	else
-		return (printf("cd : too many arguments\n"), OK);
+	if (chdir((*d)->arg[1]) == -1)
+		return (printf("cd : chdir failure\n"), OK); 	// exic code ?
 	return (OK);
 }
 
@@ -87,8 +85,6 @@ static int	exec_extern_cmd(t_data **d)
 
 static int	exec_1_cmd_to_1_out(int i, t_data **d)
 {
-	printf("exec %s to out[%d] = %d\n", (*d)->arg[0], i, (*d)->out[i]);
-	//print_cmd("", d);
 	if (dup2((*d)->out[i], STDOUT_FILENO) == -1)
 		return (printf("%s : dup2 pb start out\n", (*d)->arg[0]), OK); // exit_code = 127, if (errno != 2) exit_c = 126;
 	close((*d)->out[i]);
@@ -111,7 +107,6 @@ static int	exec_1_cmd_to_1_out(int i, t_data **d)
 	unlink(TMP_FILE);
 	if (dup2((*d)->saved_stdout, STDOUT_FILENO) == -1)
 		return (printf("%s : dup2 pb end out\n", (*d)->arg[0]), OK);
-	printf("return exec %s to out[%d]\n", (*d)->arg[0], i);
 	return (OK);
 }
 
