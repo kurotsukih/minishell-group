@@ -15,16 +15,13 @@
 int	exec_pwd(t_data **d)
 {
 	char	*s;
-	int		i;
 
 	if ((*d)->nb_args == 1)
 	{
 		s = getcwd(NULL, 0);
 		if (s == NULL)
 			return (printf("pwd : getcwd failed\n"), OK); 	// exic code ?
-		i = -1;
-		while(++i < (*d)->nb_outs)
-			printf("%s\n", s);
+		printf("%s\n", s);
 		free_(s);
 	}
 	else
@@ -95,7 +92,6 @@ int	exec_unset(t_data **d)
 int	exec_env(t_data **d)
 {
 	t_env	*var;
-	int		i;
 
 	if ((*d)->env == NULL)
 		return( OK);
@@ -104,9 +100,7 @@ int	exec_env(t_data **d)
 	var = *((*d)->env);
 	while (var != NULL)
 	{
-		i = -1;
-		while(++i < (*d)->nb_outs)
-			printf("%s\n", var->var);
+		printf("%s\n", var->var);
 		var = var->nxt;
 	}
 	return (OK);

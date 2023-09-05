@@ -88,7 +88,7 @@ void	calc_dollar_conversions(char *s, t_data **d);
 int		heredoc_to_file(char *delim, t_data **d);
 
 // exec and utils exec                       min args    max   accept <in
-void	exec_1_cmd_to_all_outs(t_data **d);
+int		exec_1_cmd_to_all_outs(t_data **d);
 int		exec_echo(t_data **d);   // 0           ...   no ?
 int		exec_cd(t_data **d);     // 0           1     no ?
 int		exec_pwd(t_data **d);    // 0           0     no

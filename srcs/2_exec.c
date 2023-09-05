@@ -127,36 +127,32 @@ static int	exec_extern_cmd(t_data **d)
 	char	**env_array;
 	// int		len_env;
 	int		status;
-	int		j;
 
 	path = path_(d); // un chemin relatif ou absolu ?
 	if (path == NULL)
 		path = ".";
-
-	j = -1;
-	while (++j < (*d)->nb_outs)
+	pid = fork();
+	if (pid < -1)
+		return (printf("%s : fork pb\n", (*d)->arg[0]), -1); // fre e all and exit ?
+	if (pid == 0)
 	{
-		pid = fork();
-		if (pid < -1)
-			return (printf("%s : fork pb\n", (*d)->arg[0]), -1); // fre e all and exit ?
-		if (pid == 0)
-		{
-			env_array = env_to_array(d);
-			// len_env = len_env_(d);
-			execve(path, (*d)->arg, env_array); //if env_array == NULL ? // every execve substitue le processus ???!!!
-			// free_env_array(env_array, len_env); no executed ?
+		env_array = env_to_array(d);
+		// len_env = len_env_(d);
+		execve(path, (*d)->arg, env_array); //if env_array == NULL ? // every execve substitue le processus ???!!!
+		// free_env_array(env_array, len_env); no executed ?
 
-		}
-		else
-			wait(&status);
 	}
+	else
+		wait(&status);
 	return (OK);
 }
 
 static int	exec_1_cmd_to_1_out(int i, t_data **d)
 {
-	if (dup2((*d)->in[0], STDIN_FILENO) == -1 || dup2((*d)->out[i], STDOUT_FILENO) == -1)
-		return (printf("%s : dup2 pb\n", (*d)->arg[0]), OK); // exit_code = 127, if (errno != 2) exit_c = 126;
+	printf("exec %s to out[%d] = %d\n", (*d)->arg[0], i, (*d)->out[i]);
+	print_cmd("", d);
+	if (dup2((*d)->out[i], STDOUT_FILENO) == -1)
+		return (printf("%s : dup2 pb start out\n", (*d)->arg[0]), OK); // exit_code = 127, if (errno != 2) exit_c = 126;
 	close((*d)->in[0]);
 	close((*d)->out[i]);
 	if (strcmp_((*d)->arg[0], "echo") == 0)
@@ -175,17 +171,23 @@ static int	exec_1_cmd_to_1_out(int i, t_data **d)
 		exec_exit(d);
 	else
 		exec_extern_cmd(d);
-	if (dup2((*d)->saved_stdin, STDIN_FILENO) == -1 || dup2((*d)->saved_stdout, STDOUT_FILENO) == -1)
-		return (printf("%s : dup2 pb\n", (*d)->arg[0]), OK);
 	unlink(TMP_FILE);
+	if (dup2((*d)->saved_stdout, STDOUT_FILENO) == -1)
+		return (printf("%s : dup2 pb end out\n", (*d)->arg[0]), OK);
+	printf("return exec %s to out[%d]\n", (*d)->arg[0], i);
 	return (OK);
 }
 
-void	exec_1_cmd_to_all_outs(t_data **d)
+int	exec_1_cmd_to_all_outs(t_data **d)
 {
 	int	i;
 
+	if (dup2((*d)->in[0], STDIN_FILENO) == -1)
+		return (printf("%s : dup2 pb start in\n", (*d)->arg[0]), OK); // exit_code = 127, if (errno != 2) exit_c = 126;
 	i = -1;
 	while (++i < (*d)->nb_outs)
 		exec_1_cmd_to_1_out(i, d);
+	if (dup2((*d)->saved_stdin, STDIN_FILENO) == -1)
+		return (printf("%s : dup2 pb end in\n", (*d)->arg[0]), OK);
+	return (OK);
 }

@@ -82,18 +82,9 @@ pour les process zombie j'ai utilisé la macro sigaction avec SIGCHLD et SA_NOCL
 
 int g_signal = 0;
 
-int parse_1_token(char *s, int *i, t_data **d)
+int	save_arg_or_in_or_out(char *redir, char *alphanum, t_data **d)
 {
-	char	*redir;
-	char	*alphanum;
-
-	(*i) += nb_spaces(&s[*i]);
-	redir = redir_(&s[*i]);
-	(*i) += ft_strlen(redir);
-	(*i) += nb_spaces(&s[*i]);
-	alphanum = alphanum_(&s[*i], d);
-	printf("redir = %s, alphanum = %s\n", redir, alphanum);
-	(*i) += ft_strlen(alphanum) - 1;
+	// printf("save_arg_or_in_or_out %s %s\n", redir, alphanum);
 	if (ft_strcmp(redir, "<") == 0)
 		(*d)->in[++((*d)->i_ins)] = open(alphanum, O_RDONLY);
 		//if (!(*d)->in[i_ins]) return (FAILURE)
@@ -104,8 +95,11 @@ int parse_1_token(char *s, int *i, t_data **d)
 		//if (!(*d)->in[i_ins]) return (FAILURE)
 	}
 	else if (ft_strcmp(redir, ">") == 0)
+	{
+		// printf("out[%d]  = open %s\n", (*d)->i_outs + 1, alphanum);
 		(*d)->out[++((*d)->i_outs)] = open(alphanum, O_WRONLY | O_CREAT | O_TRUNC, 0666);
 		//if (!(*d)->out[i_outs]) return (FAILURE)
+	}
 	else if (ft_strcmp(redir, ">>") == 0)
 		(*d)->out[++((*d)->i_outs)] = open(alphanum, O_WRONLY | O_CREAT | O_APPEND, 0666);
 		//if (!(*d)->out[i_outs]) return (FAILURE)	
@@ -119,6 +113,8 @@ static int	parse_1_cmd(char *s, int len, t_data **d)
 {
 	int		i;
 	int		mod;
+	char	*redir;
+	char	*alphanum;
 
 	(*d)->i_args = -1;
 	(*d)->i_ins = -1;
@@ -130,8 +126,16 @@ static int	parse_1_cmd(char *s, int len, t_data **d)
 	{
 		mod = mod_(s[i]);
 		if (mod == QUOTES0)
-			if (parse_1_token(s, &i, d) == FAILURE)
+		{
+			i += nb_spaces(&s[i]);
+			redir = redir_(&s[i]);
+			i += ft_strlen(redir);
+			i += nb_spaces(&s[i]);
+			alphanum = alphanum_(&s[i], d);
+			i += ft_strlen(alphanum) - 1;
+			if (save_arg_or_in_or_out(redir, alphanum, d) == FAILURE)
 				return (FAILURE);
+		}
 		i++;
 	}
 	if(mod != QUOTES0)
