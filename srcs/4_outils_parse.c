@@ -28,18 +28,6 @@ char	*redir_(char *s)
 		return (NULL);
 }
 
-int	len_alphanum(char *s)
-{
-	int	i;
-
-	if ((s[0] < 'a' || s[0] > 'z') && (s[0] < 'A' && s[0] > 'Z'))
-		return( OK);
-	i = -1;
-	while ((s[++i] >= '0' && s[i] < '9') || (s[i] >= 'a' && s[i] < 'z') || (s[i] >= 'A' && s[i] < 'Z') || s[i] == '_')
-		;
-	return (i);
-}
-
 static int	is_digit(char c)
 {
 	return (c >= '0' && c < '9');
@@ -50,15 +38,33 @@ static int	is_letter(char c)
 	return ((c >= 'a' && c < 'z') || (c >= 'A' && c < 'Z'));
 }
 
+int	len_alphanum(char *s)
+{
+	int	i;
+
+	if (s == NULL || (!is_digit(s[0]) && !is_letter(s[0])))
+	// 	if (s == NULL || (!is_digit(s[0]) && !is_letter(s[0] && s[0] != '-')))
+		return (0);
+	i = -1;
+	// if (s[0] == '-')
+	// 		++i;
+	while (is_digit(s[++i]) || is_letter(s[i]) || s[i] == '_')
+		;
+	return (i);
+}
+
 char	*alphanum_(char *s, t_data **d)
 {
 	int		i;
-	char	*alphanum = NULL; //
+	char	*alphanum;
 
 	if (s == NULL || (!is_digit(s[0]) && !is_letter(s[0])))
+	// 	if (s == NULL || (!is_digit(s[0]) && !is_letter(s[0] && s[0] != '-')))
 		return (NULL);
 	alphanum = (char *)malloc_(len_alphanum(s) + 1, d);
 	i = -1;
+	// if (s[0] == '-')
+	// 	alphanum[++i] = '-';
 	while (is_digit(s[++i]) || is_letter(s[i]) || s[i] == '_')
 		alphanum[i] = s[i];
 	alphanum[i] = '\0';
