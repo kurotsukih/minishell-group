@@ -16,7 +16,7 @@ void	sig_handler_main(int signal)
 {
 	if (signal == SIGINT)
 	{
-		write(1, "\n", 1); // printf ?
+		write(1, "\n", 1);
 		rl_on_new_line();
 		rl_replace_line("", 0);
 		rl_redisplay();
@@ -51,7 +51,7 @@ void	*malloc_(int size, t_data **d)
 	mem = NULL;
 	mem = (void *)malloc(size * sizeof(char));
 	if (mem == NULL)
-			free_all_and_exit("malloc failure", -1, d); // code ?
+		err_prog_free_all_exit("malloc failure", -1, d);
 	return (mem);
 }
 
@@ -61,14 +61,26 @@ void free_(void *mem)
 		free(mem);
 }
 
-void	free_all_and_exit(char *msg, int exit_c, t_data **d)
+void	err_prog_free_all_exit(char *msg, int exit_c, t_data **d)
 {
 	if (msg == NULL)
 		msg = "";
-	// printf("%s %s\n", msg, strerror(errno));
-	// free (env)
-	(void)d;
+	write(2, msg, ft_strlen(msg));
+	write(2, "\n", 1);
+	free_2_array((*d)->arg, (*d)->nb_args);
+	free((*d)->out);
+	//free list (*d)->env;
 	exit(exit_c);
+}
+
+int		err_cmd(char *msg, int exit_c, t_data **d)
+{
+	write(2, msg, ft_strlen(msg));
+	write(2, "\n", 1);
+	free_2_array((*d)->arg, (*d)->nb_args);
+	free((*d)->out);
+	(*d)->exit_c = exit_c;
+	return (FAILURE);
 }
 
 void	free_2_array(char **arr, int len)

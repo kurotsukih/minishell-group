@@ -112,13 +112,13 @@ char	*path_(t_data **d)
 	while (++i < (int)ft_strlen(paths_str))
 		if (paths_str[i] == ':' || paths_str[i] == '\0')
 		{
-			path = strndup_and_trim(&(paths_str[i_beg]), i - i_beg, d); // alphanum
+			path = strndup_and_trim(&(paths_str[i_beg]), i - i_beg, d);
 			path = path2_(path, (*d)->arg[0], d);
 			if (access(path, X_OK) == 0)
 				return (path);
 			free_(path);
 			i_beg = i + 1;
 		}
-	return (printf("%s : cmd not found\n", (*d)->arg[0]), NULL); 
-	// exit_code = 127, if (errno != 2) exit_c = 126;
+	err_cmd("cmd not found", 127, d); // 127? if (errno != 2) 126 ?
+	return (NULL);
 }

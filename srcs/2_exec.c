@@ -20,16 +20,19 @@ int	exec_echo(t_data **d)
 	option_n = NO;
 	i = 0;
 	while (++i < (*d)->nb_args)
+	{
 		if (strcmp_((*d)->arg[i], "-n") == 0)
 			option_n = YES;
 		else
-			{
-				printf("%s", (*d)->arg[i]);
-				if (i < (*d)->nb_args - 1)
-					printf(" ");
-			}
+		{
+			write(1, (*d)->arg[i], ft_strlen((*d)->arg[i]));
+			if (i < (*d)->nb_args - 1)
+				write(1, " ", 1);
+		}
+	}
 	if (option_n == YES)
-		printf("\n");
+		write(1, "\n", 1);
+	// fflush(stdout); /// !
 	return (OK);
 }
 
@@ -39,21 +42,21 @@ int	exec_cd(t_data **d)
 	int		res;
 
 	if ((*d)->nb_args > 2)
-		return (printf("cd : too many arguments\n"), OK);
+		return (err_cmd("cd : too many arguments", -1, d));
 	if ((*d)->nb_args == 1)
 	{
 		dir = NULL;
 		dir = get_value_from_env("HOME", d);
 		if (dir == NULL)
-			return (printf("cd : variable HOME not found\n"), OK); 	// exic code ?
+			return (err_cmd("cd : variable HOME not found", -1, d));
 		res = chdir(dir);
 		free_(dir);
 		if (res == -1)
-			return (printf("cd : chdir failure\n"), OK); 	// exic code ?
+			return (err_cmd("cd : chdir failure", -1, d));
 		return (OK);
 	}
 	if (chdir((*d)->arg[1]) == -1)
-		return (printf("cd : chdir failure\n"), OK); 	// exic code ?
+		return (err_cmd("cd : chdir failure", -1, d));
 	return (OK);
 }
 
@@ -70,7 +73,8 @@ static int	exec_extern_cmd(t_data **d)
 		path = ".";
 	pid = fork();
 	if (pid < -1)
-		return (printf("%s : fork pb\n", (*d)->arg[0]), -1); // fre e all and exit ?
+		return (err_cmd("fork pb", -1, d)); // fre e all and exit ?
+
 	if (pid == 0)
 	{
 		env_array = env_to_array(d);
@@ -86,7 +90,7 @@ static int	exec_extern_cmd(t_data **d)
 static int	exec_1_cmd_to_1_out(int i, t_data **d)
 {
 	if (dup2((*d)->out[i], STDOUT_FILENO) == -1)
-		return (printf("%s : dup2 pb start out\n", (*d)->arg[0]), OK); // exit_code = 127, if (errno != 2) exit_c = 126;
+		return (err_cmd("dup2 pb", -1, d));
 	close((*d)->out[i]);
 	if (strcmp_((*d)->arg[0], "echo") == 0)
 		exec_echo(d);
@@ -106,7 +110,7 @@ static int	exec_1_cmd_to_1_out(int i, t_data **d)
 		exec_extern_cmd(d);
 	unlink(TMP_FILE);
 	if (dup2((*d)->saved_stdout, STDOUT_FILENO) == -1)
-		return (printf("%s : dup2 pb end out\n", (*d)->arg[0]), OK);
+		return (err_cmd("dup2 pb", -1, d));
 	return (OK);
 }
 
@@ -115,12 +119,12 @@ int	exec_1_cmd_to_all_outs(t_data **d)
 	int	i;
 
 	if (dup2((*d)->in, STDIN_FILENO) == -1)
-		return (printf("%s : dup2 pb start in\n", (*d)->arg[0]), OK); // exit_code = 127, if (errno != 2) exit_c = 126;
+		return (err_cmd("dup2 pb", -1, d));
 	close((*d)->in);
 	i = -1;
 	while (++i < (*d)->nb_outs)
 		exec_1_cmd_to_1_out(i, d);
 	if (dup2((*d)->saved_stdin, STDIN_FILENO) == -1)
-		return (printf("%s : dup2 pb end in\n", (*d)->arg[0]), OK);
+		return (err_cmd("dup2 pb", -1, d));
 	return (OK);
 }

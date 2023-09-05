@@ -91,7 +91,7 @@ char	*get_value_from_env(char *key, t_data **d)
 			return (&(var->var[(int)ft_strlen(key) + 1]));
 		var = var->nxt;
 	}
-	free_all_and_exit("env variable not found", -1, d);
+	err_cmd("env variable not found", -1, d);
 	return (NULL);
 }
 

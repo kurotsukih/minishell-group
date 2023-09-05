@@ -118,8 +118,7 @@ int	heredoc_to_file(char *delim, t_data **d)
 	int		fd;
 
 	fd = open(TMP_FILE, O_WRONLY | O_CREAT | O_TRUNC, 0666);
-	//if (!fd)
-		// free all and exit ? return (printf("%s : tmp file pb\n", (*d)->arg[0]), -1); return OK
+		return (err_cmd("heredoc open tmp file pb", -1, d));
 	line = NULL;
 	while (1)
 	{

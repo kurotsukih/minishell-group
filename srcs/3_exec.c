@@ -16,13 +16,14 @@ int	exec_pwd(t_data **d)
 {
 	char	*s;
 
-	print_cmd("pwd", d);
+	// print_cmd("pwd", d);
 	if ((*d)->nb_args > 1)
-		return (printf("pwd : too many arguments\n"), OK);
+		return (err_cmd("pwd : too many arguments", -1, d));
 	s = getcwd(NULL, 0);
 	if (s == NULL)
-		return (printf("pwd : getcwd failed\n"), OK); 	// exic code ?
-	printf("%s\n", s);
+		return (err_cmd("pwd : getcwd failed", -1, d));
+	write(1, s, ft_strlen(s));
+	write(1, "\n", 1);
 	free_(s);
 	return (OK);
 }
@@ -59,7 +60,7 @@ int	exec_unset(t_data **d)
 	if ((*d)->env == NULL)
 		return( OK);
 	if ((*d)->nb_args == 1)
-		return (printf("unset : too few arguments\n"), OK);
+		return (err_cmd("unset : too few arguments", -1, d));
 	i = 0;
 	while (++i < (*d)->nb_args)
 	{
@@ -94,11 +95,12 @@ int	exec_env(t_data **d)
 	if ((*d)->env == NULL)
 		return( OK);
 	if ((*d)->nb_args > 1)
-		return (printf("env : too many arguments\n"), OK);
+		return (err_cmd("env : too many arguments", -1, d));
 	var = *((*d)->env);
 	while (var != NULL)
 	{
-		printf("%s\n", var->var);
+		write(1, var->var, ft_strlen(var->var));
+		write(1, "\n", 1);
 		var = var->nxt;
 	}
 	return (OK);
@@ -107,12 +109,12 @@ int	exec_env(t_data **d)
 int	exec_exit(t_data **d)
 {
 	if ((*d)->nb_args > 2)
-		return (printf("exit : too many arguments\n"), OK);
+		return (err_cmd("exit : too many arguments", -1, d));
 	if ((*d)->nb_args == 2 && !ft_atoi((*d)->arg[1]))
-		return (printf("exit : numeric arg. required\n"), OK);
+		return (err_cmd("exit : numeric arg. required", -1, d));
 	if ((*d)->nb_args == 2)
-		free_all_and_exit("", ft_atoi((*d)->arg[1]), d);
+		err_prog_free_all_exit("", ft_atoi((*d)->arg[1]), d);
 	else
-		free_all_and_exit("", 0, d); // code = 0 ?
+		err_prog_free_all_exit("", 0, d); // code = 0 ?
 	return (OK);
 }

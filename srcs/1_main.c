@@ -163,9 +163,9 @@ static int	parse_1_cmd(char *s, int len, t_data **d)
 		i++;
 	}
 	if(mod != QUOTES0)
-		return (printf("%s : unclosed quotes\n", s), FAILURE); // free d
-	if ((*d)->nb_args == -1)
-		return (printf("empty command\n"), FAILURE); // exit_code = 255
+		return (err_cmd("unclosed quotes", -1, d));
+			if ((*d)->nb_args == -1)
+		return (err_cmd("empty command", -1, d));
 	if ((*d)->i_outs == -1)
 		((*d)->out)[0] = dup(STDOUT_FILENO); // nxt pipe
 	if ((*d)->in == -1)

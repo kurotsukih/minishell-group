@@ -121,7 +121,8 @@ int		unclosed_quotes(char *s);
 void	*malloc_(int size, t_data **d);
 void	free_(void *mem);
 void	free_2_array(char **arr, int len);
-void	free_all_and_exit(char *msg, int exit_c, t_data **d); /// ***d ?
+void	err_prog_free_all_exit(char *msg, int exit_c, t_data **d); /// ***d ?
+int		err_cmd(char *msg, int exit_c, t_data **d);
 void	print_cmd(char *msg, t_data **d);
 void	sig_handler_main(int signal);
 void	sig_handler_fork(int signal);
