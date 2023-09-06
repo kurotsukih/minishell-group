@@ -12,7 +12,201 @@
 
 #include "headers.h"
 
-char	*strndup_and_trim(char *src, int len, t_data **d)
+static int is_in(char c, char *s)
+{
+	int	i;
+
+	if (s == NULL)
+		return (NO);
+	i = -1;
+	while (s[++i] != '\0')
+		if (s[i] == c)
+			return (YES);
+	return (NO);
+}
+
+char	*substr_of(char *include, char *src, t_data **d)
+{
+	char	*dest;
+	int		i;
+
+	i = -1;
+	while (src[++i] != '\0' && is_in(src[i], include))
+		;
+	dest = (char *)malloc_(i + 1, d);
+	i = -1;
+	while (src[++i] != '\0' && is_in(src[i], include))
+		dest[i] = src[i];
+	return (dest);
+}
+
+char	*substr_till(char *exclude, char *src, t_data **d)
+{
+	char	*dest;
+	int		i;
+
+	i = -1;
+	while (src[++i] != '\0' && !is_in(src[i], exclude))
+		;
+	dest = (char *)malloc_(i + 1, d);
+	i = -1;
+	while (src[++i] != '\0' && !is_in(src[i], exclude))
+		dest[i] = src[i];
+	return (dest);
+}
+
+int	skip_spaces(char *s)
+{
+	int	i;
+
+	i = 0;
+	while (s[i] == ' ')
+		i++;
+	return (i);
+	}
+
+char	*redir_(char *s)
+{
+	if (s[0]== '\0')
+		return (NULL);
+	if (s[0] == '>' && s[1] != '>')
+		return (">");
+	if (s[0] == '<' && s[1] != '<')
+		return ("<");
+	if (s[0] == '>' && s[1] == '>')
+		return (">>");
+	if (s[0] == '<' && s[1] == '<')
+		return ("<<");
+	else
+		return (NULL);
+}
+
+static int	is_digit(char c)
+{
+	return (c >= '0' && c < '9');
+}
+
+static int	is_letter(char c)
+{
+	return ((c >= 'a' && c < 'z') || (c >= 'A' && c < 'Z'));
+}
+
+static int	len_alphanum(char *s)
+{
+	int	i;
+
+	if (s == NULL || (!is_digit(s[0]) && !is_letter(s[0])))
+		return (0);
+	i = -1;
+	while (is_digit(s[++i]) || is_letter(s[i]) || s[i] == '_')
+		;
+	return (i);
+}
+
+char	*alphanum_(char *s, t_data **d)
+{
+	int		i;
+	char	*alphanum;
+
+	if (s == NULL || (!is_digit(s[0]) && !is_letter(s[0])))
+		return (NULL);
+	alphanum = (char *)malloc_(len_alphanum(s) + 1, d);
+	i = -1;
+	while (is_digit(s[++i]) || is_letter(s[i]) || s[i] == '_')
+		alphanum[i] = s[i];
+	alphanum[i] = '\0';
+	return (alphanum);
+}
+
+// char	*option_(char *s, t_data **d)
+// {
+// 	int		i;
+// 	char	*option;
+
+// 	if (s == NULL || s[0] != '-' || len_alphanum(&s[1]) == 0)
+// 		return (NULL);
+// 	option = (char *)malloc_(len_alphanum(&s[1]) + 2, d);
+// 	option[0] = '-';
+// 	i = 0;
+// 	while (is_digit(s[++i]) || is_letter(s[i]) || s[i] == '_')
+// 		option[i] = s[i];
+// 	option[i] = '\0';
+// 	return (option);
+// }
+
+// dedollarize d
+// exemples : "2&@$A$B^#", '2&@$A$B^#'
+// static char	*token_in_quotes(char *s, t_data **d)
+// {
+// 	char	*token;
+// 	int		i;
+
+// 	if (s[0] != '\'' && s[0] != '\"')
+// 		return (NULL);
+// 	i = 0;
+// 	while(s[i + 1] != s[0] && s[i + 1] != '\0')
+// 		i++;
+// 	if (s[i + 1] == '\0')
+// 		return (NULL);
+// 	token = (char *)malloc_(i, d);
+// 	i = 0;
+// 	while(s[i + 1] != s[0] && s[i + 1] != '\0')
+// 	{
+// 		token[i] = s[i + 1];
+// 		i++;
+// 	}
+// 	token[i] = '\0';
+// 	if (s[0] == '\'')
+// 		return (token);
+// 	return (dedollarized_(token, d));
+// }
+
+// before dedollarization
+// int	len_token(char *s, t_data **d)
+// {
+// 	int		i;
+
+// 	if (s[0] != '\'' || s[0] != '\"')
+// 	{
+// 		i = 0;
+// 		while(s[i + 1] != s[0] && s[i + 1] != '\0')
+// 			i++;
+// 		if (s[i + 1] == '\0')
+// 			return (err_cmd("unclosed quotes", -1, d), FAILURE);
+// 		return (i);
+// 	}
+// 	i = -1;
+// 	while (s[++i] != ' ' && s[i] != '<' && s[i] != '>'  && s[i] != '\'' && s[i] != '\"'&& s[i] != '\0')
+// 		;
+// 	return (i);
+// }
+
+// dedollarize d
+// exemples tokens : abcd, ab_22, -n, "2&@$A$B^#", '2&@$A$B^#'
+// char	*token_(char *s, t_data **d)
+// {
+// 	char	*token;
+// 	int		i;
+
+// 	token = token_in_quotes(s, d);
+// 	if (token == NULL)
+// 		return (err_cmd("unclosed quotes", -1, d), NULL);
+// 	if (ft_strlen(token) > 0)
+// 		return (token);
+// 	i = -1;
+// 	while (s[++i] != ' ' && s[i] != '<' && s[i] != '>'  && s[i] != '\'' && s[i] != '\"'&& s[i] != '\0')
+// 		;
+// 	if (i == 0)
+// 		return (NULL);
+// 	token = (char *)malloc_(i + 1, d); // malloc(len_token)
+// 	i = -1;
+// 	while (s[++i] != ' ' && s[i] != '<' && s[i] != '>'  && s[i] != '\'' && s[i] != '\"'&& s[i] != '\0')
+// 		token[i] = s[i];
+// 	token[i] = '\0';
+// 	return (dedollarized_(token, d));
+// }
+
+char	*strndup_and_trim(char *src, int len, t_data **d) // sunstr_till =
 {
 	int		i;
 	int		i_beg;
@@ -62,7 +256,7 @@ int	strcmp_(char *s1, char *s2)
 	if (s1 != NULL && s2 == NULL)
 		return (1); // ?
 	if (s1 == NULL && s2 == NULL)
-		return (0); // ?
+		return (0);
 	i = 0;
 	while (s1[i] != '\0'|| s2[i] != '\0')
 	{
@@ -90,14 +284,16 @@ int	mod_(char c)
 	return (mod);
 }
 
-// int	unclosed_quotes(char *s)
-// {
-// 	int		mod;
-// 	int		i;
+int	unclosed_quotes(char *s)
+{
+	int		mod;
+	int		i;
 
-// 	mod_(REINIT_QUOTES);
-// 	i = -1;
-// 	while (s[++i] != '\0')
-// 		mod = mod_(s[i]);
-// 	return (mod != QUOTES0);
-// }
+	mod_(REINIT_QUOTES);
+	i = -1;
+	while (s[++i] != '\0')
+		mod = mod_(s[i]);
+	if (mod != QUOTES0)
+		return (FAILURE);
+	return (OK);
+}

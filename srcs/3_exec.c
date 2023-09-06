@@ -32,7 +32,6 @@ int	exec_export(t_data **d)
 	t_env	*new_var;
 	int		i;
 
-	print_cmd("exec export", d);
 	if ((*d)->nb_args == 0)
 		return (exec_env(d), OK);
 	exec_unset(d);

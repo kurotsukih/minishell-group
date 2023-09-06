@@ -29,6 +29,7 @@
 # include "libft.h"
 
 # define REINIT_QUOTES -1
+# define GET_MOD -2
 # define QUOTES0 0
 # define QUOTES1 1
 # define QUOTES2 2
@@ -70,25 +71,22 @@ typedef struct		s_data
 	t_env			**env;
 	int				saved_stdin;
 	int				saved_stdout;
-	int				exit_c;
 	int				nb_args;
-	int				nb_outs;
 	char			**arg;
+	int				in;
+	int				nb_outs;
 	int				*out;
+	int				exit_c;
+	char			*token;
+	char			*redir;
+	int				i;
 	int				i_args;
 	int				i_outs;
-	int				in;
 }						t_data;
 
 // utils parse
 void	calc_nb_args_and_outs(char *s, int len, t_data **d);
 int		heredoc_to_file(char *delim, t_data **d);
-int		len_spaces(char *s);
-char	*redir_(char *s);
-char	*alphanum_(char *s, t_data **d);
-char	*token_(char *s, t_data **d);
-int		len_token(char *s, t_data **d);
-char	*dedollarized_(char *s, t_data **d);
 
 // exec and utils exec                       min args    max   accept <in
 int		exec_1_cmd(t_data **d);
@@ -110,18 +108,27 @@ int		len_env_(t_data **d);
 char	*get_value_from_env(char *key, t_data **d);
 
 // utils str
+int		skip_spaces(char *s);
+char	*substr_till(char *exclude, char *src, t_data **d);
+char	*redir_(char *s);
+char	*alphanum_(char *s, t_data **d);
+char	*dedollarized_(char *s, t_data **d);
+// char	*token_(char *s, t_data **d);
+// int		len_token(char *s, t_data **d);
 char	*strdup_(char *s, t_data **d);
 char	*strndup_and_trim(char *srs, int len, t_data **d);
 int		strcmp_(char *s1, char *s2);
 int		mod_(char c);
+int		unclosed_quotes(char *s);
 
 // general utils
+void	init(t_data ***d, char **env);
 void	*malloc_(int size, t_data **d);
 void	free_(void *mem);
 void	free_2_array(char **arr, int len);
 void	free_all_and_exit(char *msg, int exit_c, t_data **d); /// ***d ?
 int		err_cmd(char *msg, int exit_c, t_data **d);
-void	print_cmd(char *msg, t_data **d);
+void	print_d(char *msg, t_data **d);
 void	sig_handler_main(int signal);
 void	sig_handler_fork(int signal);
 void	sig_handler_heredoc(int signal);

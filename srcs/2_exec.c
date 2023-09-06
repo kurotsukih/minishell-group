@@ -87,7 +87,6 @@ static int	exec_extern_cmd(t_data **d)
 
 static int	exec_1_cmd_1_out(int i, t_data **d)
 {
-	print_cmd("exec_1_cmd_1_out", d);
 	if (dup2((*d)->out[i], STDOUT_FILENO) == -1)
 		return (err_cmd("dup2 stdout pb", -1, d));
 	close((*d)->out[i]); // ?
@@ -117,7 +116,6 @@ int	exec_1_cmd(t_data **d)
 {
 	int	i;
 
-	print_cmd("exec_1_cmd", d);
 	if (dup2((*d)->in, STDIN_FILENO) == -1)
 		return (err_cmd("dup2 start stdin pb", -1, d));
 	// close((*d)->in); ??? creates problems (only for the 2nd cmd-line !???)

@@ -44,6 +44,17 @@
 // 		exit(131);
 // }
 
+void	init(t_data ***d, char **env)
+{
+	*d = (t_data **)malloc_(sizeof(t_data *), NULL);
+	**d = (t_data *)malloc_(sizeof(t_data), *d);
+	(**d)->saved_stdin = dup(STDIN_FILENO);
+	(**d)->saved_stdout = dup(STDOUT_FILENO);
+	init_env(env, *d);
+	// signal(SIGQUIT, SIG_IGN);
+	// signal(SIGINT, &sig_handler_main);
+}
+
 void	*malloc_(int size, t_data **d)
 {
 	void	*mem;
@@ -92,7 +103,7 @@ void	free_2_array(char **arr, int len)
 	free_(arr);
 }
 
-void	print_cmd(char *msg, t_data **d)
+void	print_d(char *msg, t_data **d)
 {
 	int		i;
 
@@ -105,7 +116,8 @@ void	print_cmd(char *msg, t_data **d)
 	}
 	else
 		printf("args = NULL");
-	printf(" : in %d :  %d outs ", (*d)->in, (*d)->nb_outs);
+	printf(" (%s)\n", msg);
+	printf("  in = %d : %d outs ", (*d)->in, (*d)->nb_outs);
 	if ((*d)->out != NULL)
 	{
 		i = -1;
@@ -114,5 +126,5 @@ void	print_cmd(char *msg, t_data **d)
 	}
 	else
 		printf("outs = NULL");
-	printf(" (%s)\n", msg);
+	printf("  token = %s, redir = %s, i = %d, i_args = %d, i_outs = %d\n", (*d)->token, (*d)->redir, (*d)->i, (*d)->i_args, (*d)->i_outs);
 }
