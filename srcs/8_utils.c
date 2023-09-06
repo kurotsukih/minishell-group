@@ -16,7 +16,7 @@
 // {
 // 	if (signal == SIGINT)
 // 	{
-// 		write(1, "\n", 1);
+// 		write_fd(1, "\n");
 // 		rl_on_new_line();
 // 		rl_replace_line("", 0);
 // 		rl_redisplay();
@@ -28,7 +28,7 @@
 // {
 // 	if (signal == SIGINT)
 // 	{
-// 		write(1, "\n", 1);
+// 		write_fd(1, "\n");
 // 		rl_replace_line("", 0);
 // 		rl_redisplay();
 // 		clos e(STDIN_FILENO);
@@ -44,15 +44,24 @@
 // 		exit(131);
 // }
 
-void	init(t_data ***d, char **env)
+void	init_d(t_data ***d, char **env)
 {
 	*d = (t_data **)malloc_(sizeof(t_data *), NULL);
 	**d = (t_data *)malloc_(sizeof(t_data), *d);
 	(**d)->saved_stdin = dup(STDIN_FILENO);
 	(**d)->saved_stdout = dup(STDOUT_FILENO);
-	init_env(env, *d);
+	(**d)->env = arr_to_lst(env, *d);
 	// signal(SIGQUIT, SIG_IGN);
 	// signal(SIGINT, &sig_handler_main);
+}
+
+void	init_cmd(t_data **d)
+{
+	(*d)->redir = NULL;
+	(*d)->token = NULL;
+	dell_all_from_lst((*d)->args);
+	dell_all_from_lst((*d)->outs);
+	//// (*d)->in = ;
 }
 
 void	*malloc_(int size, t_data **d)
@@ -85,46 +94,49 @@ int		err_cmd(char *msg, int exit_c, t_data **d)
 {
 	if (msg == NULL)
 		msg = "";
-	write(2, msg, ft_strlen(msg));
-	write(2, "\n", 1);
+	write_fd_with_n(2, msg);
 	//free_2_array((*d)->arg, (*d)->nb_args);
-	free_((*d)->out);
+	free_((*d)->outs);
 	(*d)->exit_c = exit_c;
 	return (FAILURE);
 }
 
-void	free_2_array(char **arr, int len)
+void	free_2_array(char **arr)
 {
 	int	i;
 
-	i = 0;
-	while (i < len)
+	i = -1;
+	while (arr[++i] != NULL)
 		free_(arr[i]);
 	free_(arr);
 }
 
 void	print_d(char *msg, t_data **d)
 {
-	int		i;
+	t_lst	*cur;
 
-	printf("%d args ", (*d)->nb_args);
-	if ((*d)->arg != NULL)
+	printf("*** %s:\n", msg);
+	cur = *((*d)->args);
+	while (cur != NULL)
 	{
-		i = -1;
-		while (++i < (*d)->nb_args)
-			printf("%s ", (*d)->arg[i]);
+		printf("%s ", (char *)(cur->val));
+		cur= cur->nxt;
 	}
-	else
-		printf("args = NULL");
-	printf(" (%s)\n", msg);
-	printf("  in = %d : %d outs ", (*d)->in, (*d)->nb_outs);
-	if ((*d)->out != NULL)
+	printf(" : %d : ", (*d)->in);
+	cur = *((*d)->outs);
+	while (cur != NULL)
 	{
-		i = -1;
-		while (++i < (*d)->nb_outs)
-			printf("%d : ", (*d)->out[i]);
+		printf("%s ", (char *)(cur->val));
+		cur= cur->nxt;
 	}
-	else
-		printf("outs = NULL");
-	printf("  token = %s, redir = %s, i = %d, i_args = %d, i_outs = %d\n", (*d)->token, (*d)->redir, (*d)->i, (*d)->i_args, (*d)->i_outs);
+	printf("token %s, redir %s, i %d, \n", (*d)->token, (*d)->redir, (*d)->i);
+}
+
+int	write_fd(int fd, char *s){
+	return (write(fd, (char *)s, ft_strlen((char *)s)));
+}
+
+int	write_fd_with_n(int fd, char *s)
+{
+	return (write(fd, (char *)s, ft_strlen((char *)s)) + write(fd, "\n", 1));
 }

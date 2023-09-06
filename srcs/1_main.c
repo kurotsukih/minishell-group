@@ -108,21 +108,29 @@ extern cmd change the env ?
 
 int g_signal = 0;
 
-int	put_token_to_d(t_data **d)
+int	put_token_to_lst_and_oopen_file(t_data **d)
 {
-	if (strcmp_((*d)->redir, "<") == 0)
-		(*d)->in = open((*d)->token, O_RDONLY);
-	else if (strcmp_((*d)->redir, "<<") == 0)
+	int out;
+
+	if (ft_strcmp((*d)->redir, "<<") == 0)
 	{
 		heredoc_to_file((*d)->token, d);
 		(*d)->in = open(TMP_FILE, O_RDONLY);
 	}
-	else if (strcmp_((*d)->redir, ">") == 0)
-		(*d)->out[((*d)->i_outs)++] = open((*d)->token, O_WRONLY | O_CREAT | O_TRUNC, 0666);
-	else if (strcmp_((*d)->redir, ">>") == 0)
-		(*d)->out[((*d)->i_outs)++] = open((*d)->token, O_WRONLY | O_CREAT | O_APPEND, 0666);
+	else if (ft_strcmp((*d)->redir, "<") == 0)
+		(*d)->in = open((*d)->token, O_RDONLY);
+	else if (ft_strcmp((*d)->redir, ">>") == 0)
+	{
+		out = open((*d)->token, O_WRONLY | O_CREAT | O_APPEND, 0666);
+		put_to_lst((void *)(&out), &((*d)->outs), d);
+	}
+	else if (ft_strcmp((*d)->redir, ">") == 0)
+	{
+		out = open((*d)->token, O_WRONLY | O_CREAT | O_TRUNC, 0666);
+		put_to_lst((void *)(&out), &((*d)->outs), d);
+	}
 	else
-		(*d)->arg[((*d)->i_args)++] = (*d)->token;
+		put_to_lst((*d)->token, &((*d)->args), d);
 	// if (((*d)->redir)[0] == '<' && (*d)->in == -1) // doesn't work ??? errno ?
 	//	return (NULL);
 	// if (((*d)->redir)[0] == '>' && (*d)->out[(*d)->i_outs] == -1)
@@ -130,74 +138,54 @@ int	put_token_to_d(t_data **d)
 	return (OK);
 }
 
-static void	get_next_token(char *s, t_data **d)
+static void	calc_next_token(char *s, t_data **d)
 {
 	(*d)->token = NULL;
-	(*d)->i += skip_spaces(&s[(*d)->i]);
-	if (s[(*d)->i] == '\'')
-	{
-		(*d)->token = substr_till("\'", &s[(*d)->i + 1], d);
-		(*d)->i += ft_strlen((*d)->token) - 1;
-	}
-	else if (s[(*d)->i] == '\"')
-	{
-		(*d)->token = substr_till("\"", &s[(*d)->i + 1], d);
-		(*d)->i += ft_strlen((*d)->token) - 1;
-		(*d)->token = dedollarized_((*d)->token, d);
-	}
-	else
-	{
-		(*d)->redir = redir_(&s[(*d)->i]);
-		(*d)->i += ft_strlen((*d)->redir);
-		(*d)->i += skip_spaces(&s[(*d)->i]);
-		(*d)->token = substr_till(" ><\'\"", &s[(*d)->i], d);
-		(*d)->i += ft_strlen((*d)->token) - 1;
-		(*d)->token = dedollarized_((*d)->token, d);
-	}
-}
-
-// no matter what exec_1_cmd returns
-static int	parse_1_cmd(char *s, int len, t_data **d)
-{
-	calc_nb_args_and_outs(s, len, d); // verify
-	if ((*d)->nb_args == -1)
-		return (err_cmd("empty command", -1, d));
-	(*d)->i_args = 0;
-	(*d)->i_outs = 0;
-	(*d)->i = 0;
-	while ((*d)->i < len)
-	{
-		get_next_token(&s[(*d)->i], d);
-		if ((*d)->token == NULL)
-			return (err_cmd("parsing pb", -1, d));
-		if (put_token_to_d(d) == FAILURE)
-			return (err_cmd("open file pb", -1, d));
-		((*d)->i)++;
-	}
-	return (OK);
+	// if (s[(*d)->i] == '\'')
+	// {
+	// 	(*d)->token = substr_till("\'", &s[(*d)->i + 1], d);
+	// 	(*d)->i += ft_strlen((*d)->token) - 1;
+	// }
+	// else if (s[(*d)->i] == '\"')
+	// {
+	// 	(*d)->token = substr_till("\"", &s[(*d)->i + 1], d);
+	// 	(*d)->i += ft_strlen((*d)->token) - 1;
+	// 	(*d)->token = dedollarized_((*d)->token, d);
+	// }
+	// else
+	// {
+		skip_spaces(s, d);
+		calc_redir(s, d);
+		skip_spaces(s, d);
+		(*d)->token = substr_till(" ><\'\"|\0", s, d);
+		// (*d)->token = dedollarized_((*d)->token, d);
+	// }
+	// if (put_token_to_d(d) == FAILURE)
+	// 		return (err_cmd("open file pb", -1, d));
 }
 
 // arg[0] = prog name
-// no matter what parse_and_exec_cmd_line returns
 static int	parse_and_exec_cmd_line(char *s, t_data **d)
 {
-	int	i;
-	int	i_beg;
-
 	if (all_quotes_are_closed(s) != OK)
 		return (err_cmd("uncloses quotes", -1, d));
-	i = 0;
-	while (1)
-	{
-		i_beg = i;
-		while (s[i] != '\0' && (s[i] != '|' || mod_(s[i]) != QUOTES0))
-			i++;
-		if (parse_1_cmd(&s[i_beg], i - i_beg, d) == OK)
-			 exec_1_cmd(d);
-		if (s[i] == '\0')
-			break ;
-		i++;
-	}
+	(*d)->i = 0;
+	// while (1)
+	// {
+		init_cmd(d);
+		while (1)
+		{
+			calc_next_token(s, d);
+			printf("[%s] [%s]\n", (*d)->redir, (*d)->token);
+			if (ft_strlen((*d)->token) == 0)
+				break ;
+		}
+		// exec_cmd(d);
+		// if (s[(*d)->i] == '|')
+		// 	((*d)->i)++;
+		// else
+		// 	break ;
+	// }
 	return (OK);
 }
 
@@ -208,7 +196,7 @@ int	main(int argc, char **argv, char **env)
 
 	(void)argc;
 	(void)argv;
-	init(&d, env);
+	init_d(&d, env);
 	while (1)
 	{
 		cmd_line = NULL;

@@ -41,12 +41,6 @@
 
 extern int g_signal;
 
-typedef struct		s_env
-{
-	char			*var;
-	struct s_env	*nxt;
-}					t_env;
-
 // *cmd = currectly traited cmd
 
 // структура, связанная с открытым файлом :
@@ -66,30 +60,42 @@ typedef struct		s_env
 
 // du p возвращает первый свободный номер ФД
 // а dup2 указать номер нового ФД
+
+typedef struct		s_lst
+{
+	void			*val;
+	struct s_lst	*nxt;
+}					t_lst;
+
 typedef struct		s_data
 {
-	t_env			**env;
+	t_lst			**env;
 	int				saved_stdin;
 	int				saved_stdout;
-	int				nb_args;
-	char			**arg;
+	t_lst			**args;
+	t_lst			**outs;
 	int				in;
-	int				nb_outs;
-	int				*out;
 	int				exit_c;
+	int				i;
 	char			*token;
 	char			*redir;
-	int				i;
-	int				i_args;
-	int				i_outs;
-}						t_data;
+}					t_data;
 
 // utils parse
-void	calc_nb_args_and_outs(char *s, int len, t_data **d);
+int		all_quotes_are_closed(char *s);
+void	skip_spaces(char *s, t_data **d);
+void	calc_redir(char *s, t_data **d);
+char	*alphanum_(char *s, t_data **d);
+char	*substr_till(char *stop, char *src, t_data **d);
 int		heredoc_to_file(char *delim, t_data **d);
+char	*dedollarized_(char *s, t_data **d);
+int		mod_(char c);
+char	*strdup_(char *s, t_data **d);
+char	*strndup_and_trim(char *srs, int len, t_data **d);
+int		strcmp_(char *s1, char *s2);
 
-// exec and utils exec                       min args    max   accept <in
-int		exec_1_cmd(t_data **d);
+// exec                             min args    max   accept <in
+int		exec_cmd(t_data **d);
 int		exec_echo(t_data **d);   // 0           ...   no ?
 int		exec_cd(t_data **d);     // 0           1     no ?
 int		exec_pwd(t_data **d);    // 0           0     no
@@ -100,35 +106,30 @@ int		exec_exit(t_data **d);   // 0           1     no ?
 char	*path_(t_data **d);
 
 // utils env
-void	init_env(char **env_array, t_data **d);
 char	*key_(char *s, t_data **d);
 char 	*val_(char *s, t_data **d);
-char	**env_to_array(t_data **d);
-int		len_env_(t_data **d);
-char	*get_value_from_env(char *key, t_data **d);
+char	*get_val_from_env(char *key, t_data **d);
 
-// utils str
-int		skip_spaces(char *s);
-char	*substr_till(char *exclude, char *src, t_data **d);
-char	*redir_(char *s);
-char	*alphanum_(char *s, t_data **d);
-char	*dedollarized_(char *s, t_data **d);
-// char	*token_(char *s, t_data **d);
-// int		len_token(char *s, t_data **d);
-char	*strdup_(char *s, t_data **d);
-char	*strndup_and_trim(char *srs, int len, t_data **d);
-int		strcmp_(char *s1, char *s2);
-int		mod_(char c);
-int		all_quotes_are_closed(char *s);
+// utils lst
+void	put_to_lst(void *val, t_lst ***lst, t_data **d);
+t_lst	**arr_to_lst(char **arr, t_data **d);
+char	**lst_to_arr(t_lst **lst, t_data **d);
+int		len_lst(t_lst **lst);
+void	del_from_lst(t_lst *to_del, t_lst **lst);
+void	dell_all_from_lst(t_lst **lst);
+void	free_lst(t_lst ***lst);
 
-// general utils
-void	init(t_data ***d, char **env);
+// utils
+void	init_d(t_data ***d, char **env);
+void	init_cmd(t_data **d);
 void	*malloc_(int size, t_data **d);
+void	print_d(char *msg, t_data **d);
+int		write_fd(int fd, char *s);
+int		write_fd_with_n(int fd, char *s);
 void	free_(void *mem);
-void	free_2_array(char **arr, int len);
+void	free_2_array(char **arr);
 void	free_all_and_exit(char *msg, int exit_c, t_data **d); /// ***d ?
 int		err_cmd(char *msg, int exit_c, t_data **d);
-void	print_d(char *msg, t_data **d);
 void	sig_handler_main(int signal);
 void	sig_handler_fork(int signal);
 void	sig_handler_heredoc(int signal);

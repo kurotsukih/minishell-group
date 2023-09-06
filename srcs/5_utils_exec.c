@@ -21,7 +21,7 @@ static char	*dedollarized_1(char *s, int i, t_data **d)
 	int		k;
 
 	key = alphanum_(&(s[i + 1]), d);
-	val = get_value_from_env(key, d);
+	val = get_val_from_env(key, d);
 	if (val == NULL)
 		return (err_cmd("doll conversion not found", -1, d), NULL);
 	len = ft_strlen(s) - ft_strlen(key) + ft_strlen(val);
@@ -94,21 +94,14 @@ char	*path_(t_data **d)
 	char	*full_path;
 	int		i;
 	int		i_beg;
-/*
-/home/an/.local/bin: 19
-/home/an/.nvm/versions/node/v20.5.1/bin: 59
-/home/an/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/us
-*/
-	paths = get_value_from_env("PATH", d);
+
+	paths = get_val_from_env("PATH", d);
 	i_beg = 0;
 	i = 0;
-	// int k = 0;
 	while (i < (int)ft_strlen(paths))
 	{
 		path = substr_till(":", &(paths[i_beg]), d);
-		//printf("i=%d path = [%s]\n", i, path);
-		// path = strndup_and_trim(&(paths_str[i_beg]), i - i_beg, d);
-		full_path = full_path_(path, (*d)->arg[0], d);
+		full_path = full_path_(path, (*((*d)->args))->val, d);
 		if (access(full_path, X_OK) == 0)
 			return (full_path);
 		i += ft_strlen(path) + 1;

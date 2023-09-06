@@ -16,104 +16,83 @@ int	exec_pwd(t_data **d)
 {
 	char	*s;
 
-	if ((*d)->nb_args > 1)
+	if (len_lst((*d)->args) > 1)
 		return (err_cmd("pwd : too many arguments", -1, d));
 	s = getcwd(NULL, 0);
 	if (s == NULL)
 		return (err_cmd("pwd : getcwd failed", -1, d));
-	write(1, s, ft_strlen(s));
-	write(1, "\n", 1);
+	write_fd_with_n(1, s);
 	free_(s);
 	return (OK);
 }
 
 int	exec_export(t_data **d)
 {
-	t_env	*new_var;
-	int		i;
+	t_lst	*cur;
 
-	if ((*d)->nb_args == 0)
+	if (len_lst((*d)->args) == 1)
 		return (exec_env(d), OK);
 	exec_unset(d);
-	i = 0;
-	while (++i < (*d)->nb_args)
+	cur = (*((*d)->args))->nxt;
+	while (cur != NULL)
 	{
-		new_var = (t_env *)malloc_(sizeof(t_env), d);
-		new_var->var = strdup_((*d)->arg[i], d);
-		if ((*d)->env != NULL)
-			new_var->nxt = *((*d)->env);
-		else
-			new_var->nxt = NULL;
-		*((*d)->env) = new_var;
+		put_to_lst(cur->val, &((*d)->env), d); /// ft_strdup ?
+		cur = cur->nxt;
 	}
 	return (OK);
 }
 
 int	exec_unset(t_data **d)
 {
-	t_env	*var;
-	t_env	*prv;
-	char	*key;
-	int		i;
+	t_lst	*cur;
+	t_lst	*env;
 
-	if ((*d)->env == NULL)
-		return( OK);
-	if ((*d)->nb_args == 1)
+	if (len_lst((*d)->args) == 1)
 		return (err_cmd("unset : too few arguments", -1, d));
-	i = 0;
-	while (++i < (*d)->nb_args)
+	cur = (*((*d)->args))->nxt;
+	while (cur != NULL)
 	{
-		prv = NULL;
-		var = *((*d)->env);
-		while (var != NULL)
+		env = *((*d)->env);
+		while (env != NULL)
 		{
-			key = key_(var->var, d);
-			if (key == NULL)
-				continue ;
-			if (strcmp_(key, (*d)->arg[i]) == 0)
+			if (ft_strncmp(cur->val, env->val, ft_strlen(cur->val)) == 0)
 			{
-				free_(var->var);
-				if (prv != NULL)
-					prv->nxt = var->nxt;
-				else if (*((*d)->env) == var)
-					*((*d)->env) = var->nxt;
-				free_(var);
-				return( OK);
+				del_from_lst(env, (*d)->env);
+				break ;
 			}
-			prv = var;
-			var = var->nxt;
+			env = env->nxt;
 		}
+		cur = cur->nxt;
 	}
 	return (OK);
 }
 
 int	exec_env(t_data **d)
 {
-	t_env	*var;
+	t_lst	*env;
 
 	if ((*d)->env == NULL)
 		return( OK);
-	if ((*d)->nb_args > 1)
+	if (len_lst((*d)->args) > 1)
 		return (err_cmd("env : too many arguments", -1, d));
-	var = *((*d)->env);
-	while (var != NULL)
+	env = *((*d)->env);
+	while (env != NULL)
 	{
-		write(1, var->var, ft_strlen(var->var));
-		write(1, "\n", 1);
-		var = var->nxt;
+		write_fd_with_n(1, env->val);
+		env = env->nxt;
 	}
 	return (OK);
 }
 
 int	exec_exit(t_data **d)
 {
-	if ((*d)->nb_args > 2)
+	if (len_lst((*d)->args) > 2)
 		return (err_cmd("exit : too many arguments", -1, d));
-	if ((*d)->nb_args == 2 && !ft_atoi((*d)->arg[1]))
+	if (len_lst((*d)->args) == 2 && !ft_atoi((*((*d)->args))->nxt->val))
 		return (err_cmd("exit : numeric arg. required", -1, d));
-	if ((*d)->nb_args == 2)
-		free_all_and_exit("", ft_atoi((*d)->arg[1]), d);
-	else
+	if (len_lst((*d)->args) == 1)
 		free_all_and_exit("", (*d)->exit_c, d);
+	else if (len_lst((*d)->args) == 2)
+		free_all_and_exit("", ft_atoi((*((*d)->args))->nxt->val), d);
 	return (OK);
 }

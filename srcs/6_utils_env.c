@@ -12,25 +12,6 @@
 
 #include "headers.h"
 
-void	init_env(char **env_array, t_data **d)
-{
-	int		i;
-	t_env	*new;
-
-	(*d)->env = (t_env **)malloc_(sizeof(t_env *), d);
-	*((*d)->env) = NULL;
-	i = -1;
-	while (1)
-	{
-		new = (t_env *)malloc_(sizeof(t_env), d);
-		new->var = env_array[++i];
-		if (new->var == NULL)
-			break ; 
-		new->nxt = *((*d)->env);
-		*((*d)->env) = new;
-	}
-}
-
 char *key_(char *s, t_data **d)
 {
 	char	*key;
@@ -80,49 +61,17 @@ char *val_(char *s, t_data **d)
 	return (val);
 }
 
-char	*get_value_from_env(char *key, t_data **d)
+char	*get_val_from_env(char *key, t_data **d)
 {
-	t_env	*var;
+	t_lst	*env;
 
-	var = *((*d)->env);
-	while (var != NULL)
+	env = *((*d)->env);
+	while (env != NULL)
 	{
-		if (ft_strncmp(key, var->var, ft_strlen(key)) == 0)
-			return (&(var->var[(int)ft_strlen(key) + 1]));
-		var = var->nxt;
+		if (ft_strncmp(key, env->val, ft_strlen(key)) == 0)
+			return (&(((char *)(env->val))[(int)ft_strlen(key) + 1]));
+		env = env->nxt;
 	}
 	return (err_cmd("env variable not found", -1, d), NULL);
 }
 
-char	**env_to_array(t_data **d)
-{
-	int		i;
-	char	**env_array;
-	t_env	*var;
-
-	env_array = (char **)malloc_((len_env_(d) + 1) *sizeof(char *), d);
-	i = -1;
-	var = *((*d)->env);
-	while (var != NULL)
-	{
-		env_array[++i] = var->var;
-		var = var->nxt;
-	}
-	env_array[++i] = NULL;
-	return (env_array);
-}
-
-int len_env_(t_data **d)
-{
-	t_env	*var;
-	int		len;
-
-	len = 0;
-	var = *((*d)->env);
-	while (var != NULL)
-	{
-		len ++;
-		var = var->nxt;
-	}
-	return (len);
-}
