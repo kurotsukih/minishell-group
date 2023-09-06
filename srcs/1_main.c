@@ -159,9 +159,7 @@ static void	get_next_token(char *s, t_data **d)
 // no matter what exec_1_cmd returns
 static int	parse_1_cmd(char *s, int len, t_data **d)
 {
-	printf("call calc_nb_args_and_outs\n");
 	calc_nb_args_and_outs(s, len, d); // verify
-	print_d("calc_nb", d);
 	if ((*d)->nb_args == -1)
 		return (err_cmd("empty command", -1, d));
 	(*d)->i_args = 0;
@@ -174,7 +172,6 @@ static int	parse_1_cmd(char *s, int len, t_data **d)
 			return (err_cmd("parsing pb", -1, d));
 		if (put_token_to_d(d) == FAILURE)
 			return (err_cmd("open file pb", -1, d));
-		print_d("parse_1_cmd", d);
 		((*d)->i)++;
 	}
 	return (OK);
@@ -187,18 +184,16 @@ static int	parse_and_exec_cmd_line(char *s, t_data **d)
 	int	i;
 	int	i_beg;
 
-	printf("parse line\n");
-	if (unclosed_quotes(s) != YES)
+	if (all_quotes_are_closed(s) != OK)
 		return (err_cmd("uncloses quotes", -1, d));
 	i = 0;
 	while (1)
 	{
-		printf("parse line i = %d\n", i);
 		i_beg = i;
 		while (s[i] != '\0' && (s[i] != '|' || mod_(s[i]) != QUOTES0))
 			i++;
 		if (parse_1_cmd(&s[i_beg], i - i_beg, d) == OK)
-			exec_1_cmd(d);
+			 exec_1_cmd(d);
 		if (s[i] == '\0')
 			break ;
 		i++;

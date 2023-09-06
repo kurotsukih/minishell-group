@@ -67,7 +67,9 @@ static int	exec_extern_cmd(t_data **d)
 	int		len_env;
 	int		status;
 
+	print_d("exec extern", d);
 	path = path_(d); // un chemin relatif ou absolu ?
+	printf("path = %s\n", path);
 	if (path == NULL)
 		path = ".";
 	pid = fork();

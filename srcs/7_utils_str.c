@@ -40,18 +40,19 @@ char	*substr_of(char *include, char *src, t_data **d)
 	return (dest);
 }
 
-char	*substr_till(char *exclude, char *src, t_data **d)
+char	*substr_till(char *stop, char *src, t_data **d)
 {
 	char	*dest;
 	int		i;
 
 	i = -1;
-	while (src[++i] != '\0' && !is_in(src[i], exclude))
+	while (src[++i] != '\0' && !is_in(src[i], stop))
 		;
 	dest = (char *)malloc_(i + 1, d);
 	i = -1;
-	while (src[++i] != '\0' && !is_in(src[i], exclude))
+	while (src[++i] != '\0' && !is_in(src[i], stop))
 		dest[i] = src[i];
+	dest[i] = '\0';
 	return (dest);
 }
 
@@ -284,7 +285,7 @@ int	mod_(char c)
 	return (mod);
 }
 
-int	unclosed_quotes(char *s)
+int	all_quotes_are_closed(char *s)
 {
 	int		mod;
 	int		i;

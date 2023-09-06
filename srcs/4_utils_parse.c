@@ -19,24 +19,19 @@ void calc_nb_args_and_outs(char *s, int len, t_data **d)
 	(*d)->i = 0;
 	while ((*d)->i < len)
 	{
-		printf("1) i=%d\n", (*d)->i);
 		(*d)->token = NULL;
 		(*d)->i += skip_spaces(&s[(*d)->i]);
-		printf("2) i=%d\n", (*d)->i);
 		if (s[(*d)->i] == '\'')
 			(*d)->token = substr_till("\'", &s[(*d)->i + 1], d);
 		else if (s[(*d)->i] == '\"')
-			(*d)->token = substr_till("\"", &s[(*d)->i + 1], d);
+			(*d)->token = substr_till("\"", &s[(*d)->i + 1], d); // \0 ?
 		else
 		{
-			printf("3) i=%d\n", (*d)->i);
 			(*d)->redir = redir_(&s[(*d)->i]);
 			(*d)->i += ft_strlen((*d)->redir);
 			(*d)->i += skip_spaces(&s[(*d)->i]);
-			(*d)->token = substr_till(" ><\'\"", &s[(*d)->i], d);
-			printf("4) i=%d\n", (*d)->i);
+			(*d)->token = substr_till(" ><\'\"\0", &s[(*d)->i], d);
 		}
-		printf("i=%d, token = %s\n", (*d)->i, (*d)->token);
 		(*d)->i += ft_strlen((*d)->token) - 1;
 		if (strcmp_((*d)->redir, ">") == 0 || strcmp_((*d)->redir, ">>") == 0) ////
 			((*d)->nb_outs)++;

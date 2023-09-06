@@ -119,7 +119,7 @@ char	*strdup_(char *s, t_data **d);
 char	*strndup_and_trim(char *srs, int len, t_data **d);
 int		strcmp_(char *s1, char *s2);
 int		mod_(char c);
-int		unclosed_quotes(char *s);
+int		all_quotes_are_closed(char *s);
 
 // general utils
 void	init(t_data ***d, char **env);
