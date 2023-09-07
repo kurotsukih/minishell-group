@@ -95,7 +95,7 @@ int		err_cmd(char *msg, int exit_c, t_data **d)
 	if (msg == NULL)
 		msg = "";
 	write_fd_with_n(2, msg);
-	//free_2_array((*d)->arg, (*d)->nb_args);
+	//free_2_array((*d)->arg, (*d)->nb_args); error because string without malloc ?
 	free_((*d)->outs);
 	(*d)->exit_c = exit_c;
 	return (FAILURE);
@@ -111,11 +111,6 @@ void	free_2_array(char **arr)
 	free_(arr);
 }
 
-// printf("1) out = %d\n",           out);
-// printf("2) out = %p\n",          &out);
-// printf("3) out = %p\n",  (void *)&out);
-// printf("4) out = %p\n",  (int  *)&out);
-// printf("5) out = %d\n", *((int *)&out));
 void	print_d(char *msg, t_data **d)
 {
 	t_lst	*cur;
@@ -142,7 +137,7 @@ void	print_d(char *msg, t_data **d)
 		cur = *((*d)->outs);
 		while (cur != NULL)
 		{
-			printf("%d ", *((int *)&(cur->val)));
+			printf("%d ", *((int *)(cur->val)));
 			cur= cur->nxt;
 		}
 	}

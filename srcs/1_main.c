@@ -108,10 +108,11 @@ extern cmd change the env ?
 
 int g_signal = 0;
 
-int	put_token_to_lst_and_oopen_file(t_data **d)
+int	put_arg_or_fd_to_lst(t_data **d)
 {
-	int out;
+	int *out;
 
+	out = (int *)malloc(sizeof(int));
 	if (ft_strcmp((*d)->redir, "<<") == 0)
 	{
 		heredoc_to_file((*d)->token, d);
@@ -121,13 +122,13 @@ int	put_token_to_lst_and_oopen_file(t_data **d)
 		(*d)->in = open((*d)->token, O_RDONLY);
 	else if (ft_strcmp((*d)->redir, ">>") == 0)
 	{
-		out = open((*d)->token, O_WRONLY | O_CREAT | O_APPEND, 0666);
-		put_to_lst((void *)(&out), &((*d)->outs), d);
+		*out = open((*d)->token, O_WRONLY | O_CREAT | O_APPEND, 0666);
+		put_to_lst((void *)out, &((*d)->outs), d);
 	}
 	else if (ft_strcmp((*d)->redir, ">") == 0)
 	{
-		out = open((*d)->token, O_WRONLY | O_CREAT | O_TRUNC, 0666);
-		put_to_lst((void *)&out, &((*d)->outs), d);
+		*out = open((*d)->token, O_WRONLY | O_CREAT | O_TRUNC, 0666);
+		put_to_lst((void *)out, &((*d)->outs), d);
 	}
 	else
 		put_to_lst((*d)->token, &((*d)->args), d);
@@ -160,7 +161,7 @@ static int	calc_1_redir_and_1_token(char *s, t_data **d)
 		calc_token(" \"\'\0<>|", s, d);
 		// (*d)->token = dedollarized_((*d)->token, d);
 	// }
-	if (put_token_to_lst_and_oopen_file(d) == FAILURE)
+	if (put_arg_or_fd_to_lst(d) == FAILURE)
 		return (err_cmd("open file pb", -1, d));
 	// if (ft_strlen((*d)->token) == 0)
 	// 	return (err_cmd("parse pb", -1, d));
