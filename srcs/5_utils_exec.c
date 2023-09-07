@@ -101,8 +101,7 @@ char	*path_(t_data **d)
 	while (i < (int)ft_strlen(paths))
 	{
 		path = NULL;
-		//path = calc_token(":", &(paths[i_beg]), d);
-		calc_token(":", &(paths[i_beg]), d);
+		calc_token(":\0", &(paths[i_beg]), d);
 		full_path = full_path_(path, (*((*d)->args))->val, d);
 		if (access(full_path, X_OK) == 0)
 			return (full_path);

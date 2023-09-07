@@ -111,29 +111,41 @@ void	free_2_array(char **arr)
 	free_(arr);
 }
 
+// printf("1) out = %d\n",           out);
+// printf("2) out = %p\n",          &out);
+// printf("3) out = %p\n",  (void *)&out);
+// printf("4) out = %p\n",  (int  *)&out);
+// printf("5) out = %d\n", *((int *)&out));
 void	print_d(char *msg, t_data **d)
 {
 	t_lst	*cur;
 
-	printf("D (%s) :\nargs: ", msg);
+	printf("d (%s) :\nargs ", msg);
 	if ((*d)->args == NULL)
 		printf("no args\n");
 	else
 	{
+		// printf("D (%s) :\nargs: ", msg);
 		cur = *((*d)->args);
+		// printf("D (%s) :\nargs: ", msg);
 		while (cur != NULL)
 		{
 			printf("%s ", (char *)(cur->val));
 			cur= cur->nxt;
 		}
 	}
-	// printf(" : %d : ", (*d)->in);
-	// cur = *((*d)->outs);
-	// while (cur != NULL)
-	// {
-	// 	printf("%s ", (char *)(cur->val));
-	// 	cur= cur->nxt;
-	// }
+	printf(" : %d : ", (*d)->in);
+	if ((*d)->outs == NULL)
+		printf("no outs\n");
+	else
+	{
+		cur = *((*d)->outs);
+		while (cur != NULL)
+		{
+			printf("%d ", *((int *)&(cur->val)));
+			cur= cur->nxt;
+		}
+	}
 	printf("\ntoken = [%s], redir = [%s], i = %d\n", (*d)->token, (*d)->redir, (*d)->i);
 }
 
