@@ -115,21 +115,26 @@ void	print_d(char *msg, t_data **d)
 {
 	t_lst	*cur;
 
-	printf("*** %s:\n", msg);
-	cur = *((*d)->args);
-	while (cur != NULL)
+	printf("D (%s) :\nargs: ", msg);
+	if ((*d)->args == NULL)
+		printf("no args\n");
+	else
 	{
-		printf("%s ", (char *)(cur->val));
-		cur= cur->nxt;
+		cur = *((*d)->args);
+		while (cur != NULL)
+		{
+			printf("%s ", (char *)(cur->val));
+			cur= cur->nxt;
+		}
 	}
-	printf(" : %d : ", (*d)->in);
-	cur = *((*d)->outs);
-	while (cur != NULL)
-	{
-		printf("%s ", (char *)(cur->val));
-		cur= cur->nxt;
-	}
-	printf("token %s, redir %s, i %d, \n", (*d)->token, (*d)->redir, (*d)->i);
+	// printf(" : %d : ", (*d)->in);
+	// cur = *((*d)->outs);
+	// while (cur != NULL)
+	// {
+	// 	printf("%s ", (char *)(cur->val));
+	// 	cur= cur->nxt;
+	// }
+	printf("\ntoken = [%s], redir = [%s], i = %d\n", (*d)->token, (*d)->redir, (*d)->i);
 }
 
 int	write_fd(int fd, char *s){

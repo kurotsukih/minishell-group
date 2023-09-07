@@ -69,14 +69,21 @@ typedef struct		s_lst
 
 typedef struct		s_data
 {
+	// minishell params
 	t_lst			**env;
 	int				saved_stdin;
 	int				saved_stdout;
+
+	// cmd_line params
+	int				i;
+
+	// cmd params
 	t_lst			**args;
 	t_lst			**outs;
 	int				in;
 	int				exit_c;
-	int				i;
+
+	// token params
 	char			*token;
 	char			*redir;
 }					t_data;
@@ -86,7 +93,7 @@ int		all_quotes_are_closed(char *s);
 void	skip_spaces(char *s, t_data **d);
 void	calc_redir(char *s, t_data **d);
 char	*alphanum_(char *s, t_data **d);
-char	*substr_till(char *stop, char *src, t_data **d);
+void	calc_token(char *stop, char *s, t_data **d);
 int		heredoc_to_file(char *delim, t_data **d);
 char	*dedollarized_(char *s, t_data **d);
 int		mod_(char c);

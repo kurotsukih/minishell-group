@@ -67,30 +67,32 @@ static int is_in(char c, char *s)
 	return (NO);
 }
 
-char	*substr_till(char *stop, char *s, t_data **d)
+void	calc_token(char *stop, char *s, t_data **d)
 {
-	char	*dest;
+	char	*token;
 	int		i;
 
 	i = (*d)->i;
+	printf("calc token [%s] %d\n", s, (*d)->i);
 	while (1)
 	{
 		if (s[i] == '\0' || is_in(s[i], stop))
 			break ;
 		i++;
 	}
-	dest = (char *)malloc_(i - (*d)->i + 1, d);
+	token = (char *)malloc_(i - (*d)->i + 1, d);
 	i = (*d)->i;
 	while (1)
 	{
 		if (s[i] == '\0' || is_in(s[i], stop))
 			break ;
-		dest[i - (*d)->i] = s[i];
+		token[i - (*d)->i] = s[i];
 		i++;
 	}
-	dest[i - (*d)->i] = '\0';
-	((*d)->i) += i - (*d)->i + 1;
-	return (dest);
+	token[i - (*d)->i] = '\0';
+	((*d)->i) += i - (*d)->i;
+	(*d)->token = token;
+	printf("calc token end, token = %s, %d\n", token, (*d)->i);
 }
 
 int	heredoc_to_file(char *delim, t_data **d)

@@ -114,7 +114,6 @@ void	dell_all_from_lst(t_lst **lst)
 		to_del = cur;
 		del_from_lst(to_del, lst);
 		cur = cur->nxt;
-		free(to_del);
 	}
 }
 

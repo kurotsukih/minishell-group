@@ -112,6 +112,7 @@ int	put_token_to_lst_and_oopen_file(t_data **d)
 {
 	int out;
 
+	printf("put_token_to_lst_and_oopen_file [%s] [%s]\n", (*d)->redir, (*d)->token);
 	if (ft_strcmp((*d)->redir, "<<") == 0)
 	{
 		heredoc_to_file((*d)->token, d);
@@ -138,9 +139,9 @@ int	put_token_to_lst_and_oopen_file(t_data **d)
 	return (OK);
 }
 
-static void	calc_next_token(char *s, t_data **d)
+// no matter what calc_next_token returns
+static int	calc_1_redir_and_1_token(char *s, t_data **d)
 {
-	(*d)->token = NULL;
 	// if (s[(*d)->i] == '\'')
 	// {
 	// 	(*d)->token = substr_till("\'", &s[(*d)->i + 1], d);
@@ -157,26 +158,36 @@ static void	calc_next_token(char *s, t_data **d)
 		skip_spaces(s, d);
 		calc_redir(s, d);
 		skip_spaces(s, d);
-		(*d)->token = substr_till(" ><\'\"|\0", s, d);
+		// printf("call calc_token, i = %d\n", (*d)->i);
+		calc_token(" \"\'\0<>|", s, d);
+		printf("redir = %s, token = %s\n", (*d)->redir, (*d)->token);
 		// (*d)->token = dedollarized_((*d)->token, d);
 	// }
-	// if (put_token_to_d(d) == FAILURE)
-	// 		return (err_cmd("open file pb", -1, d));
+	if (put_token_to_lst_and_oopen_file(d) == FAILURE)
+		return (err_cmd("open file pb", -1, d));
+	// print_d("", d);
+	// if (ft_strlen((*d)->token) == 0)
+	// 	return (err_cmd("parse pb", -1, d));
+	return (OK);
 }
 
 // arg[0] = prog name
+// no matter what parse_and_exec_cmd_line returns
 static int	parse_and_exec_cmd_line(char *s, t_data **d)
 {
 	if (all_quotes_are_closed(s) != OK)
 		return (err_cmd("uncloses quotes", -1, d));
-	(*d)->i = 0;
+	(*d)->i = 0;  // init_cmd_line
 	// while (1)
 	// {
-		init_cmd(d);
+		dell_all_from_lst((*d)->args); // init_cmd(d);
+		dell_all_from_lst((*d)->outs);
+		(*d)->in = -1;
 		while (1)
 		{
-			calc_next_token(s, d);
-			printf("[%s] [%s]\n", (*d)->redir, (*d)->token);
+			(*d)->redir = ""; // init_token
+			(*d)->token = "";
+			calc_1_redir_and_1_token(s, d);
 			if (ft_strlen((*d)->token) == 0)
 				break ;
 		}
