@@ -57,7 +57,6 @@ static int is_in(char c, char *s)
 {
 	int	i;
 
-	// printf("is in [%c] [%s] ?\n", c == '\0' ? '0' : c, s);
 	if (s == NULL)
 		return (NO);
 	i = -1;

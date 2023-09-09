@@ -191,18 +191,15 @@ static int	exec_cmd_line(char *s, t_data **d)
 			if (ft_strlen((*d)->token) == 0)
 				break ;
 		}
-		print_d("1", d);
 		if (len_lst((*d)->outs) == 0)
 		{
 			out = (int *)malloc(sizeof(int));
 			out[0] = dup(STDOUT_FILENO);
-			// dup(STDOUT_FILENO);
-			// int k = 0;
-			// if (dup2(k, STDOUT_FILENO))
-			// 	return (err_cmd("dup2 start stdin pb", -1, d));
+			if (out[0] == -1)
+				return (err_cmd("dup stdout pb", -1, d));
 			put_to_lst((void *)(&out[0]), &((*d)->outs), d);
+			print_d("!", d);
 		}
-		print_d("2", d);
 		exec_cmd(d);
 		if (s[(*d)->i] == '|')
 			((*d)->i)++;

@@ -86,16 +86,20 @@ static int	exec_extern_cmd(t_data **d)
 	return (OK);
 }
 
-			// printf("%d ", *((int *)(cur->val)));
-
-static int	exec_cmd_1_out(int i, t_data **d)
+// printf("%d ", *((int *)(cur->val)));
+static int	exec_cmd_1_fd(int fd, t_data **d)
 {
-	printf("exec cdm 1 out\n");
-	if (dup2( *((int *)((*d)->outs)[i]), STDOUT_FILENO) == -1)
+	char *cmd;
+
+	printf("exec cdm 1 out %d\n", fd);
+	// printf("dup 2 %d\n", *((int *)((*d)->outs)[i])
+	if (dup2(fd, STDOUT_FILENO) == -1)
 		return (err_cmd("dup2 stdout pb", -1, d));
-	printf("exec cdm 1 out\n");
-	close(*((int *)((*d)->outs)[i])); // ?
-	printf("exec cdm 1 out\n");
+	close(fd); // err segm
+
+	cmd = ((char *)((((*d)->args[0]))->val));
+
+	printf("cmd = %s\n", cmd);
 	if (ft_strcmp((char *)((*d)->args[0]), "echo") == 0)
 		exec_echo(d);
 	else if (ft_strcmp((char *)((*d)->args[0]), "cd") == 0)
@@ -129,7 +133,7 @@ int	exec_cmd(t_data **d)
 	out = *((*d)->outs);
 	while (out != NULL)
 	{
-		exec_cmd_1_out(*((int *)(out)), d);
+		exec_cmd_1_fd(*((int *)(out->val)), d);
 		out = out->nxt;
 	}
 	// if (dup2((*d)->saved_stdin, STDIN_FILENO) == -1)

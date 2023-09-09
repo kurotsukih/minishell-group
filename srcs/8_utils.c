@@ -120,9 +120,7 @@ void	print_d(char *msg, t_data **d)
 		printf("no args\n");
 	else
 	{
-		// printf("D (%s) :\nargs: ", msg);
 		cur = *((*d)->args);
-		// printf("D (%s) :\nargs: ", msg);
 		while (cur != NULL)
 		{
 			printf("%s ", (char *)(cur->val));

@@ -16,6 +16,7 @@ int	exec_pwd(t_data **d)
 {
 	char	*s;
 
+	printf("exec pwd\n");
 	if (len_lst((*d)->args) > 1)
 		return (err_cmd("pwd : too many arguments", -1, d));
 	s = getcwd(NULL, 0);
