@@ -115,7 +115,7 @@ void	print_d(char *msg, t_data **d)
 {
 	t_lst	*cur;
 
-	printf("d (%s) :\nargs ", msg);
+	printf("d %s : ", msg);
 	if ((*d)->args == NULL)
 		printf("no args\n");
 	else
@@ -131,7 +131,7 @@ void	print_d(char *msg, t_data **d)
 	}
 	printf(" : %d : ", (*d)->in);
 	if ((*d)->outs == NULL)
-		printf("no outs\n");
+		printf("no outs");
 	else
 	{
 		cur = *((*d)->outs);
@@ -141,7 +141,7 @@ void	print_d(char *msg, t_data **d)
 			cur= cur->nxt;
 		}
 	}
-	printf("\ntoken = [%s], redir = [%s], i = %d\n", (*d)->token, (*d)->redir, (*d)->i);
+	printf("\n  token = [%s], redir = [%s], i = %d\n", (*d)->token, (*d)->redir, (*d)->i);
 }
 
 int	write_fd(int fd, char *s){

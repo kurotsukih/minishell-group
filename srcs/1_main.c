@@ -112,7 +112,6 @@ int	put_arg_or_fd_to_lst(t_data **d)
 {
 	int *out;
 
-	out = (int *)malloc(sizeof(int));
 	if (ft_strcmp((*d)->redir, "<<") == 0)
 	{
 		heredoc_to_file((*d)->token, d);
@@ -122,25 +121,27 @@ int	put_arg_or_fd_to_lst(t_data **d)
 		(*d)->in = open((*d)->token, O_RDONLY);
 	else if (ft_strcmp((*d)->redir, ">>") == 0)
 	{
+		out = (int *)malloc(sizeof(int));
 		*out = open((*d)->token, O_WRONLY | O_CREAT | O_APPEND, 0666);
 		put_to_lst((void *)out, &((*d)->outs), d);
 	}
 	else if (ft_strcmp((*d)->redir, ">") == 0)
 	{
+		out = (int *)malloc(sizeof(int));
 		*out = open((*d)->token, O_WRONLY | O_CREAT | O_TRUNC, 0666);
 		put_to_lst((void *)out, &((*d)->outs), d);
 	}
 	else
 		put_to_lst((*d)->token, &((*d)->args), d);
-	// if (((*d)->redir)[0] == '<' && (*d)->in == -1) // doesn't work ??? errno ?
+	// if (((*d)->redir)[0] == '<' && (*d)->in == -1)
 	//	return (NULL);
-	// if (((*d)->redir)[0] == '>' && (*d)->out[(*d)->i_outs] == -1)
+	// if (((*d)->redir)[0] == '>' && out == -1)
 	// 	return (NULL);
 	return (OK);
 }
 
 // no matter what calc_next_token returns
-static int	calc_1_redir_and_1_token(char *s, t_data **d)
+static int	calc_1_token(char *s, t_data **d)
 {
 	// if (s[(*d)->i] == '\'')
 	// {
@@ -159,7 +160,7 @@ static int	calc_1_redir_and_1_token(char *s, t_data **d)
 		calc_redir(s, d);
 		skip_spaces(s, d);
 		calc_token(" \"\'\0<>|", s, d);
-		// (*d)->token = dedollarized_((*d)->token, d);
+		(*d)->token = dedollarized_((*d)->token, d);
 	// }
 	if (put_arg_or_fd_to_lst(d) == FAILURE)
 		return (err_cmd("open file pb", -1, d));
@@ -170,26 +171,39 @@ static int	calc_1_redir_and_1_token(char *s, t_data **d)
 
 // arg[0] = prog name
 // no matter what parse_and_exec_cmd_line returns
-static int	parse_and_exec_cmd_line(char *s, t_data **d)
+static int	exec_cmd_line(char *s, t_data **d)
 {
+	int *out;
+
 	if (all_quotes_are_closed(s) != OK)
 		return (err_cmd("uncloses quotes", -1, d));
-	(*d)->i = 0;  // init_cmd_line
+	(*d)->i = 0;  // reinit_cmd_line
 	while (1)
 	{
-		dell_all_from_lst((*d)->args); // init_cmd(d);
+		dell_all_from_lst((*d)->args); // reinit_cmd(d);
 		dell_all_from_lst((*d)->outs);
 		(*d)->in = -1;
 		while (1)
 		{
-			(*d)->redir = ""; // init_token
+			(*d)->redir = ""; // reinit_token
 			(*d)->token = "";
-			calc_1_redir_and_1_token(s, d);
+			calc_1_token(s, d);
 			if (ft_strlen((*d)->token) == 0)
 				break ;
 		}
-		print_d("", d);
-		// exec_cmd(d);
+		print_d("1", d);
+		if (len_lst((*d)->outs) == 0)
+		{
+			out = (int *)malloc(sizeof(int));
+			out[0] = dup(STDOUT_FILENO);
+			// dup(STDOUT_FILENO);
+			// int k = 0;
+			// if (dup2(k, STDOUT_FILENO))
+			// 	return (err_cmd("dup2 start stdin pb", -1, d));
+			put_to_lst((void *)(&out[0]), &((*d)->outs), d);
+		}
+		print_d("2", d);
+		exec_cmd(d);
 		if (s[(*d)->i] == '|')
 			((*d)->i)++;
 		else
@@ -219,7 +233,7 @@ int	main(int argc, char **argv, char **env)
 		// 	continue;
 		// }
 		add_history(cmd_line);
-		parse_and_exec_cmd_line(cmd_line, d);
+		exec_cmd_line(cmd_line, d);
 		free_(cmd_line);
 	}
 	free_all_and_exit("", 0, d);

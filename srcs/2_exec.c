@@ -17,7 +17,6 @@ int	exec_echo(t_data **d)
 	t_lst	*cur;
 	int		option_n;
 
-	print_d("exec echo", d);
 	option_n = NO;
 	cur = (*((*d)->args))->nxt;
 	while (cur != NULL)
@@ -87,12 +86,16 @@ static int	exec_extern_cmd(t_data **d)
 	return (OK);
 }
 
-static int	exec_1_cmd_1_out(int i, t_data **d)
+			// printf("%d ", *((int *)(cur->val)));
+
+static int	exec_cmd_1_out(int i, t_data **d)
 {
-	print_d("exec_1_cmd_1_out", d);
+	printf("exec cdm 1 out\n");
 	if (dup2( *((int *)((*d)->outs)[i]), STDOUT_FILENO) == -1)
 		return (err_cmd("dup2 stdout pb", -1, d));
+	printf("exec cdm 1 out\n");
 	close(*((int *)((*d)->outs)[i])); // ?
+	printf("exec cdm 1 out\n");
 	if (ft_strcmp((char *)((*d)->args[0]), "echo") == 0)
 		exec_echo(d);
 	else if (ft_strcmp((char *)((*d)->args[0]), "cd") == 0)
@@ -119,17 +122,17 @@ int	exec_cmd(t_data **d)
 {
 	t_lst *out;
 
-	print_d("exec_1_cmd", d);
-	if (dup2((*d)->in, STDIN_FILENO) == -1)
-		return (err_cmd("dup2 start stdin pb", -1, d));
+	// if (dup2((*d)->in, STDIN_FILENO) == -1)
+	// 	return (err_cmd("dup2 start stdin pb", -1, d));
 	// close((*d)->in); ??? creates problems (only for the 2nd cmd-line !???)
+	printf("exec cdm\n");
 	out = *((*d)->outs);
 	while (out != NULL)
 	{
-		exec_1_cmd_1_out(*((int *)(out)), d);
+		exec_cmd_1_out(*((int *)(out)), d);
 		out = out->nxt;
 	}
-	if (dup2((*d)->saved_stdin, STDIN_FILENO) == -1)
-		return (err_cmd("dup2 end stdin pb", -1, d));
+	// if (dup2((*d)->saved_stdin, STDIN_FILENO) == -1)
+	// 	return (err_cmd("dup2 end stdin pb", -1, d));
 	return (OK);
 }
