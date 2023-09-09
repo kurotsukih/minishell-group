@@ -17,9 +17,14 @@ int	exec_pwd(t_data **d)
 	char	*s;
 
 	printf("exec pwd\n");
-	if (len_lst((*d)->args) > 1)
+	print_d("!", d);
+	printf("len list = %d\n", len_lst((*d)->args));
+	printf("exec pwd\n");
+	if (len_lst((*d)->args) > 2) //null
 		return (err_cmd("pwd : too many arguments", -1, d));
+	printf("exec pwd\n");
 	s = getcwd(NULL, 0);
+	printf("exec pwd\n");
 	if (s == NULL)
 		return (err_cmd("pwd : getcwd failed", -1, d));
 	write_fd_with_n(1, s);

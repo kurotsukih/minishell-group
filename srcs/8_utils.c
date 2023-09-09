@@ -148,5 +148,6 @@ int	write_fd(int fd, char *s){
 
 int	write_fd_with_n(int fd, char *s)
 {
+	printf("write_fd_with_n %s\n", s);
 	return (write(fd, (char *)s, ft_strlen((char *)s)) + write(fd, "\n", 1));
 }

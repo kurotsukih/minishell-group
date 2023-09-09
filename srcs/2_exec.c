@@ -96,23 +96,20 @@ static int	exec_cmd_1_fd(int fd, t_data **d)
 	if (dup2(fd, STDOUT_FILENO) == -1)
 		return (err_cmd("dup2 stdout pb", -1, d));
 	close(fd); // err segm
-
 	cmd = ((char *)((((*d)->args[0]))->val));
-
-	printf("cmd = %s\n", cmd);
-	if (ft_strcmp((char *)((*d)->args[0]), "echo") == 0)
+	if (ft_strcmp(cmd, "echo") == 0)
 		exec_echo(d);
-	else if (ft_strcmp((char *)((*d)->args[0]), "cd") == 0)
+	else if (ft_strcmp(cmd, "cd") == 0)
 		exec_cd(d);
-	else if (ft_strcmp((char *)((*d)->args[0]), "pwd") == 0)
+	else if (ft_strcmp(cmd, "pwd") == 0)
 		exec_pwd(d);
-	else if (ft_strcmp((char *)((*d)->args[0]), "export") == 0)
+	else if (ft_strcmp(cmd, "export") == 0)
 		exec_export(d);
-	else if (ft_strcmp((char *)((*d)->args[0]), "unset") == 0)
+	else if (ft_strcmp(cmd, "unset") == 0)
 		exec_unset(d);
-	else if (ft_strcmp((char *)((*d)->args[0]), "env") == 0)
+	else if (ft_strcmp(cmd, "env") == 0)
 		exec_env(d);
-	else if (ft_strcmp((char *)((*d)->args[0]), "exit") == 0)
+	else if (ft_strcmp(cmd, "exit") == 0)
 		exec_exit(d);
 	else
 		exec_extern_cmd(d);

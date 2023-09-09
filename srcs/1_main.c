@@ -198,7 +198,6 @@ static int	exec_cmd_line(char *s, t_data **d)
 			if (out[0] == -1)
 				return (err_cmd("dup stdout pb", -1, d));
 			put_to_lst((void *)(&out[0]), &((*d)->outs), d);
-			print_d("!", d);
 		}
 		exec_cmd(d);
 		if (s[(*d)->i] == '|')
