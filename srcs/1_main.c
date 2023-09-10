@@ -174,7 +174,6 @@ static int	calc_redir_and_token(char *s, t_data **d)
 		(*d)->token = calc_token_str(" \"\'<>|", &s[(*d)->i], d);
 		((*d)->i) += ft_strlen((*d)->token);
 		(*d)->token = dedollarized_((*d)->token, d);
-		printf("dedollarized = %s\n", (*d)->token);
 	// }
 	if (ft_strlen((*d)->token) > 0 && put_arg_or_fd_to_lst(d) == FAILURE)
 		return (err_cmd("open file pb", -1, d));
@@ -190,19 +189,18 @@ static int	exec_cmd_line(char *s, t_data **d)
 	if (all_quotes_are_closed(s) != OK)
 		return (err_cmd("uncloses quotes", -1, d));
 	(*d)->i = 0;
-	while (1) // cmd_line
-	{  // reinit_cmd_line
+	while (1) // cmds
+	{
 		del_all_from_lst((*d)->args);
 		del_all_from_lst((*d)->outs);
-		(*d)->in = -1; // reinit cmd
-		int k = 0;
-		while (k++ < 3)
+		(*d)->in = -1;
+		while (1) // tokens
 		{
 			calc_redir_and_token(s, d);
 			if (ft_strlen((*d)->token) == 0)
 				break ;
 		}
-		if (len_lst((*d)->outs) < 2)
+		if (len_lst((*d)->outs) == 0) // func
 		{
 			out = (int *)malloc(sizeof(int));
 			out[0] = dup(STDOUT_FILENO);
@@ -210,6 +208,7 @@ static int	exec_cmd_line(char *s, t_data **d)
 				return (err_cmd("dup stdout pb", -1, d));
 			put_to_lst((void *)(&out[0]), &((*d)->outs), d);
 		}
+		print_d("after parse", d);
 		exec_cmd(d);
 		if (s[(*d)->i] == '|')
 			((*d)->i)++;

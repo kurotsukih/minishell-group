@@ -3,18 +3,18 @@
 int	len_lst(t_lst **lst)
 {
 	t_lst	*cur;
-	int		len;
+	int		i;
 
 	if (lst == NULL)
 		return (0);
-	len = 0;
+	i = 0;
 	cur = *lst;
 	while (cur != NULL)
 	{
-		len++;
+		i++;
 		cur = cur->nxt;
 	}
-	return (len);
+	return (i);
 }
 
 void	put_to_lst(void *val, t_lst ***lst, t_data **d)
@@ -26,20 +26,19 @@ void	put_to_lst(void *val, t_lst ***lst, t_data **d)
 	new->val = val;
 	new->nxt = NULL;
 	if (*lst == NULL)
+	{
 		*lst = (t_lst **)malloc_(sizeof(t_lst *), d);
+		**lst = NULL;
+	}	
 	cur = **lst;
 	if (cur == NULL)
 	{
 		**lst = new;
 		return ;
 	}
-	while (1)
-	{
-		if (cur != NULL && cur->nxt != NULL)
-			cur = cur->nxt;
-		if (cur != NULL)
-			cur->nxt = new;
-	}
+	while (cur != NULL && cur->nxt != NULL)
+		cur = cur->nxt;
+	cur->nxt = new;
 }
 
 t_lst	**arr_to_lst(char **arr, t_data **d)
@@ -48,34 +47,30 @@ t_lst	**arr_to_lst(char **arr, t_data **d)
 	t_lst **lst;
 
 	i = -1;
-	while (1)
-	{
-		put_to_lst((void *)(arr[++i]), &lst, d);
-		if (arr[i] == NULL)
-			break ;
-	}
+	while (arr[++i] != NULL)
+		put_to_lst((void *)(arr[i]), &lst, d);
 	return (lst);
 }
 
 char	**lst_to_arr(t_lst **lst, t_data **d)
 {
-	int		i;
 	char	**arr;
 	t_lst	*cur;
+	int		len;
+	int		i;
 
 	if (lst == NULL)
 		return (NULL);
-	arr = (char **)malloc_((len_lst(lst) + 1) *sizeof(char *), d);
+	len = len_lst(lst) + 1;
+	arr = (char **)malloc_(len *sizeof(char *), d);
 	cur = *lst;
 	i = -1;
-	while (1)
+	while (++i < len)
 	{
-		arr[++i] = (char *)(cur->val);
-		if (cur->val == NULL)
-			break ;
+		arr[i] = (char *)(cur->val);
 		cur = cur->nxt;
 	}
-	arr[++i] = NULL;
+	arr[i] = NULL;
 	return (arr);
 }
 
@@ -123,7 +118,7 @@ void	del_all_from_lst(t_lst **lst)
 
 void	free_lst(t_lst ***lst)
 {
-	if (*lst == NULL)
+	if (**lst == NULL || *lst == NULL)
 		return ;
 	del_all_from_lst(*lst);
 	free_(*lst);

@@ -16,7 +16,7 @@ int	exec_pwd(t_data **d)
 {
 	char	*s;
 
-	if (len_lst((*d)->args) > 1) //null
+	if (len_lst((*d)->args) > 1)
 		return (err_cmd("pwd : too many arguments", -1, d));
 	s = getcwd(NULL, 0);
 	if (s == NULL)
@@ -44,24 +44,24 @@ int	exec_export(t_data **d)
 
 int	exec_unset(t_data **d)
 {
-	t_lst	*cur;
+	t_lst	*arg;
 	t_lst	*env;
-	int		i;
+	char	*var_name_in_arg;
+	char	*var_name_in_env;
 
 	if (len_lst((*d)->args) == 1)
 		return (err_cmd("unset : too few arguments", -1, d));
-	cur = (*((*d)->args))->nxt;
-	while (cur != NULL)
+	arg = (*((*d)->args))->nxt;
+	while (arg != NULL)
 	{
+		var_name_in_arg = calc_token_str("=\0", (char *)(arg->val), d);
 		env = *((*d)->env);
 		// while (env != NULL && env->val != NULL)
 		while (env != NULL)
 		{
-			i = 0;
-			while ( ((char *)(cur->val))[i] != '=' && ((char *)(cur->val))[i] != '\0')
-				i++;
-			printf("* unset %s %d ?\n", (char *)(env->val), i);
-			if (ft_strncmp((char *)(cur->val), (char *)(env->val), i + 1) == 0) // i+1 for the sign =
+			var_name_in_env = calc_token_str("=\0", (char *)(env->val), d);
+			printf("* unset %s %s ?\n", var_name_in_arg, var_name_in_env);
+			if (ft_strcmp(var_name_in_arg, var_name_in_env) == 0)
 			{
 				printf("* OUIIIIIIIIIIIIIIIIII\n");
 				del_from_lst(env, (*d)->env);
@@ -69,7 +69,7 @@ int	exec_unset(t_data **d)
 			}
 			env = env->nxt;
 		}
-		cur = cur->nxt;
+		arg = arg->nxt;
 	}
 	return (OK);
 }
