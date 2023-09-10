@@ -64,18 +64,22 @@ char *val_(char *s, t_data **d)
 char	*get_val_from_env(char *key, t_data **d)
 {
 	t_lst	*env;
-	char	*val;
+	char	*key_env;
+	char	*val_env;
 
-	val = NULL;
+	if (len_lst((*d)->env) == 0)
+		return (NULL);
+	val_env = NULL;
 	env = *((*d)->env);
 	while (env != NULL)
 	{
-		if (ft_strncmp(key, env->val, ft_strlen(key)) == 0)
+		key_env = calc_token_str("=\0", (char *)(env->val), d);
+		if (ft_strcmp(key, key_env) == 0)
 		{
-			val = &(((char *)(env->val))[ft_strlen(key) + 1]);
-			if (val == NULL)
+			val_env = &(((char *)(env->val))[ft_strlen(key) + 1]);
+			if (val_env == NULL)
 				return (err_cmd("env variable not found", -1, d), NULL);
-			return (val);
+			return (val_env);
 		}
 		env = env->nxt;
 	}

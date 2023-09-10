@@ -20,8 +20,11 @@ static char	*dedollarized_1(char *s, int i, t_data **d)
 	char	*val;
 	int		k;
 
-	key = alphanum_(&(s[i + 1]), d);
+	printf("dedollarize_1 %s\n", s);
+	// key = alphanum_(&(s[i + 1]), d);
+	key = &(s[i + 1]);
 	val = get_val_from_env(key, d);
+	printf("key = %s, val = %s\n", key, val);
 	if (val == NULL)
 		return (err_cmd("doll conversion not found", -1, d), NULL);
 	len = ft_strlen(s) - ft_strlen(key) + ft_strlen(val);
@@ -36,30 +39,40 @@ static char	*dedollarized_1(char *s, int i, t_data **d)
 	while(++k < len)
 		dedollarized[k] = s[k + ft_strlen(key) - ft_strlen(val) + 1];
 	dedollarized[k] = '\0';
-	free_(key);
+	//free_(key); NO NEED
+	printf("dedollarize_1 return %s\n", dedollarized);
 	return (dedollarized);
 }
 
+// if fails ?
 char	*dedollarized_(char *s, t_data **d)
 {
-// if fails ?
 	char	*dedollarized;
+	int		mod;
 	int		i;
 
 	mod_(REINIT_QUOTES);
 	i = -1;
-	while (s[++i] == '\0')
-		if (mod_(s[i]) != QUOTES1)
+	// printf("s[0] = %c !!!\n",s[0]);
+	while (s[++i] != '\0')
+	{
+		mod = mod_(s[i]);
+		// printf("s[%d]=%c, mod = %d\n", i, s[i], mod);
+		if (mod != QUOTES1)
 		{
-			if (s[i] == '$' && s[i + 1] == '?')
-				{} // (ft_itoa(exit_code));
-			else if (s[i] == '$')
+			// printf("[%c] == $ ?\n", s[i]);
+			// if (s[i] == '$' && s[i + 1] == '?')
+			// 	{} // (ft_itoa(exit_code));
+			if (s[i] == '$')
 			{
+				// printf("OUI [%c] == $\n", s[i]);
+				// printf("call dedollarize_1\n");
 				dedollarized = dedollarized_1(s, i, d);
 				free_(s);
 				s = dedollarized;
 			}
 		}
+	}
 	return (s);
 }
 

@@ -173,6 +173,7 @@ static int	calc_redir_and_token(char *s, t_data **d)
 		// calc_token(" \"\'<>|", s, d);
 		(*d)->token = calc_token_str(" \"\'<>|", &s[(*d)->i], d);
 		((*d)->i) += ft_strlen((*d)->token);
+		// printf("cal dedollarisez [%s]\n", (*d)->token);
 		(*d)->token = dedollarized_((*d)->token, d);
 	// }
 	if (ft_strlen((*d)->token) > 0 && put_arg_or_fd_to_lst(d) == FAILURE)

@@ -46,24 +46,21 @@ int	exec_unset(t_data **d)
 {
 	t_lst	*arg;
 	t_lst	*env;
-	char	*var_name_in_arg;
-	char	*var_name_in_env;
+	char	*key_arg;
+	char	*key_env;
 
 	if (len_lst((*d)->args) == 1)
 		return (err_cmd("unset : too few arguments", -1, d));
 	arg = (*((*d)->args))->nxt;
 	while (arg != NULL)
 	{
-		var_name_in_arg = calc_token_str("=\0", (char *)(arg->val), d);
+		key_arg = calc_token_str("=\0", (char *)(arg->val), d);
 		env = *((*d)->env);
-		// while (env != NULL && env->val != NULL)
 		while (env != NULL)
 		{
-			var_name_in_env = calc_token_str("=\0", (char *)(env->val), d);
-			printf("* unset %s %s ?\n", var_name_in_arg, var_name_in_env);
-			if (ft_strcmp(var_name_in_arg, var_name_in_env) == 0)
+			key_env = calc_token_str("=\0", (char *)(env->val), d);
+			if (ft_strcmp(key_arg, key_env) == 0)
 			{
-				printf("* OUIIIIIIIIIIIIIIIIII\n");
 				del_from_lst(env, (*d)->env);
 				break ;
 			}
