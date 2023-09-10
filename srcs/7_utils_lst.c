@@ -22,26 +22,24 @@ void	put_to_lst(void *val, t_lst ***lst, t_data **d)
 	t_lst	*new;
 	t_lst	*cur;
 
-
 	new = (t_lst *)malloc_(sizeof(t_lst), d);
 	new->val = val;
 	new->nxt = NULL;
 	if (*lst == NULL)
-	{
 		*lst = (t_lst **)malloc_(sizeof(t_lst *), d);
-		**lst = new;
-		return ;
-	}
-	else if (**lst == NULL)
+	cur = **lst;
+	if (cur == NULL)
 	{
 		**lst = new;
 		return ;
 	}
-	cur = **lst;
-	while (cur != NULL && cur->nxt != NULL)
-		cur = cur->nxt;
-	if (cur != NULL)
-		cur->nxt = new;
+	while (1)
+	{
+		if (cur != NULL && cur->nxt != NULL)
+			cur = cur->nxt;
+		if (cur != NULL)
+			cur->nxt = new;
+	}
 }
 
 t_lst	**arr_to_lst(char **arr, t_data **d)
@@ -86,7 +84,6 @@ void	del_from_lst(t_lst *to_del, t_lst **lst)
 	t_lst	*cur;
 	t_lst	*prv;
 
-	printf("del from list\n");
 	if (lst == NULL)
 		return ;
 	cur = *lst;
@@ -99,7 +96,7 @@ void	del_from_lst(t_lst *to_del, t_lst **lst)
 					prv->nxt = cur->nxt;
 				else if (prv == NULL)
 					*lst = cur->nxt;
-				free_(cur->val);
+				//free_(cur->val); // core dumped
 				free_(cur);
 				break ;
 			}

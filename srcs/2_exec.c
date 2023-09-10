@@ -97,7 +97,7 @@ static int	exec_cmd_fd(int fd, t_data **d)
 		return (err_cmd("dup2 stdout pb", -1, d));
 	close(fd);
 	cmd = ((char *)((((*d)->args[0]))->val));
-	printf("exec %s fd %d\n", cmd, fd);
+	// printf("exec %s fd %d\n", cmd, fd);
 	if (ft_strcmp(cmd, "echo") == 0)
 		exec_echo(d);
 	else if (ft_strcmp(cmd, "cd") == 0)

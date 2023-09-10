@@ -140,14 +140,14 @@ int	put_arg_or_fd_to_lst(t_data **d)
 	return (OK);
 }
 
-static void	calc_token(char *stop, char *s, t_data **d)
-{
-	char	*token;
+// static void	calc_token(char *stop, char *s, t_data **d)
+// {
+// 	char	*token;
 
-	token = calc_token_str(stop, &s[(*d)->i], d);
-	((*d)->i) += ft_strlen(token);
-	(*d)->token = token;
-}
+// 	token = calc_token_str(stop, &s[(*d)->i], d);
+// 	((*d)->i) += ft_strlen(token);
+// 	(*d)->token = token;
+// }
 
 // no matter what calc_next_token returns
 static int	calc_redir_and_token(char *s, t_data **d)
@@ -170,8 +170,11 @@ static int	calc_redir_and_token(char *s, t_data **d)
 		skip_spaces(s, d);
 		calc_redir(s, d);
 		skip_spaces(s, d);
-		calc_token(" \"\'<>|", s, d);
+		// calc_token(" \"\'<>|", s, d);
+		(*d)->token = calc_token_str(" \"\'<>|", &s[(*d)->i], d);
+		((*d)->i) += ft_strlen((*d)->token);
 		(*d)->token = dedollarized_((*d)->token, d);
+		printf("dedollarized = %s\n", (*d)->token);
 	// }
 	if (ft_strlen((*d)->token) > 0 && put_arg_or_fd_to_lst(d) == FAILURE)
 		return (err_cmd("open file pb", -1, d));
@@ -191,7 +194,6 @@ static int	exec_cmd_line(char *s, t_data **d)
 	{  // reinit_cmd_line
 		del_all_from_lst((*d)->args);
 		del_all_from_lst((*d)->outs);
-		print_d("after del_all_from_lst", d);
 		(*d)->in = -1; // reinit cmd
 		int k = 0;
 		while (k++ < 3)

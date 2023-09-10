@@ -141,7 +141,7 @@ char	*calc_token_str(char *stop, char *s, t_data **d)
 		i++;
 	}
 	token[i] = '\0';
-	printf("calc token str %s %s return %s\n", stop, s, token);
+	// printf("calc token str %s %s return %s\n", stop, s, token);
 	return (token);
 }
 

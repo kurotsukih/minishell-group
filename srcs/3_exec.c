@@ -30,7 +30,6 @@ int	exec_export(t_data **d)
 {
 	t_lst	*cur;
 
-	printf("exec export\n");
 	if (len_lst((*d)->args) == 1)
 		return (exec_env(d), OK);
 	exec_unset(d);
@@ -40,7 +39,6 @@ int	exec_export(t_data **d)
 		put_to_lst(cur->val, &((*d)->env), d); /// ft_strdup ?
 		cur = cur->nxt;
 	}
-	printf("exec export return \n");
 	return (OK);
 }
 
@@ -48,23 +46,24 @@ int	exec_unset(t_data **d)
 {
 	t_lst	*cur;
 	t_lst	*env;
+	int		i;
 
-	printf("exec unset\n");
 	if (len_lst((*d)->args) == 1)
 		return (err_cmd("unset : too few arguments", -1, d));
 	cur = (*((*d)->args))->nxt;
 	while (cur != NULL)
 	{
 		env = *((*d)->env);
+		// while (env != NULL && env->val != NULL)
 		while (env != NULL)
 		{
-			printf("strncmp ");
-			printf("%s ",(char *)(cur->val));
-			printf("%s ",(char *)(env->val));
-			printf("%d\n",ft_strlen((char *)(cur->val)));
-			if (ft_strncmp((char *)(cur->val), (char *)(env->val), ft_strlen((char *)(cur->val))) == 0)
+			i = 0;
+			while ( ((char *)(cur->val))[i] != '=' && ((char *)(cur->val))[i] != '\0')
+				i++;
+			printf("* unset %s %d ?\n", (char *)(env->val), i);
+			if (ft_strncmp((char *)(cur->val), (char *)(env->val), i + 1) == 0) // i+1 for the sign =
 			{
-				printf("exec unset * 4\n");
+				printf("* OUIIIIIIIIIIIIIIIIII\n");
 				del_from_lst(env, (*d)->env);
 				break ;
 			}
@@ -72,7 +71,6 @@ int	exec_unset(t_data **d)
 		}
 		cur = cur->nxt;
 	}
-	printf("exec unset return\n");
 	return (OK);
 }
 
@@ -85,7 +83,7 @@ int	exec_env(t_data **d)
 	if (len_lst((*d)->args) > 1)
 		return (err_cmd("env : too many arguments", -1, d));
 	env = *((*d)->env);
-	while (env != NULL)
+	while (env != NULL && env->val != NULL)
 	{
 		write_fd_with_n(1, env->val);
 		env = env->nxt;
