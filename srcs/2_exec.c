@@ -68,15 +68,20 @@ static int	exec_extern_cmd(t_data **d)
 	char	**env_arr;
 	int		status;
 
-	path = path_(d); // un chemin relatif ou absolu ?
-	if (path == NULL)
-		path = "."; // ?
 	pid = fork();
 	if (pid < -1)
 		free_all_and_exit("fork pb", -1, d);
 	if (pid == 0)
 	{
+		path = path_(d); // un chemin relatif ou absolu ?
+		if (path == NULL)
+			path = "."; // ?
+		printf("exec extern, path = %s\n", path);
 		args_arr = lst_to_arr((*d)->args, d);
+		printf("ARR arg[0] = %s\n", args_arr[0]);
+		// int i = 0;
+		// while(args_arr[++i] != NULL)
+		// 	printf("ARR arg = %s\n", args_arr[i]);
 		env_arr = lst_to_arr((*d)->env, d);
 		execve(path, args_arr, env_arr); //if env_array == NULL ? // every execve substitue le processus ???!!!
 		free_2_array(args_arr); //not executed ?
@@ -97,7 +102,6 @@ static int	exec_cmd_fd(int fd, t_data **d)
 		return (err_cmd("dup2 stdout pb", -1, d));
 	close(fd);
 	cmd = ((char *)((((*d)->args[0]))->val));
-	// printf("exec %s fd %d\n", cmd, fd);
 	if (ft_strcmp(cmd, "echo") == 0)
 		exec_echo(d);
 	else if (ft_strcmp(cmd, "cd") == 0)
@@ -124,16 +128,16 @@ int	exec_cmd(t_data **d)
 {
 	t_lst *out;
 
-	// if (dup2((*d)->in, STDIN_FILENO) == -1)
-	// 	return (err_cmd("dup2 start stdin pb", -1, d));
-	// close((*d)->in); ??? creates problems (only for the 2nd cmd-line !???)
+	if (dup2((*d)->in, STDIN_FILENO) == -1)
+		return (err_cmd("dup2 start stdin pb", -1, d));
+	close((*d)->in); //??? creates problems (only for the 2nd cmd-line !???)
 	out = *((*d)->outs);
 	while (out != NULL)
 	{
 		exec_cmd_fd(*((int *)(out->val)), d);
 		out = out->nxt;
 	}
-	// if (dup2((*d)->saved_stdin, STDIN_FILENO) == -1)
-	// 	return (err_cmd("dup2 end stdin pb", -1, d));
+	if (dup2((*d)->saved_stdin, STDIN_FILENO) == -1)
+		return (err_cmd("dup2 end stdin pb", -1, d));
 	return (OK);
 }

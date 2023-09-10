@@ -16,6 +16,7 @@ int	skip_spaces(char *s, t_data **d)
 {
 	int	there_are_skipped_spaces;
 
+	there_are_skipped_spaces = NO;
 	while (s[(*d)->i] == ' ')
 	{	
 		there_are_skipped_spaces = YES;
@@ -26,18 +27,22 @@ int	skip_spaces(char *s, t_data **d)
 
 void	calc_redir(char *s, t_data **d)
 {
+	char	*redir;
+
 	if (s[(*d)->i]== '\0')
-		(*d)->redir = "";
+		redir = "";
 	else if (s[(*d)->i] == '>' && s[(*d)->i + 1] != '>')
-		(*d)->redir = ">";
+		redir = ">";
 	else if (s[(*d)->i] == '<' && s[(*d)->i + 1] != '<')
-		(*d)->redir = "<";
+		redir = "<";
 	else if (s[(*d)->i] == '>' && s[(*d)->i + 1] == '>')
-		(*d)->redir = ">>";
+		redir = ">>";
 	else if (s[(*d)->i] == '<' && s[(*d)->i + 1] == '<')
-		(*d)->redir = "<<";
+		redir = "<<";
 	else
-		(*d)->redir = "";
+		redir = "";
+	// if (ft_strlen(redir) > 0)
+	(*d)->redir = redir;
 	((*d)->i) += ft_strlen((*d)->redir);
 }
 

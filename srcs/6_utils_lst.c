@@ -56,19 +56,20 @@ char	**lst_to_arr(t_lst **lst, t_data **d)
 {
 	char	**arr;
 	t_lst	*cur;
-	int		len;
+	int		len_arr;
 	int		i;
 
 	if (lst == NULL)
 		return (NULL);
-	len = len_lst(lst) + 1;
-	arr = (char **)malloc_(len *sizeof(char *), d);
+	len_arr = len_lst(lst) + 1;
+	arr = (char **)malloc_(len_arr *sizeof(char *), d);
 	cur = *lst;
-	i = -1;
-	while (++i < len)
+	i = 0;
+	while (i < len_arr - 1)
 	{
 		arr[i] = (char *)(cur->val);
 		cur = cur->nxt;
+		i++;
 	}
 	arr[i] = NULL;
 	return (arr);

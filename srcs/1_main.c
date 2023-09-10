@@ -174,21 +174,17 @@ static int	calc_redir_and_token(char *s, t_data **d)
 		((*d)->i) += ft_strlen((*d)->token);
 		(*d)->token = dedollarized_((*d)->token, d);
 	}
-	skip_spaces(s, d);
 	if (ft_strlen((*d)->token) > 0 && put_token_to_d(d) == FAILURE) // token = arg or fd
 		return (err_cmd("get token pb", -1, d));
-	// if (skip_spaces(s, d) == YES)
-	// {
-	// 	free((*d)->token);
-	// 	(*d)->token = " ";
-	// 	put_token_to_d(d);
-	// }
+	skip_spaces(s, d);
+	// if (skip_spaces(s, d) == YES) ...
+	// here we should detect the situations where a paces should be added between tokens (for echo)
+	// here we could add a token " " to d
 	return (OK);
 }
 
 // arg[0] = prog name
 // no matter what parse_and_exec_cmd_line returns
-
 static int	exec_cmd_line(char *s, t_data **d)
 {
 	if (all_quotes_are_closed(s) != OK)
@@ -202,7 +198,6 @@ static int	exec_cmd_line(char *s, t_data **d)
 		while (1) // tokens
 		{
 			calc_redir_and_token(s, d);
-			print_d("*", d);
 			if (ft_strlen((*d)->token) == 0)
 				break ;
 		}
@@ -210,6 +205,7 @@ static int	exec_cmd_line(char *s, t_data **d)
 			put_stdout_to_d(d);
 		if ((*d)->in == -1)
 			put_stdin_to_d(d);
+		print_d("parsed", d);
 		exec_cmd(d);
 		if (s[(*d)->i] != '|')
 			break ;
