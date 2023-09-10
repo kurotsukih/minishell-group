@@ -112,7 +112,6 @@ int	put_arg_or_fd_to_lst(t_data **d)
 {
 	int *out;
 
-	printf("put_arg_or_fd_to_lst\n");
 	if (ft_strcmp((*d)->redir, "<<") == 0)
 	{
 		heredoc_to_file((*d)->token, d);
@@ -141,8 +140,34 @@ int	put_arg_or_fd_to_lst(t_data **d)
 	return (OK);
 }
 
+void	calc_token(char *stop, char *s, t_data **d)
+{
+	char	*token;
+	int		i;
+
+	i = (*d)->i;
+	while (1)
+	{
+		if (s[i] == '\0' || is_in(s[i], stop))
+			break ;
+		i++;
+	}
+	token = (char *)malloc_(i - (*d)->i + 1, d);
+	i = (*d)->i;
+	while (1)
+	{
+		if (s[i] == '\0' || is_in(s[i], stop))
+			break ;
+		token[i - (*d)->i] = s[i];
+		i++;
+	}
+	token[i - (*d)->i] = '\0';
+	((*d)->i) += i - (*d)->i;
+	(*d)->token = token;
+}
+
 // no matter what calc_next_token returns
-static int	calc_1_token(char *s, t_data **d)
+static int	calc_redir_and_token(char *s, t_data **d)
 {
 	(*d)->redir = ""; // reinit_token
 	(*d)->token = "";
@@ -165,10 +190,8 @@ static int	calc_1_token(char *s, t_data **d)
 		calc_token(" \"\'<>|", s, d);
 		(*d)->token = dedollarized_((*d)->token, d);
 	// }
-	print_d("before put token", d);
 	if (ft_strlen((*d)->token) > 0 && put_arg_or_fd_to_lst(d) == FAILURE)
 		return (err_cmd("open file pb", -1, d));
-	print_d("after put token", d);
 	return (OK);
 }
 
@@ -183,12 +206,16 @@ static int	exec_cmd_line(char *s, t_data **d)
 	(*d)->i = 0;
 	while (1) // cmd_line  // reinit_cmd_line
 	{  // reinit_cmd_line
+		printf("i will del all from 2 lists\n");
+		printf("before\n");
+		print_d("before del_all_from_lst", d);
 		del_all_from_lst((*d)->args);
 		del_all_from_lst((*d)->outs);
-		(*d)->in = -1;
-		while (1) // cmd
+		print_d("after del_all_from_lst", d);
+		(*d)->in = -1; // reinit cmd
+		while (1)
 		{
-			calc_1_token(s, d);
+			calc_redir_and_token(s, d);
 			if (ft_strlen((*d)->token) == 0)
 				break ;
 		}
@@ -204,8 +231,12 @@ static int	exec_cmd_line(char *s, t_data **d)
 		if (s[(*d)->i] == '|')
 			((*d)->i)++;
 		else
+		{
+			printf("break\n");
 			break ;
+		}
 	}
+	printf("return\n");
 	return (OK);
 }
 
@@ -220,7 +251,9 @@ int	main(int argc, char **argv, char **env)
 	while (1)
 	{
 		cmd_line = NULL;
+		printf("wait for cmd line\n");
 		cmd_line = readline("$");
+		printf("got cmd line\n");
 		if (cmd_line == NULL) // EOF
 			break ;
 		// if (g_signal == 1)
@@ -231,8 +264,9 @@ int	main(int argc, char **argv, char **env)
 		// }
 		add_history(cmd_line);
 		exec_cmd_line(cmd_line, d);
+		printf("cmd line executed\n");
 		free_(cmd_line);
 	}
-	free_all_and_exit("", 0, d);
+	free_all_and_exit("", 0, d); // never executed ?
 	return (OK); // ?
 }

@@ -92,14 +92,15 @@ typedef struct		s_data
 int		all_quotes_are_closed(char *s);
 void	skip_spaces(char *s, t_data **d);
 void	calc_redir(char *s, t_data **d);
-char	*alphanum_(char *s, t_data **d);
 void	calc_token(char *stop, char *s, t_data **d);
+char	*alphanum_(char *s, t_data **d);
 int		heredoc_to_file(char *delim, t_data **d);
 char	*dedollarized_(char *s, t_data **d);
 int		mod_(char c);
 char	*strdup_(char *s, t_data **d);
 char	*strndup_and_trim(char *srs, int len, t_data **d);
 int		strcmp_(char *s1, char *s2);
+int		is_in(char c, char *s);
 
 // exec                             min args    max   accept <in
 int		exec_cmd(t_data **d);

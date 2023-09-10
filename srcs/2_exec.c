@@ -41,16 +41,16 @@ int	exec_cd(t_data **d)
 	char	*dir;
 	int		res;
 
-	if (len_lst((*d)->args) > 3)
+	if (len_lst((*d)->args) > 2)
 		return (err_cmd("cd : too many arguments", -1, d));
-	if (len_lst((*d)->args) == 2)
+	if (len_lst((*d)->args) == 1)
 	{
 		dir = NULL;
 		dir = get_val_from_env("HOME", d);
 		if (dir == NULL)
 			return (err_cmd("cd : variable HOME not found", -1, d));
 	}
-	else if (len_lst((*d)->args) == 3)
+	else if (len_lst((*d)->args) == 2)
 		dir = (*((*d)->args))->nxt->val;
 	res = chdir(dir);
 	free_(dir);
@@ -87,22 +87,26 @@ static int	exec_extern_cmd(t_data **d)
 }
 
 // printf("%d ", *((int *)(cur->val)));
-static int	exec_cmd_1_fd(int fd, t_data **d)
+static int	exec_cmd_fd(int fd, t_data **d)
 {
 	char *cmd;
 
-	printf("exec cdm 1 out %d\n", fd);
+	printf("exec cdm fd %d\n", fd);
 	// printf("dup 2 %d\n", *((int *)((*d)->outs)[i])
 	if (dup2(fd, STDOUT_FILENO) == -1)
 		return (err_cmd("dup2 stdout pb", -1, d));
-	close(fd); // err segm
+	close(fd);
 	cmd = ((char *)((((*d)->args[0]))->val));
+	printf("cmd = %s\n", cmd);
 	if (ft_strcmp(cmd, "echo") == 0)
 		exec_echo(d);
 	else if (ft_strcmp(cmd, "cd") == 0)
 		exec_cd(d);
-	else if (ft_strcmp(cmd, "pwd") == 0)
+	else if (ft_strcmp(cmd, "pwd") == 0) 
+	{
+		printf("call exec pwd\n");
 		exec_pwd(d);
+	}
 	else if (ft_strcmp(cmd, "export") == 0)
 		exec_export(d);
 	else if (ft_strcmp(cmd, "unset") == 0)
@@ -116,6 +120,7 @@ static int	exec_cmd_1_fd(int fd, t_data **d)
 	if (dup2((*d)->saved_stdout, STDOUT_FILENO) == -1)
 		return (err_cmd("dup2 stdout pb", -1, d));
 	unlink(TMP_FILE);
+	printf("exec cdm fd return\n");
 	return (OK);
 }
 
@@ -130,10 +135,11 @@ int	exec_cmd(t_data **d)
 	out = *((*d)->outs);
 	while (out != NULL)
 	{
-		exec_cmd_1_fd(*((int *)(out->val)), d);
+		exec_cmd_fd(*((int *)(out->val)), d);
 		out = out->nxt;
 	}
 	// if (dup2((*d)->saved_stdin, STDIN_FILENO) == -1)
 	// 	return (err_cmd("dup2 end stdin pb", -1, d));
+	printf("exec cdm return\n");
 	return (OK);
 }

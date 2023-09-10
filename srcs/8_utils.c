@@ -88,8 +88,6 @@ int		err_cmd(char *msg, int exit_c, t_data **d)
 	if (msg == NULL)
 		msg = "";
 	write_fd_with_n(2, msg);
-	//free_2_array((*d)->arg, (*d)->nb_args); error because string without malloc ?
-	free_((*d)->outs);
 	(*d)->exit_c = exit_c;
 	return (FAILURE);
 }
@@ -108,33 +106,37 @@ void	print_d(char *msg, t_data **d)
 {
 	t_lst	*cur;
 
-	printf("d %s : ", msg);
-	if ((*d)->args == NULL || *((*d)->args) == NULL)
-		printf("no args");
-	else
-	{
-		printf("%d args ", len_lst((*d)->args));
-		cur = *((*d)->args);
-		while (cur != NULL)
-		{
-			printf("[%s] ", (char *)(cur->val));
-			cur= cur->nxt;
-		}
-	}
-	printf(" : %d : ", (*d)->in);
-	if ((*d)->outs == NULL || *((*d)->outs) == NULL)
-		printf("no outs");
-	else
-	{
-		printf("%d outs ", len_lst((*d)->outs));
-		cur = *((*d)->outs);
-		while (cur != NULL)
-		{
-			printf("%d ", *((int *)(cur->val)));
-			cur= cur->nxt;
-		}
-	}
-	printf("\n  token = [%s], redir = [%s], i = %d\n", (*d)->token, (*d)->redir, (*d)->i);
+	printf("d ");
+	// printf("%s : ", msg);
+	// if ((*d)->args == NULL)
+	// 	printf("no args");
+	// else
+	// {
+	// 	printf("%d args ", len_lst((*d)->args));
+	// 	cur = *((*d)->args);
+	// 	while (cur != NULL)
+	// 	{
+	// 		printf("[%s] ", (char *)(cur->val));
+	// 		cur= cur->nxt;
+	// 	}
+	// }
+	// printf(" : %d : ", (*d)->in);
+	// if ((*d)->outs == NULL)
+	// 	printf("no outs");
+	// else
+	// {
+	// 	printf("%d outs ", len_lst((*d)->outs));
+	// 	cur = *((*d)->outs);
+	// 	while (cur != NULL)
+	// 	{
+	// 		printf("%d ", *((int *)(cur->val)));
+	// 		cur= cur->nxt;
+	// 	}
+	// }
+	// printf("\n  token = [%s], redir = [%s], i = %d\n", (*d)->token, (*d)->redir, (*d)->i);
+	(void)cur;
+	(void)msg;
+	(void)d;
 }
 
 int	write_fd(int fd, char *s){

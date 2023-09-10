@@ -53,7 +53,7 @@ char	*alphanum_(char *s, t_data **d)
 	return (alphanum);
 }
 
-static int is_in(char c, char *s)
+int is_in(char c, char *s)
 {
 	int	i;
 
@@ -64,32 +64,6 @@ static int is_in(char c, char *s)
 		if (s[i] == c)
 			return (YES);
 	return (NO);
-}
-
-void	calc_token(char *stop, char *s, t_data **d)
-{
-	char	*token;
-	int		i;
-
-	i = (*d)->i;
-	while (1)
-	{
-		if (s[i] == '\0' || is_in(s[i], stop))
-			break ;
-		i++;
-	}
-	token = (char *)malloc_(i - (*d)->i + 1, d);
-	i = (*d)->i;
-	while (1)
-	{
-		if (s[i] == '\0' || is_in(s[i], stop))
-			break ;
-		token[i - (*d)->i] = s[i];
-		i++;
-	}
-	token[i - (*d)->i] = '\0';
-	((*d)->i) += i - (*d)->i;
-	(*d)->token = token;
 }
 
 int	heredoc_to_file(char *delim, t_data **d)

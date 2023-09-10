@@ -23,7 +23,6 @@ void	put_to_lst(void *val, t_lst ***lst, t_data **d)
 	t_lst	*cur;
 
 
-	printf("put_to list\n");
 	new = (t_lst *)malloc_(sizeof(t_lst), d);
 	new->val = val;
 	new->nxt = NULL;
@@ -89,6 +88,8 @@ void	del_from_lst(t_lst *to_del, t_lst **lst)
 
 	if (lst == NULL)
 		return ;
+	printf("del_from_lst\n");
+	//printf("%s will be deleted form lst\n", (char *)(to_del->val));
 	cur = *lst;
 	prv = NULL;
 	while (cur != NULL)
@@ -106,22 +107,26 @@ void	del_from_lst(t_lst *to_del, t_lst **lst)
 		prv = cur;
 		cur = cur->nxt;
 	}
+	printf("deleted form lst\n");
 }
 
 void	del_all_from_lst(t_lst **lst)
 {
 	t_lst	*cur;
-	t_lst	*to_del;
+	t_lst	*nxt;
 
+	printf("del_all from_lst\n");
 	if (lst == NULL)
 		return ;
 	cur = *lst;
 	while (cur != NULL)
 	{
-		to_del = cur;
-		del_from_lst(to_del, lst);
-		cur = cur->nxt;
+		printf("while del all %s\n", (char *)(cur->val));
+		nxt = cur->nxt;
+		del_from_lst(cur, lst);
+		cur = nxt;
 	}
+	printf("all deleted form lst\n");
 }
 
 void	free_lst(t_lst ***lst)
@@ -129,5 +134,5 @@ void	free_lst(t_lst ***lst)
 	if (*lst == NULL)
 		return ;
 	del_all_from_lst(*lst);
-	free(*lst);
+	free_(*lst);
 }
