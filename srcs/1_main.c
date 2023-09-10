@@ -112,6 +112,7 @@ int	put_arg_or_fd_to_lst(t_data **d)
 {
 	int *out;
 
+	printf("put_arg_or_fd_to_lst\n");
 	if (ft_strcmp((*d)->redir, "<<") == 0)
 	{
 		heredoc_to_file((*d)->token, d);
@@ -143,6 +144,8 @@ int	put_arg_or_fd_to_lst(t_data **d)
 // no matter what calc_next_token returns
 static int	calc_1_token(char *s, t_data **d)
 {
+	(*d)->redir = ""; // reinit_token
+	(*d)->token = "";
 	// if (s[(*d)->i] == '\'')
 	// {
 	// 	(*d)->token = substr_till("\'", &s[(*d)->i + 1], d);
@@ -159,13 +162,13 @@ static int	calc_1_token(char *s, t_data **d)
 		skip_spaces(s, d);
 		calc_redir(s, d);
 		skip_spaces(s, d);
-		calc_token(" \"\'\0<>|", s, d);
+		calc_token(" \"\'<>|", s, d);
 		(*d)->token = dedollarized_((*d)->token, d);
 	// }
-	if (put_arg_or_fd_to_lst(d) == FAILURE)
+	print_d("before put token", d);
+	if (ft_strlen((*d)->token) > 0 && put_arg_or_fd_to_lst(d) == FAILURE)
 		return (err_cmd("open file pb", -1, d));
-	// if (ft_strlen((*d)->token) == 0)
-	// 	return (err_cmd("parse pb", -1, d));
+	print_d("after put token", d);
 	return (OK);
 }
 
@@ -177,21 +180,19 @@ static int	exec_cmd_line(char *s, t_data **d)
 
 	if (all_quotes_are_closed(s) != OK)
 		return (err_cmd("uncloses quotes", -1, d));
-	(*d)->i = 0;  // reinit_cmd_line
-	while (1)
-	{
-		dell_all_from_lst((*d)->args); // reinit_cmd(d);
-		dell_all_from_lst((*d)->outs);
+	(*d)->i = 0;
+	while (1) // cmd_line  // reinit_cmd_line
+	{  // reinit_cmd_line
+		del_all_from_lst((*d)->args);
+		del_all_from_lst((*d)->outs);
 		(*d)->in = -1;
-		while (1)
+		while (1) // cmd
 		{
-			(*d)->redir = ""; // reinit_token
-			(*d)->token = "";
 			calc_1_token(s, d);
 			if (ft_strlen((*d)->token) == 0)
 				break ;
 		}
-		if (len_lst((*d)->outs) == 0)
+		if (len_lst((*d)->outs) < 2)
 		{
 			out = (int *)malloc(sizeof(int));
 			out[0] = dup(STDOUT_FILENO);

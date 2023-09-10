@@ -51,17 +51,10 @@ void	init_d(t_data ***d, char **env)
 	(**d)->saved_stdin = dup(STDIN_FILENO);
 	(**d)->saved_stdout = dup(STDOUT_FILENO);
 	(**d)->env = arr_to_lst(env, *d);
+	(**d)->redir = "";
+	(**d)->token = "";
 	// signal(SIGQUIT, SIG_IGN);
 	// signal(SIGINT, &sig_handler_main);
-}
-
-void	init_cmd(t_data **d)
-{
-	(*d)->redir = NULL;
-	(*d)->token = NULL;
-	dell_all_from_lst((*d)->args);
-	dell_all_from_lst((*d)->outs);
-	//// (*d)->in = ;
 }
 
 void	*malloc_(int size, t_data **d)
@@ -116,22 +109,24 @@ void	print_d(char *msg, t_data **d)
 	t_lst	*cur;
 
 	printf("d %s : ", msg);
-	if ((*d)->args == NULL)
-		printf("no args\n");
+	if ((*d)->args == NULL || *((*d)->args) == NULL)
+		printf("no args");
 	else
 	{
+		printf("%d args ", len_lst((*d)->args));
 		cur = *((*d)->args);
 		while (cur != NULL)
 		{
-			printf("%s ", (char *)(cur->val));
+			printf("[%s] ", (char *)(cur->val));
 			cur= cur->nxt;
 		}
 	}
 	printf(" : %d : ", (*d)->in);
-	if ((*d)->outs == NULL)
+	if ((*d)->outs == NULL || *((*d)->outs) == NULL)
 		printf("no outs");
 	else
 	{
+		printf("%d outs ", len_lst((*d)->outs));
 		cur = *((*d)->outs);
 		while (cur != NULL)
 		{

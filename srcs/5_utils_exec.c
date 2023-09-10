@@ -30,11 +30,11 @@ static char	*dedollarized_1(char *s, int i, t_data **d)
 	while (++k < i)
 		dedollarized[k] = s[k];
 	k--;
-	while (++k < i + (int)ft_strlen(val))
+	while (++k < i + ft_strlen(val))
 		dedollarized[k] = val[k - i];
 	k--;
 	while(++k < len)
-		dedollarized[k] = s[k + (int)ft_strlen(key) - (int)ft_strlen(val) + 1];
+		dedollarized[k] = s[k + ft_strlen(key) - ft_strlen(val) + 1];
 	dedollarized[k] = '\0';
 	free_(key);
 	return (dedollarized);
@@ -98,7 +98,7 @@ char	*path_(t_data **d)
 	paths = get_val_from_env("PATH", d);
 	i_beg = 0;
 	i = 0;
-	while (i < (int)ft_strlen(paths))
+	while (i < ft_strlen(paths))
 	{
 		path = NULL;
 		calc_token(":\0", &(paths[i_beg]), d);

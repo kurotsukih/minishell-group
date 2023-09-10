@@ -69,7 +69,7 @@ char	*get_val_from_env(char *key, t_data **d)
 	while (env != NULL)
 	{
 		if (ft_strncmp(key, env->val, ft_strlen(key)) == 0)
-			return (&(((char *)(env->val))[(int)ft_strlen(key) + 1]));
+			return (&(((char *)(env->val))[ft_strlen(key) + 1]));
 		env = env->nxt;
 	}
 	return (err_cmd("env variable not found", -1, d), NULL);

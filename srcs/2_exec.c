@@ -41,16 +41,16 @@ int	exec_cd(t_data **d)
 	char	*dir;
 	int		res;
 
-	if (len_lst((*d)->args) > 2)
+	if (len_lst((*d)->args) > 3)
 		return (err_cmd("cd : too many arguments", -1, d));
-	if (len_lst((*d)->args) == 1)
+	if (len_lst((*d)->args) == 2)
 	{
 		dir = NULL;
 		dir = get_val_from_env("HOME", d);
 		if (dir == NULL)
 			return (err_cmd("cd : variable HOME not found", -1, d));
 	}
-	else if (len_lst((*d)->args) == 2)
+	else if (len_lst((*d)->args) == 3)
 		dir = (*((*d)->args))->nxt->val;
 	res = chdir(dir);
 	free_(dir);

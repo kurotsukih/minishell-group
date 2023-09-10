@@ -123,12 +123,12 @@ t_lst	**arr_to_lst(char **arr, t_data **d);
 char	**lst_to_arr(t_lst **lst, t_data **d);
 int		len_lst(t_lst **lst);
 void	del_from_lst(t_lst *to_del, t_lst **lst);
-void	dell_all_from_lst(t_lst **lst);
+void	del_all_from_lst(t_lst **lst);
 void	free_lst(t_lst ***lst);
 
 // utils
 void	init_d(t_data ***d, char **env);
-void	init_cmd(t_data **d);
+void	reinit_cmd(t_data **d);
 void	*malloc_(int size, t_data **d);
 void	print_d(char *msg, t_data **d);
 int		write_fd(int fd, char *s);

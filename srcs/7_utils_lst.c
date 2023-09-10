@@ -22,12 +22,19 @@ void	put_to_lst(void *val, t_lst ***lst, t_data **d)
 	t_lst	*new;
 	t_lst	*cur;
 
+
+	printf("put_to list\n");
 	new = (t_lst *)malloc_(sizeof(t_lst), d);
 	new->val = val;
 	new->nxt = NULL;
 	if (*lst == NULL)
 	{
 		*lst = (t_lst **)malloc_(sizeof(t_lst *), d);
+		**lst = new;
+		return ;
+	}
+	else if (**lst == NULL)
+	{
 		**lst = new;
 		return ;
 	}
@@ -101,7 +108,7 @@ void	del_from_lst(t_lst *to_del, t_lst **lst)
 	}
 }
 
-void	dell_all_from_lst(t_lst **lst)
+void	del_all_from_lst(t_lst **lst)
 {
 	t_lst	*cur;
 	t_lst	*to_del;
@@ -121,6 +128,6 @@ void	free_lst(t_lst ***lst)
 {
 	if (*lst == NULL)
 		return ;
-	dell_all_from_lst(*lst);
+	del_all_from_lst(*lst);
 	free(*lst);
 }
