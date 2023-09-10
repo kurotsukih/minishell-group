@@ -31,7 +31,7 @@ int	exec_echo(t_data **d)
 		}
 		cur = cur->nxt;
 	}
-	if (option_n == YES)
+	if (option_n == NO)
 		write_fd(1, "\n");
 	return (OK);
 }

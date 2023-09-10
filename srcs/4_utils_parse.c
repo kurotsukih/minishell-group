@@ -35,24 +35,6 @@ void	calc_redir(char *s, t_data **d)
 	((*d)->i) += ft_strlen((*d)->redir);
 }
 
-char	*alphanum_(char *s, t_data **d)
-{
-	int		i;
-	char	*alphanum;
-
-	if (s == NULL || (!ft_isdigit(s[0]) && !ft_isalpha(s[0])))
-		return (NULL);
-	i = -1;
-	while (ft_isdigit(s[++i]) || ft_isalpha(s[i]) || s[i] == '_')
-		;
-	alphanum = (char *)malloc_(i + 1, d);
-	i = -1;
-	while (ft_isdigit(s[++i]) || ft_isalpha(s[i]) || s[i] == '_')
-		alphanum[i] = s[i];
-	alphanum[i] = '\0';
-	return (alphanum);
-}
-
 int is_in(char c, char *s)
 {
 	int	i;
@@ -141,79 +123,17 @@ char	*calc_token_str(char *stop, char *s, t_data **d)
 		i++;
 	}
 	token[i] = '\0';
-	// printf("calc token str %s %s return %s\n", stop, s, token);
 	return (token);
 }
 
-// dedollarize d
-// exemples : "2&@$A$B^#", '2&@$A$B^#'
-// static char	*token_in_quotes(char *s, t_data **d)
-// {
-// 	char	*token;
-// 	int		i;
+int	put_stdout_to_d(t_data **d)
+{
+	int *out;
 
-// 	if (s[0] != '\'' && s[0] != '\"')
-// 		return (NULL);
-// 	i = 0;
-// 	while(s[i + 1] != s[0] && s[i + 1] != '\0')
-// 		i++;
-// 	if (s[i + 1] == '\0')
-// 		return (NULL);
-// 	token = (char *)malloc_(i, d);
-// 	i = 0;
-// 	while(s[i + 1] != s[0] && s[i + 1] != '\0')
-// 	{
-// 		token[i] = s[i + 1];
-// 		i++;
-// 	}
-// 	token[i] = '\0';
-// 	if (s[0] == '\'')
-// 		return (token);
-// 	return (dedollarized_(token, d));
-// }
-
-// before dedollarization
-// int	len_token(char *s, t_data **d)
-// {
-// 	int		i;
-
-// 	if (s[0] != '\'' || s[0] != '\"')
-// 	{
-// 		i = 0;
-// 		while(s[i + 1] != s[0] && s[i + 1] != '\0')
-// 			i++;
-// 		if (s[i + 1] == '\0')
-// 			return (err_cmd("unclosed quotes", -1, d), FAILURE);
-// 		return (i);
-// 	}
-// 	i = -1;
-// 	while (s[++i] != ' ' && s[i] != '<' && s[i] != '>'  && s[i] != '\'' && s[i] != '\"'&& s[i] != '\0')
-// 		;
-// 	return (i);
-// }
-
-// dedollarize d
-// exemples tokens : abcd, ab_22, -n, "2&@$A$B^#", '2&@$A$B^#'
-// char	*token_(char *s, t_data **d)
-// {
-// 	char	*token;
-// 	int		i;
-
-// 	token = token_in_quotes(s, d);
-// 	if (token == NULL)
-// 		return (err_cmd("unclosed quotes", -1, d), NULL);
-// 	if (ft_strlen(token) > 0)
-// 		return (token);
-// 	i = -1;
-// 	while (s[++i] != ' ' && s[i] != '<' && s[i] != '>'  && s[i] != '\'' && s[i] != '\"'&& s[i] != '\0')
-// 		;
-// 	if (i == 0)
-// 		return (NULL);
-// 	token = (char *)malloc_(i + 1, d); // malloc(len_token)
-// 	i = -1;
-// 	while (s[++i] != ' ' && s[i] != '<' && s[i] != '>'  && s[i] != '\'' && s[i] != '\"'&& s[i] != '\0')
-// 		token[i] = s[i];
-// 	token[i] = '\0';
-// 	return (dedollarized_(token, d));
-// }
-
+	out = (int *)malloc(sizeof(int));
+	out[0] = dup(STDOUT_FILENO);
+	if (out[0] == -1)
+		return (err_cmd("dup stdout pb", -1, d));
+	put_to_lst((void *)(&out[0]), &((*d)->outs), d);
+	return (OK);
+}

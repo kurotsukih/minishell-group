@@ -12,6 +12,31 @@
 
 #include "headers.h"
 
+char	*get_val_from_env(char *key, t_data **d)
+{
+	t_lst	*env;
+	char	*key_env;
+	char	*val_env;
+
+	if (len_lst((*d)->env) == 0)
+		return (NULL);
+	val_env = NULL;
+	env = *((*d)->env);
+	while (env != NULL)
+	{
+		key_env = calc_token_str("=\0", (char *)(env->val), d);
+		if (ft_strcmp(key, key_env) == 0)
+		{
+			val_env = &(((char *)(env->val))[ft_strlen(key) + 1]);
+			if (val_env == NULL)
+				return (err_cmd("env variable not found", -1, d), NULL);
+			return (val_env);
+		}
+		env = env->nxt;
+	}
+	return (err_cmd("env variable not found", -1, d), NULL);
+}
+
 static char	*dedollarized_1(char *s, int i, t_data **d)
 {
 	char	*dedollarized;
@@ -20,11 +45,8 @@ static char	*dedollarized_1(char *s, int i, t_data **d)
 	char	*val;
 	int		k;
 
-	printf("dedollarize_1 %s\n", s);
-	// key = alphanum_(&(s[i + 1]), d);
 	key = &(s[i + 1]);
 	val = get_val_from_env(key, d);
-	printf("key = %s, val = %s\n", key, val);
 	if (val == NULL)
 		return (err_cmd("doll conversion not found", -1, d), NULL);
 	len = ft_strlen(s) - ft_strlen(key) + ft_strlen(val);
@@ -40,7 +62,6 @@ static char	*dedollarized_1(char *s, int i, t_data **d)
 		dedollarized[k] = s[k + ft_strlen(key) - ft_strlen(val) + 1];
 	dedollarized[k] = '\0';
 	//free_(key); NO NEED
-	printf("dedollarize_1 return %s\n", dedollarized);
 	return (dedollarized);
 }
 

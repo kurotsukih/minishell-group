@@ -12,37 +12,37 @@
 
 #include "headers.h"
 
-// void	sig_handler_main(int signal)
-// {
-// 	if (signal == SIGINT)
-// 	{
-// 		write_fd(1, "\n");
-// 		rl_on_new_line();
-// 		rl_replace_line("", 0);
-// 		rl_redisplay();
-// 		g_signal = 1;
-// 	}
-// }
+void	sig_handler_main(int signal) // ???
+{
+	if (signal == SIGINT)
+	{
+		write_fd(1, "\n");
+		rl_on_new_line();
+		rl_replace_line("", 0);
+		rl_redisplay();
+		g_signal = 1;
+	}
+}
 
-// void	sig_handler_heredoc(int signal)
-// {
-// 	if (signal == SIGINT)
-// 	{
-// 		write_fd(1, "\n");
-// 		rl_replace_line("", 0);
-// 		rl_redisplay();
-// 		clos e(STDIN_FILENO);
-// 		g_signal = 1;
-// 	}
-// }
+void	sig_handler_heredoc(int signal) // ???
+{
+	if (signal == SIGINT)
+	{
+		write_fd(1, "\n");
+		rl_replace_line("", 0);
+		rl_redisplay();
+		close(STDIN_FILENO);
+		g_signal = 1;
+	}
+}
 
-// void	sig_handler_fork(int signal)
-// {
-// 	if (signal == SIGINT)
-// 		exit(130);
-// 	if (signal == SIGQUIT)
-// 		exit(131);
-// }
+void	sig_handler_fork(int signal) // ???
+{
+	if (signal == SIGINT)
+		exit(130);
+	if (signal == SIGQUIT)
+		exit(131);
+}
 
 void	init_d(t_data ***d, char **env)
 {
@@ -78,8 +78,8 @@ void	free_all_and_exit(char *msg, int exit_c, t_data **d)
 {
 	err_cmd(msg, exit_c, d);
 	//fre e list (*d)->env;
-	// close((*d)->saved_stdin); // ?
-	// close((*d)->saved_stdout); // ?
+	close((*d)->saved_stdin);
+	close((*d)->saved_stdout);
 	exit(exit_c);
 }
 
@@ -87,7 +87,7 @@ int		err_cmd(char *msg, int exit_c, t_data **d)
 {
 	if (msg == NULL)
 		msg = "";
-	write_fd_with_n(2, msg);
+	write_fd(2, msg);
 	(*d)->exit_c = exit_c;
 	return (FAILURE);
 }
@@ -133,9 +133,6 @@ void	print_d(char *msg, t_data **d)
 		}
 	}
 	printf("\n  token = [%s], redir = [%s], i = %d\n", (*d)->token, (*d)->redir, (*d)->i);
-	// (void)cur;
-	// (void)msg;
-	// (void)d;
 }
 
 int	write_fd(int fd, char *s){

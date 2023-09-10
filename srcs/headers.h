@@ -69,40 +69,33 @@ typedef struct		s_lst
 
 typedef struct		s_data
 {
-	// minishell params
 	t_lst			**env;
 	int				saved_stdin;
 	int				saved_stdout;
 
-	// cmd_line params
-	int				i;
+	int				i;      // cmd_line params
 
-	// cmd params
-	t_lst			**args;
+	t_lst			**args; // cmd params
 	t_lst			**outs;
 	int				in;
 	int				exit_c;
 
-	// token params
-	char			*token;
+	char			*token; // token params
 	char			*redir;
 }					t_data;
 
-// utils parse
+// utils parse 9
 int		all_quotes_are_closed(char *s);
 void	skip_spaces(char *s, t_data **d);
 void	calc_redir(char *s, t_data **d);
-char	*alphanum_(char *s, t_data **d);
 char	*calc_token_str(char *stop, char *s, t_data **d);
-int		heredoc_to_file(char *delim, t_data **d);
 char	*dedollarized_(char *s, t_data **d);
 int		mod_(char c);
-char	*strdup_(char *s, t_data **d);
-char	*strndup_and_trim(char *srs, int len, t_data **d);
-int		strcmp_(char *s1, char *s2);
 int		is_in(char c, char *s);
+int		put_stdout_to_d(t_data **d);
+int		heredoc_to_file(char *delim, t_data **d);
 
-// exec                             min args    max   accept <in
+// exec 10                          min args    max   accept <in
 int		exec_cmd(t_data **d);
 int		exec_echo(t_data **d);   // 0           ...   no ?
 int		exec_cd(t_data **d);     // 0           1     no ?
@@ -112,13 +105,9 @@ int		exec_unset(t_data **d);  // 1           ...   no ?
 int		exec_env(t_data **d);    // 0           0     no
 int		exec_exit(t_data **d);   // 0           1     no ?
 char	*path_(t_data **d);
-
-// utils env
-char	*key_(char *s, t_data **d);
-char 	*val_(char *s, t_data **d);
 char	*get_val_from_env(char *key, t_data **d);
 
-// utils lst
+// utils lst 7
 void	put_to_lst(void *val, t_lst ***lst, t_data **d);
 t_lst	**arr_to_lst(char **arr, t_data **d);
 char	**lst_to_arr(t_lst **lst, t_data **d);
@@ -127,9 +116,8 @@ void	del_from_lst(t_lst *to_del, t_lst **lst);
 void	del_all_from_lst(t_lst **lst);
 void	free_lst(t_lst ***lst);
 
-// utils
+// utils 12
 void	init_d(t_data ***d, char **env);
-void	reinit_cmd(t_data **d);
 void	*malloc_(int size, t_data **d);
 void	print_d(char *msg, t_data **d);
 int		write_fd(int fd, char *s);

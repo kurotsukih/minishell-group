@@ -108,7 +108,7 @@ extern cmd change the env ?
 
 int g_signal = 0;
 
-int	put_arg_or_fd_to_lst(t_data **d)
+int	put_arg_or_fd_to_d(t_data **d)
 {
 	int *out;
 
@@ -170,23 +170,20 @@ static int	calc_redir_and_token(char *s, t_data **d)
 		skip_spaces(s, d);
 		calc_redir(s, d);
 		skip_spaces(s, d);
-		// calc_token(" \"\'<>|", s, d);
 		(*d)->token = calc_token_str(" \"\'<>|", &s[(*d)->i], d);
 		((*d)->i) += ft_strlen((*d)->token);
-		// printf("cal dedollarisez [%s]\n", (*d)->token);
 		(*d)->token = dedollarized_((*d)->token, d);
 	// }
-	if (ft_strlen((*d)->token) > 0 && put_arg_or_fd_to_lst(d) == FAILURE)
+	if (ft_strlen((*d)->token) > 0 && put_arg_or_fd_to_d(d) == FAILURE)
 		return (err_cmd("open file pb", -1, d));
 	return (OK);
 }
 
 // arg[0] = prog name
 // no matter what parse_and_exec_cmd_line returns
+
 static int	exec_cmd_line(char *s, t_data **d)
 {
-	int *out;
-
 	if (all_quotes_are_closed(s) != OK)
 		return (err_cmd("uncloses quotes", -1, d));
 	(*d)->i = 0;
@@ -201,15 +198,8 @@ static int	exec_cmd_line(char *s, t_data **d)
 			if (ft_strlen((*d)->token) == 0)
 				break ;
 		}
-		if (len_lst((*d)->outs) == 0) // func
-		{
-			out = (int *)malloc(sizeof(int));
-			out[0] = dup(STDOUT_FILENO);
-			if (out[0] == -1)
-				return (err_cmd("dup stdout pb", -1, d));
-			put_to_lst((void *)(&out[0]), &((*d)->outs), d);
-		}
-		print_d("after parse", d);
+		if (len_lst((*d)->outs) == 0)
+			put_stdout_to_d(d);
 		exec_cmd(d);
 		if (s[(*d)->i] == '|')
 			((*d)->i)++;
@@ -244,5 +234,5 @@ int	main(int argc, char **argv, char **env)
 		free_(cmd_line);
 	}
 	free_all_and_exit("", 0, d); // never executed ?
-	return (OK); // ?
+	return (0);
 }
