@@ -137,12 +137,12 @@ char	*calc_token_str(char *stop, char *s, t_data **d)
 	return (token);
 }
 
-int	put_stdout_to_d(t_data **d)
+int	put_fd_out_to_d(int fd, t_data **d)
 {
 	int *out;
 
 	out = (int *)malloc(sizeof(int));
-	out[0] = dup(STDOUT_FILENO);
+	out[0] = dup(fd);
 	if (out[0] == -1)
 		return (err_cmd("dup stdout pb", -1, d));
 	put_to_lst((void *)(&out[0]), &((*d)->outs), d);

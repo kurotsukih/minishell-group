@@ -79,6 +79,7 @@ typedef struct		s_data
 	t_lst			**outs;
 	int				in;
 	int				exit_c;
+	int				pipe[2];
 
 	char			*token; // token params
 	char			*redir;
@@ -92,7 +93,7 @@ char	*calc_token_str(char *stop, char *s, t_data **d);
 char	*dedollarized_(char *s, t_data **d);
 int		mod_(char c);
 int		is_in(char c, char *s);
-int		put_stdout_to_d(t_data **d);
+int		put_fd_out_to_d(int fd, t_data **d);
 int		put_stdin_to_d(t_data **d);
 int		heredoc_to_file(char *delim, t_data **d);
 

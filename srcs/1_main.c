@@ -104,6 +104,8 @@ extern cmd change the env ?
 // }
 */
 
+// printf("%d ", *((int *)(cur->val)));
+
 #include "headers.h"
 
 int g_signal = 0;
@@ -140,15 +142,6 @@ int	put_token_to_d(t_data **d)
 	return (OK);
 }
 
-// static void	calc_token(char *stop, char *s, t_data **d)
-// {
-// 	char	*token;
-
-// 	token = calc_token_str(stop, &s[(*d)->i], d);
-// 	((*d)->i) += ft_strlen(token);
-// 	(*d)->token = token;
-// }
-
 // no matter what calc_next_token returns
 static int	calc_redir_and_token(char *s, t_data **d)
 {
@@ -178,8 +171,8 @@ static int	calc_redir_and_token(char *s, t_data **d)
 		return (err_cmd("get token pb", -1, d));
 	skip_spaces(s, d);
 	// if (skip_spaces(s, d) == YES) ...
-	// here we should detect the situations where a paces should be added between tokens (for echo)
-	// here we could add a token " " to d
+	// to detect the situations where a space should be added between tokens (for echo)
+	// to add a token " " to d
 	return (OK);
 }
 
@@ -202,7 +195,7 @@ static int	exec_cmd_line(char *s, t_data **d)
 				break ;
 		}
 		if (len_lst((*d)->outs) == 0)
-			put_stdout_to_d(d);
+			put_fd_out_to_d(STDOUT_FILENO, d);
 		if ((*d)->in == -1)
 			put_stdin_to_d(d);
 		print_d("parsed", d);
@@ -210,6 +203,12 @@ static int	exec_cmd_line(char *s, t_data **d)
 		if (s[(*d)->i] != '|')
 			break ;
 		((*d)->i)++;
+		// put_pipe_to_d(d);
+		// if (pipe((*d)->pipe) == -1)
+		// 	return (free_all_and_exit("pipe failed", -1, d), FAILURE);
+		// node->cmds[i_cmd].out_fd = fd[1];
+		// node->cmds[i_cmd].out_pipe_fd = fd[0];
+		// node->cmds[i_cmd + 1].in_fd = fd[0];
 	}
 	return (OK);
 }

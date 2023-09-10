@@ -52,9 +52,8 @@ int	exec_cd(t_data **d)
 	else if (len_lst((*d)->args) == 2)
 		dir = (*((*d)->args))->nxt->val;
 	res = chdir(dir);
-	// printf("dir = %s\n", dir);
-	// printf("res = %d\n", res);
-	// free_(dir); error segm
+	// if (len_lst((*d)->args) == 1)
+	// 	free_(dir);
 	if (res == -1)
 		return (err_cmd("cd : chdir failure", -1, d));
 	return (OK);
@@ -87,12 +86,10 @@ static int	exec_extern_cmd(t_data **d)
 	return (OK);
 }
 
-// printf("%d ", *((int *)(cur->val)));
 static int	exec_cmd_fd(int fd, t_data **d)
 {
 	char *cmd;
 
-	// printf("fd = %d, STDOUT_FILENO = %d\n", fd, STDOUT_FILENO);
 	if (dup2(fd, STDOUT_FILENO) == -1)
 		return (err_cmd("dup2 stdout pb", -1, d));
 	close(fd);
@@ -123,10 +120,9 @@ int	exec_cmd(t_data **d)
 {
 	t_lst *out;
 
-	// printf("(*d)->in = %d, STDIN_FILENO = %d\n", (*d)->in, STDIN_FILENO);
 	if (dup2((*d)->in, STDIN_FILENO) == -1)
 		return (err_cmd("dup2 start stdin pb", -1, d));
-	close((*d)->in); //??? creates problems for the 2nd cmd-line !???)
+	close((*d)->in);
 	out = *((*d)->outs);
 	while (out != NULL)
 	{

@@ -36,7 +36,7 @@ int	exec_export(t_data **d)
 	cur = (*((*d)->args))->nxt;
 	while (cur != NULL)
 	{
-		put_to_lst(cur->val, &((*d)->env), d); /// ft_strdup ?
+		put_to_lst(cur->val, &((*d)->env), d);
 		cur = cur->nxt;
 	}
 	return (OK);
