@@ -16,8 +16,6 @@ int	exec_pwd(t_data **d)
 {
 	char	*s;
 
-	printf("exec pwd\n");
-	print_d("exec pwd", d);
 	if (len_lst((*d)->args) > 1) //null
 		return (err_cmd("pwd : too many arguments", -1, d));
 	s = getcwd(NULL, 0);
@@ -32,6 +30,7 @@ int	exec_export(t_data **d)
 {
 	t_lst	*cur;
 
+	printf("exec export\n");
 	if (len_lst((*d)->args) == 1)
 		return (exec_env(d), OK);
 	exec_unset(d);
@@ -41,6 +40,7 @@ int	exec_export(t_data **d)
 		put_to_lst(cur->val, &((*d)->env), d); /// ft_strdup ?
 		cur = cur->nxt;
 	}
+	printf("exec export return \n");
 	return (OK);
 }
 
@@ -49,6 +49,7 @@ int	exec_unset(t_data **d)
 	t_lst	*cur;
 	t_lst	*env;
 
+	printf("exec unset\n");
 	if (len_lst((*d)->args) == 1)
 		return (err_cmd("unset : too few arguments", -1, d));
 	cur = (*((*d)->args))->nxt;
@@ -57,8 +58,13 @@ int	exec_unset(t_data **d)
 		env = *((*d)->env);
 		while (env != NULL)
 		{
-			if (ft_strncmp(cur->val, env->val, ft_strlen(cur->val)) == 0)
+			printf("strncmp ");
+			printf("%s ",(char *)(cur->val));
+			printf("%s ",(char *)(env->val));
+			printf("%d\n",ft_strlen((char *)(cur->val)));
+			if (ft_strncmp((char *)(cur->val), (char *)(env->val), ft_strlen((char *)(cur->val))) == 0)
 			{
+				printf("exec unset * 4\n");
 				del_from_lst(env, (*d)->env);
 				break ;
 			}
@@ -66,6 +72,7 @@ int	exec_unset(t_data **d)
 		}
 		cur = cur->nxt;
 	}
+	printf("exec unset return\n");
 	return (OK);
 }
 

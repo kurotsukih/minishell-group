@@ -119,6 +119,32 @@ int	mod_(char c)
 	return (mod);
 }
 
+char	*calc_token_str(char *stop, char *s, t_data **d)
+{
+	char	*token;
+	int		i;
+
+	i = 0;
+	while (1)
+	{
+		if (s[i] == '\0' || is_in(s[i], stop))
+			break ;
+		i++;
+	}
+	token = (char *)malloc_(i + 1, d);
+	i = 0;
+	while (1)
+	{
+		if (s[i] == '\0' || is_in(s[i], stop))
+			break ;
+		token[i] = s[i];
+		i++;
+	}
+	token[i] = '\0';
+	printf("calc token str %s %s return %s\n", stop, s, token);
+	return (token);
+}
+
 // dedollarize d
 // exemples : "2&@$A$B^#", '2&@$A$B^#'
 // static char	*token_in_quotes(char *s, t_data **d)

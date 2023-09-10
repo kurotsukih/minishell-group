@@ -78,8 +78,8 @@ void	free_all_and_exit(char *msg, int exit_c, t_data **d)
 {
 	err_cmd(msg, exit_c, d);
 	//fre e list (*d)->env;
-	close((*d)->saved_stdin); // ?
-	close((*d)->saved_stdout); // ?
+	// close((*d)->saved_stdin); // ?
+	// close((*d)->saved_stdout); // ?
 	exit(exit_c);
 }
 
@@ -106,37 +106,36 @@ void	print_d(char *msg, t_data **d)
 {
 	t_lst	*cur;
 
-	printf("d ");
-	// printf("%s : ", msg);
-	// if ((*d)->args == NULL)
-	// 	printf("no args");
-	// else
-	// {
-	// 	printf("%d args ", len_lst((*d)->args));
-	// 	cur = *((*d)->args);
-	// 	while (cur != NULL)
-	// 	{
-	// 		printf("[%s] ", (char *)(cur->val));
-	// 		cur= cur->nxt;
-	// 	}
-	// }
-	// printf(" : %d : ", (*d)->in);
-	// if ((*d)->outs == NULL)
-	// 	printf("no outs");
-	// else
-	// {
-	// 	printf("%d outs ", len_lst((*d)->outs));
-	// 	cur = *((*d)->outs);
-	// 	while (cur != NULL)
-	// 	{
-	// 		printf("%d ", *((int *)(cur->val)));
-	// 		cur= cur->nxt;
-	// 	}
-	// }
-	// printf("\n  token = [%s], redir = [%s], i = %d\n", (*d)->token, (*d)->redir, (*d)->i);
-	(void)cur;
-	(void)msg;
-	(void)d;
+	printf("%s : ", msg);
+	if ((*d)->args == NULL)
+		printf("no args");
+	else
+	{
+		printf("%d args ", len_lst((*d)->args));
+		cur = *((*d)->args);
+		while (cur != NULL)
+		{
+			printf("[%s] ", (char *)(cur->val));
+			cur= cur->nxt;
+		}
+	}
+	printf(" : %d : ", (*d)->in);
+	if ((*d)->outs == NULL)
+		printf("no outs");
+	else
+	{
+		printf("%d outs ", len_lst((*d)->outs));
+		cur = *((*d)->outs);
+		while (cur != NULL)
+		{
+			printf("%d ", *((int *)(cur->val)));
+			cur= cur->nxt;
+		}
+	}
+	printf("\n  token = [%s], redir = [%s], i = %d\n", (*d)->token, (*d)->redir, (*d)->i);
+	// (void)cur;
+	// (void)msg;
+	// (void)d;
 }
 
 int	write_fd(int fd, char *s){

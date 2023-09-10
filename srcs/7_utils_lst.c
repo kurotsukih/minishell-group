@@ -86,10 +86,9 @@ void	del_from_lst(t_lst *to_del, t_lst **lst)
 	t_lst	*cur;
 	t_lst	*prv;
 
+	printf("del from list\n");
 	if (lst == NULL)
 		return ;
-	printf("del_from_lst\n");
-	//printf("%s will be deleted form lst\n", (char *)(to_del->val));
 	cur = *lst;
 	prv = NULL;
 	while (cur != NULL)
@@ -107,7 +106,6 @@ void	del_from_lst(t_lst *to_del, t_lst **lst)
 		prv = cur;
 		cur = cur->nxt;
 	}
-	printf("deleted form lst\n");
 }
 
 void	del_all_from_lst(t_lst **lst)
@@ -115,18 +113,15 @@ void	del_all_from_lst(t_lst **lst)
 	t_lst	*cur;
 	t_lst	*nxt;
 
-	printf("del_all from_lst\n");
 	if (lst == NULL)
 		return ;
 	cur = *lst;
 	while (cur != NULL)
 	{
-		printf("while del all %s\n", (char *)(cur->val));
 		nxt = cur->nxt;
 		del_from_lst(cur, lst);
 		cur = nxt;
 	}
-	printf("all deleted form lst\n");
 }
 
 void	free_lst(t_lst ***lst)

@@ -140,29 +140,12 @@ int	put_arg_or_fd_to_lst(t_data **d)
 	return (OK);
 }
 
-void	calc_token(char *stop, char *s, t_data **d)
+static void	calc_token(char *stop, char *s, t_data **d)
 {
 	char	*token;
-	int		i;
 
-	i = (*d)->i;
-	while (1)
-	{
-		if (s[i] == '\0' || is_in(s[i], stop))
-			break ;
-		i++;
-	}
-	token = (char *)malloc_(i - (*d)->i + 1, d);
-	i = (*d)->i;
-	while (1)
-	{
-		if (s[i] == '\0' || is_in(s[i], stop))
-			break ;
-		token[i - (*d)->i] = s[i];
-		i++;
-	}
-	token[i - (*d)->i] = '\0';
-	((*d)->i) += i - (*d)->i;
+	token = calc_token_str(stop, &s[(*d)->i], d);
+	((*d)->i) += ft_strlen(token);
 	(*d)->token = token;
 }
 
@@ -204,16 +187,14 @@ static int	exec_cmd_line(char *s, t_data **d)
 	if (all_quotes_are_closed(s) != OK)
 		return (err_cmd("uncloses quotes", -1, d));
 	(*d)->i = 0;
-	while (1) // cmd_line  // reinit_cmd_line
+	while (1) // cmd_line
 	{  // reinit_cmd_line
-		printf("i will del all from 2 lists\n");
-		printf("before\n");
-		print_d("before del_all_from_lst", d);
 		del_all_from_lst((*d)->args);
 		del_all_from_lst((*d)->outs);
 		print_d("after del_all_from_lst", d);
 		(*d)->in = -1; // reinit cmd
-		while (1)
+		int k = 0;
+		while (k++ < 3)
 		{
 			calc_redir_and_token(s, d);
 			if (ft_strlen((*d)->token) == 0)
@@ -231,12 +212,8 @@ static int	exec_cmd_line(char *s, t_data **d)
 		if (s[(*d)->i] == '|')
 			((*d)->i)++;
 		else
-		{
-			printf("break\n");
 			break ;
-		}
 	}
-	printf("return\n");
 	return (OK);
 }
 
@@ -251,9 +228,7 @@ int	main(int argc, char **argv, char **env)
 	while (1)
 	{
 		cmd_line = NULL;
-		printf("wait for cmd line\n");
 		cmd_line = readline("$");
-		printf("got cmd line\n");
 		if (cmd_line == NULL) // EOF
 			break ;
 		// if (g_signal == 1)
@@ -264,7 +239,6 @@ int	main(int argc, char **argv, char **env)
 		// }
 		add_history(cmd_line);
 		exec_cmd_line(cmd_line, d);
-		printf("cmd line executed\n");
 		free_(cmd_line);
 	}
 	free_all_and_exit("", 0, d); // never executed ?
