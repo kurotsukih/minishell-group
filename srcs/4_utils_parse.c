@@ -12,10 +12,16 @@
 
 #include "headers.h"
 
-void	skip_spaces(char *s, t_data **d)
+int	skip_spaces(char *s, t_data **d)
 {
+	int	there_are_skipped_spaces;
+
 	while (s[(*d)->i] == ' ')
+	{	
+		there_are_skipped_spaces = YES;
 		((*d)->i)++;
+	}
+	return (there_are_skipped_spaces);
 }
 
 void	calc_redir(char *s, t_data **d)
@@ -135,5 +141,13 @@ int	put_stdout_to_d(t_data **d)
 	if (out[0] == -1)
 		return (err_cmd("dup stdout pb", -1, d));
 	put_to_lst((void *)(&out[0]), &((*d)->outs), d);
+	return (OK);
+}
+
+int	put_stdin_to_d(t_data **d)
+{
+	(*d)->in = dup(STDIN_FILENO);
+	if ((*d)->in == -1)
+		return (err_cmd("dup stdin pb", -1, d));
 	return (OK);
 }

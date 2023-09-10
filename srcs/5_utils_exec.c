@@ -69,31 +69,19 @@ static char	*dedollarized_1(char *s, int i, t_data **d)
 char	*dedollarized_(char *s, t_data **d)
 {
 	char	*dedollarized;
-	int		mod;
 	int		i;
 
-	mod_(REINIT_QUOTES);
 	i = -1;
-	// printf("s[0] = %c !!!\n",s[0]);
 	while (s[++i] != '\0')
-	{
-		mod = mod_(s[i]);
-		// printf("s[%d]=%c, mod = %d\n", i, s[i], mod);
-		if (mod != QUOTES1)
+		if (s[i] == '$')
 		{
-			// printf("[%c] == $ ?\n", s[i]);
-			// if (s[i] == '$' && s[i + 1] == '?')
-			// 	{} // (ft_itoa(exit_code));
-			if (s[i] == '$')
-			{
-				// printf("OUI [%c] == $\n", s[i]);
-				// printf("call dedollarize_1\n");
+			if (s[i + 1] == '?')
+				{} // dedollarized = ft_itoa(exit_code);
+			else
 				dedollarized = dedollarized_1(s, i, d);
-				free_(s);
-				s = dedollarized;
-			}
+			free_(s);
+			s = dedollarized;
 		}
-	}
 	return (s);
 }
 

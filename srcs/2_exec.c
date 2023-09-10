@@ -26,7 +26,7 @@ int	exec_echo(t_data **d)
 		else
 		{
 			write_fd(1, cur->val);
-			if (cur->nxt != NULL)
+			if (cur->nxt != NULL) // echo "$A"R : we should not print " "
 				write_fd(1, " ");
 		}
 		cur = cur->nxt;

@@ -108,7 +108,7 @@ extern cmd change the env ?
 
 int g_signal = 0;
 
-int	put_arg_or_fd_to_d(t_data **d)
+int	put_token_to_d(t_data **d)
 {
 	int *out;
 
@@ -152,30 +152,37 @@ int	put_arg_or_fd_to_d(t_data **d)
 // no matter what calc_next_token returns
 static int	calc_redir_and_token(char *s, t_data **d)
 {
-	(*d)->redir = ""; // reinit_token
-	(*d)->token = "";
-	// if (s[(*d)->i] == '\'')
-	// {
-	// 	(*d)->token = substr_till("\'", &s[(*d)->i + 1], d);
-	// 	(*d)->i += ft_strlen((*d)->token) - 1;
-	// }
-	// else if (s[(*d)->i] == '\"')
-	// {
-	// 	(*d)->token = substr_till("\"", &s[(*d)->i + 1], d);
-	// 	(*d)->i += ft_strlen((*d)->token) - 1;
-	// 	(*d)->token = dedollarized_((*d)->token, d);
-	// }
-	// else
-	// {
-		skip_spaces(s, d);
+	skip_spaces(s, d);
+	(*d)->redir = "";
+	(*d)->token = ""; // free((*d)->token); ?
+	if (s[(*d)->i] == '\'')
+	{
+		(*d)->token = calc_token_str("\'\0", &s[(*d)->i + 1], d);
+		(*d)->i += ft_strlen((*d)->token) + 2; ////
+	}
+	else if (s[(*d)->i] == '\"')
+	{
+		(*d)->token = calc_token_str("\"\0", &s[(*d)->i + 1], d);
+		(*d)->i += ft_strlen((*d)->token) + 2; ////
+		(*d)->token = dedollarized_((*d)->token, d);
+	}
+	else
+	{
 		calc_redir(s, d);
 		skip_spaces(s, d);
 		(*d)->token = calc_token_str(" \"\'<>|", &s[(*d)->i], d);
 		((*d)->i) += ft_strlen((*d)->token);
 		(*d)->token = dedollarized_((*d)->token, d);
+	}
+	skip_spaces(s, d);
+	if (ft_strlen((*d)->token) > 0 && put_token_to_d(d) == FAILURE) // token = arg or fd
+		return (err_cmd("get token pb", -1, d));
+	// if (skip_spaces(s, d) == YES)
+	// {
+	// 	free((*d)->token);
+	// 	(*d)->token = " ";
+	// 	put_token_to_d(d);
 	// }
-	if (ft_strlen((*d)->token) > 0 && put_arg_or_fd_to_d(d) == FAILURE)
-		return (err_cmd("open file pb", -1, d));
 	return (OK);
 }
 
@@ -195,16 +202,18 @@ static int	exec_cmd_line(char *s, t_data **d)
 		while (1) // tokens
 		{
 			calc_redir_and_token(s, d);
+			print_d("*", d);
 			if (ft_strlen((*d)->token) == 0)
 				break ;
 		}
 		if (len_lst((*d)->outs) == 0)
 			put_stdout_to_d(d);
+		if ((*d)->in == -1)
+			put_stdin_to_d(d);
 		exec_cmd(d);
-		if (s[(*d)->i] == '|')
-			((*d)->i)++;
-		else
+		if (s[(*d)->i] != '|')
 			break ;
+		((*d)->i)++;
 	}
 	return (OK);
 }

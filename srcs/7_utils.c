@@ -74,24 +74,6 @@ void free_(void *mem)
 		free(mem);
 }
 
-void	free_all_and_exit(char *msg, int exit_c, t_data **d)
-{
-	err_cmd(msg, exit_c, d);
-	//fre e list (*d)->env;
-	close((*d)->saved_stdin);
-	close((*d)->saved_stdout);
-	exit(exit_c);
-}
-
-int		err_cmd(char *msg, int exit_c, t_data **d)
-{
-	if (msg == NULL)
-		msg = "";
-	write_fd(2, msg);
-	(*d)->exit_c = exit_c;
-	return (FAILURE);
-}
-
 void	free_2_array(char **arr)
 {
 	int	i;
@@ -100,6 +82,26 @@ void	free_2_array(char **arr)
 	while (arr[++i] != NULL)
 		free_(arr[i]);
 	free_(arr);
+}
+
+int		err_cmd(char *msg, int exit_c, t_data **d)
+{
+	if (msg == NULL)
+		msg = "";
+	write_fd_with_n(2, msg);
+	(*d)->exit_c = exit_c;
+	return (FAILURE);
+}
+
+void	free_all_and_exit(char *msg, int exit_c, t_data **d)
+{
+	err_cmd(msg, exit_c, d);
+	//fre e list (*d)->args;
+	//fre e list (*d)->env;
+	close((*d)->saved_stdin);
+	close((*d)->saved_stdout);
+	// free(d);
+	exit(exit_c);
 }
 
 void	print_d(char *msg, t_data **d)

@@ -84,15 +84,16 @@ typedef struct		s_data
 	char			*redir;
 }					t_data;
 
-// utils parse 9
+// utils parse 10
 int		all_quotes_are_closed(char *s);
-void	skip_spaces(char *s, t_data **d);
+int		skip_spaces(char *s, t_data **d);
 void	calc_redir(char *s, t_data **d);
 char	*calc_token_str(char *stop, char *s, t_data **d);
 char	*dedollarized_(char *s, t_data **d);
 int		mod_(char c);
 int		is_in(char c, char *s);
 int		put_stdout_to_d(t_data **d);
+int		put_stdin_to_d(t_data **d);
 int		heredoc_to_file(char *delim, t_data **d);
 
 // exec 10                          min args    max   accept <in
