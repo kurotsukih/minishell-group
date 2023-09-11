@@ -44,7 +44,7 @@ void	sig_handler_fork(int signal) // ???
 		exit(131);
 }
 
-void	init_d(t_data ***d, char **env)
+int	init_d(t_data ***d, char **env)
 {
 	*d = (t_data **)malloc_(sizeof(t_data *), NULL);
 	**d = (t_data *)malloc_(sizeof(t_data), *d);
@@ -53,8 +53,14 @@ void	init_d(t_data ***d, char **env)
 	(**d)->env = arr_to_lst(env, *d);
 	(**d)->redir = "";
 	(**d)->token = "";
+	if (pipe((**d)->pipe1) == -1 || pipe((**d)->pipe2) == -1)
+		return (err_cmd("pipe pb", -1, *d), FAILURE);
+	// out_fd = fd[1];
+	// out_pipe_fd = fd[0];
+	// in_fd = fd[0];
 	// signal(SIGQUIT, SIG_IGN);
 	// signal(SIGINT, &sig_handler_main);
+	return (OK);
 }
 
 void	*malloc_(int size, t_data **d)

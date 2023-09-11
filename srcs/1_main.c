@@ -169,10 +169,8 @@ static int	calc_redir_and_token(char *s, t_data **d)
 	}
 	if (ft_strlen((*d)->token) > 0 && put_token_to_d(d) == FAILURE) // token = arg or fd
 		return (err_cmd("get token pb", -1, d));
-	skip_spaces(s, d);
-	// if (skip_spaces(s, d) == YES) ...
-	// to detect the situations where a space should be added between tokens (for echo)
-	// to add a token " " to d
+	if (skip_spaces(s, d) == YES)
+		{} // to add a space tp the token (for echo)
 	return (OK);
 }
 
@@ -206,9 +204,6 @@ static int	exec_cmd_line(char *s, t_data **d)
 		// put_pipe_to_d(d);
 		// if (pipe((*d)->pipe) == -1)
 		// 	return (free_all_and_exit("pipe failed", -1, d), FAILURE);
-		// node->cmds[i_cmd].out_fd = fd[1];
-		// node->cmds[i_cmd].out_pipe_fd = fd[0];
-		// node->cmds[i_cmd + 1].in_fd = fd[0];
 	}
 	return (OK);
 }

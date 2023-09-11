@@ -120,7 +120,7 @@ void	del_all_from_lst(t_lst **lst);
 void	free_lst(t_lst ***lst);
 
 // utils 12
-void	init_d(t_data ***d, char **env);
+int		init_d(t_data ***d, char **env);
 void	*malloc_(int size, t_data **d);
 void	print_d(char *msg, t_data **d);
 int		write_fd(int fd, char *s);
