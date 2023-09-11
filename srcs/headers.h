@@ -38,6 +38,8 @@
 # define FAILURE -1
 # define YES 1
 # define NO 0
+# define IN 1
+# define OUT 0
 
 extern int g_signal;
 

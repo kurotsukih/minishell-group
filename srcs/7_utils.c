@@ -44,20 +44,18 @@ void	sig_handler_fork(int signal) // ???
 		exit(131);
 }
 
-int	init_d(t_data ***d, char **env)
+int	init_d(t_data ***d, char **env) // **d ?
 {
 	*d = (t_data **)malloc_(sizeof(t_data *), NULL);
 	**d = (t_data *)malloc_(sizeof(t_data), *d);
-	(**d)->saved_stdin = dup(STDIN_FILENO);
-	(**d)->saved_stdout = dup(STDOUT_FILENO);
 	(**d)->env = arr_to_lst(env, *d);
 	(**d)->redir = "";
 	(**d)->token = "";
 	if (pipe((**d)->pipe1) == -1 || pipe((**d)->pipe2) == -1)
 		return (err_cmd("pipe pb", -1, *d), FAILURE);
-	// out_fd = fd[1];
-	// out_pipe_fd = fd[0];
-	// in_fd = fd[0];
+	(**d)->saved_stdin = dup(STDIN_FILENO); // if fail s ?
+	(**d)->saved_stdout = dup(STDOUT_FILENO);
+	(**d)->pipe1[IN] = dup(STDIN_FILENO);
 	// signal(SIGQUIT, SIG_IGN);
 	// signal(SIGINT, &sig_handler_main);
 	return (OK);

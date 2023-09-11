@@ -185,7 +185,11 @@ static int	exec_cmd_line(char *s, t_data **d)
 	{
 		del_all_from_lst((*d)->args);
 		del_all_from_lst((*d)->outs);
-		put_fd_to_in(STDIN_FILENO, d);
+		// put_fd_to_in(STDIN_FILENO, d);
+		(*d)->pipe1[OUT] = (*d)->pipe2[OUT];// dup2 ?
+		// if (dup2((*d)->pipe2[OUT], (*d)->pipe1[OUT]) == -1)
+		// 	return(err_cmd("dup2 pb", -1, d), FAILURE);
+		put_fd_to_in((*d)->pipe1[OUT], d);
 		while (1) // tokens
 		{
 			calc_redir_and_token(s, d);
@@ -193,11 +197,9 @@ static int	exec_cmd_line(char *s, t_data **d)
 				break ;
 		}
 		if (s[(*d)->i] == '|')
-			put_fd_to_outs((*d)->pipe2[1], d);
+			put_fd_to_outs((*d)->pipe2[IN], d);
 		if (len_lst((*d)->outs) == 0)
 			put_fd_to_outs(STDOUT_FILENO, d);
-		if (ft_strcmp((char *)((((*d)->args)[0])->val), "grep") == 0)
-			put_fd_to_in((*d)->pipe2[0], d);
 		print_d("parsed", d);
 		exec_cmd(d);
 		if (s[(*d)->i] != '|') // == \0 ?
