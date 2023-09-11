@@ -79,7 +79,8 @@ typedef struct		s_data
 	t_lst			**outs;
 	int				in;
 	int				exit_c;
-	int				pipe[2];
+	int				pipe1[2];
+	int				pipe2[2];
 
 	char			*token; // token params
 	char			*redir;
@@ -126,10 +127,12 @@ int		write_fd(int fd, char *s);
 int		write_fd_with_n(int fd, char *s);
 void	free_(void *mem);
 void	free_2_array(char **arr);
-void	free_all_and_exit(char *msg, int exit_c, t_data **d); /// ***d ?
+void	free_all_and_exit(char *msg, int exit_c, t_data **d); 
 int		err_cmd(char *msg, int exit_c, t_data **d);
 void	sig_handler_main(int signal);
 void	sig_handler_fork(int signal);
 void	sig_handler_heredoc(int signal);
 
+// free_all_and_exit should have **d for free d in case of an error + exit
+// so all the functions have **d
 #endif
