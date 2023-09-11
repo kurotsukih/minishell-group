@@ -44,18 +44,17 @@ void	sig_handler_fork(int signal) // ???
 		exit(131);
 }
 
-int	init_d(t_data ***d, char **env) // **d ?
+int	init_d(t_data **d, char **env) // **d ?
 {
-	*d = (t_data **)malloc_(sizeof(t_data *), NULL);
-	**d = (t_data *)malloc_(sizeof(t_data), *d);
-	(**d)->env = arr_to_lst(env, *d);
-	(**d)->redir = "";
-	(**d)->token = "";
-	if (pipe((**d)->pipe1) == -1 || pipe((**d)->pipe2) == -1)
-		return (err_cmd("pipe pb", -1, *d), FAILURE);
-	(**d)->saved_stdin = dup(STDIN_FILENO); // if fail s ?
-	(**d)->saved_stdout = dup(STDOUT_FILENO);
-	(**d)->pipe1[IN] = dup(STDIN_FILENO);
+	*d = (t_data *)malloc_(sizeof(t_data), d);
+	(*d)->env = arr_to_lst(env, d);
+	(*d)->redir = "";
+	(*d)->token = "";
+	if (pipe((*d)->pipe[0]) == -1 || pipe((*d)->pipe[1]) == -1)
+		return (err_cmd("pipe pb", -1, d), FAILURE);
+	(*d)->saved_stdin = dup(STDIN_FILENO); // if fail s ?
+	(*d)->saved_stdout = dup(STDOUT_FILENO);
+	(*d)->pipe[0][IN] = dup(STDIN_FILENO);
 	// signal(SIGQUIT, SIG_IGN);
 	// signal(SIGINT, &sig_handler_main);
 	return (OK);
@@ -125,13 +124,13 @@ void	print_d(char *msg, t_data **d)
 			cur= cur->nxt;
 		}
 	}
-	printf(" : %d : ", (*d)->in);
-	if ((*d)->outs == NULL)
+	printf(" : %d : ", (*d)->fd_in);
+	if ((*d)->fds_out == NULL)
 		printf("no outs");
 	else
 	{
-		printf("%d outs ", len_lst((*d)->outs));
-		cur = *((*d)->outs);
+		printf("%d outs ", len_lst((*d)->fds_out));
+		cur = *((*d)->fds_out);
 		while (cur != NULL)
 		{
 			printf("%d ", *((int *)(cur->val)));

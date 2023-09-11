@@ -145,14 +145,14 @@ int	put_fd_to_outs(int fd, t_data **d)
 	out[0] = dup(fd);
 	if (out[0] == -1)
 		return (err_cmd("dup stdout pb", -1, d));
-	put_to_lst((void *)(&out[0]), &((*d)->outs), d);
+	put_to_lst((void *)(&out[0]), &((*d)->fds_out), d);
 	return (OK);
 }
 
 int	put_fd_to_in(int fd, t_data **d)
 {
-	(*d)->in = dup(fd);
-	if ((*d)->in == -1)
+	(*d)->fd_in = dup(fd);
+	if ((*d)->fd_in == -1)
 		return (err_cmd("dup stdin pb", -1, d));
 	return (OK);
 }

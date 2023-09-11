@@ -117,21 +117,21 @@ int	put_token_to_d(t_data **d)
 	if (ft_strcmp((*d)->redir, "<<") == 0)
 	{
 		heredoc_to_file((*d)->token, d);
-		(*d)->in = open(TMP_FILE, O_RDONLY);
+		(*d)->fd_in = open(TMP_FILE, O_RDONLY);
 	}
 	else if (ft_strcmp((*d)->redir, "<") == 0)
-		(*d)->in = open((*d)->token, O_RDONLY);
+		(*d)->fd_in = open((*d)->token, O_RDONLY);
 	else if (ft_strcmp((*d)->redir, ">>") == 0)
 	{
 		out = (int *)malloc(sizeof(int));
 		*out = open((*d)->token, O_WRONLY | O_CREAT | O_APPEND, 0666);
-		put_to_lst((void *)out, &((*d)->outs), d);
+		put_to_lst((void *)out, &((*d)->fds_out), d);
 	}
 	else if (ft_strcmp((*d)->redir, ">") == 0)
 	{
 		out = (int *)malloc(sizeof(int));
 		*out = open((*d)->token, O_WRONLY | O_CREAT | O_TRUNC, 0666);
-		put_to_lst((void *)out, &((*d)->outs), d);
+		put_to_lst((void *)out, &((*d)->fds_out), d);
 	}
 	else
 		put_to_lst((*d)->token, &((*d)->args), d);
@@ -175,21 +175,20 @@ static int	calc_redir_and_token(char *s, t_data **d)
 }
 
 // arg[0] = prog name
-// no matter what parse_and_exec_cmd_line returns
+// no matter what p"arse_and_exec_cmd_line returns
 static int	exec_cmd_line(char *s, t_data **d)
 {
+	int k = 0;
+
 	if (all_quotes_are_closed(s) != OK)
 		return (err_cmd("uncloses quotes", -1, d));
 	(*d)->i = 0;
 	while (1) // cmds
 	{
 		del_all_from_lst((*d)->args);
-		del_all_from_lst((*d)->outs);
+		del_all_from_lst((*d)->fds_out);
 		// put_fd_to_in(STDIN_FILENO, d);
-		(*d)->pipe1[OUT] = (*d)->pipe2[OUT];// dup2 ?
-		// if (dup2((*d)->pipe2[OUT], (*d)->pipe1[OUT]) == -1)
-		// 	return(err_cmd("dup2 pb", -1, d), FAILURE);
-		put_fd_to_in((*d)->pipe1[OUT], d);
+		put_fd_to_in((*d)->pipe[k % 2][OUT], d);
 		while (1) // tokens
 		{
 			calc_redir_and_token(s, d);
@@ -197,14 +196,20 @@ static int	exec_cmd_line(char *s, t_data **d)
 				break ;
 		}
 		if (s[(*d)->i] == '|')
-			put_fd_to_outs((*d)->pipe2[IN], d);
-		if (len_lst((*d)->outs) == 0)
+			put_fd_to_outs((*d)->pipe[(k + 1) % 2][IN], d);
+		if (len_lst((*d)->fds_out) == 0)
 			put_fd_to_outs(STDOUT_FILENO, d);
 		print_d("parsed", d);
 		exec_cmd(d);
+		printf("s[%d] = %c, break ?\n", (*d)->i, s[(*d)->i]);
 		if (s[(*d)->i] != '|') // == \0 ?
+		{
+			// fflush(the last out)
+			printf("break\n");
 			break ;
+		}
 		((*d)->i)++;
+		k++;
 	}
 	return (OK);
 }
@@ -212,7 +217,7 @@ static int	exec_cmd_line(char *s, t_data **d)
 int	main(int argc, char **argv, char **env)
 {
 	char	*cmd_line;
-	t_data	**d;
+	t_data	*d;
 
 	(void)argc;
 	(void)argv;
@@ -230,9 +235,9 @@ int	main(int argc, char **argv, char **env)
 		// 	continue;
 		// }
 		add_history(cmd_line);
-		exec_cmd_line(cmd_line, d);
+		exec_cmd_line(cmd_line, &d);
 		free_(cmd_line);
 	}
-	free_all_and_exit("", 0, d); // never executed ?
+	free_all_and_exit("", 0, &d); // never executed ?
 	return (0);
 }

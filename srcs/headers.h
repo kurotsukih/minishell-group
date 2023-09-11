@@ -78,11 +78,10 @@ typedef struct		s_data
 	int				i;      // cmd_line params
 
 	t_lst			**args; // cmd params
-	t_lst			**outs;
-	int				in;
+	t_lst			**fds_out;
+	int				fd_in;
 	int				exit_c;
-	int				pipe1[2];
-	int				pipe2[2];
+	int				pipe[2][2];
 
 	char			*token; // token params
 	char			*redir;
@@ -122,7 +121,7 @@ void	del_all_from_lst(t_lst **lst);
 void	free_lst(t_lst ***lst);
 
 // utils 12
-int		init_d(t_data ***d, char **env);
+int		init_d(t_data **d, char **env);
 void	*malloc_(int size, t_data **d);
 void	print_d(char *msg, t_data **d);
 int		write_fd(int fd, char *s);

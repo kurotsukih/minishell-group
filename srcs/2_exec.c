@@ -118,16 +118,16 @@ static int	exec_cmd_fd(int fd, t_data **d)
 
 int	exec_cmd(t_data **d)
 {
-	t_lst *out;
+	t_lst *fd;
 
-	if (dup2((*d)->in, STDIN_FILENO) == -1)
+	if (dup2((*d)->fd_in, STDIN_FILENO) == -1)
 		return (err_cmd("dup2 start stdin pb", -1, d));
-	close((*d)->in);
-	out = *((*d)->outs);
-	while (out != NULL)
+	close((*d)->fd_in);
+	fd = *((*d)->fds_out);
+	while (fd != NULL)
 	{
-		exec_cmd_fd(*((int *)(out->val)), d);
-		out = out->nxt;
+		exec_cmd_fd(*((int *)(fd->val)), d);
+		fd = fd->nxt;
 	}
 	if (dup2((*d)->saved_stdin, STDIN_FILENO) == -1)
 		return (err_cmd("dup2 end stdin pb", -1, d));
