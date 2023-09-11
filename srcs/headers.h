@@ -94,8 +94,8 @@ char	*calc_token_str(char *stop, char *s, t_data **d);
 char	*dedollarized_(char *s, t_data **d);
 int		mod_(char c);
 int		is_in(char c, char *s);
-int		put_fd_out_to_d(int fd, t_data **d);
-int		put_stdin_to_d(t_data **d);
+int		put_fd_to_outs(int fd, t_data **d);
+int		put_fd_to_in(int fd, t_data **d);
 int		heredoc_to_file(char *delim, t_data **d);
 
 // exec 10                          min args    max   accept <in

@@ -185,25 +185,24 @@ static int	exec_cmd_line(char *s, t_data **d)
 	{
 		del_all_from_lst((*d)->args);
 		del_all_from_lst((*d)->outs);
-		(*d)->in = -1;
+		put_fd_to_in(STDIN_FILENO, d);
 		while (1) // tokens
 		{
 			calc_redir_and_token(s, d);
 			if (ft_strlen((*d)->token) == 0)
 				break ;
 		}
+		if (s[(*d)->i] == '|')
+			put_fd_to_outs((*d)->pipe2[1], d);
 		if (len_lst((*d)->outs) == 0)
-			put_fd_out_to_d(STDOUT_FILENO, d);
-		if ((*d)->in == -1)
-			put_stdin_to_d(d);
+			put_fd_to_outs(STDOUT_FILENO, d);
+		if (ft_strcmp((char *)((((*d)->args)[0])->val), "grep") == 0)
+			put_fd_to_in((*d)->pipe2[0], d);
 		print_d("parsed", d);
 		exec_cmd(d);
-		if (s[(*d)->i] != '|')
+		if (s[(*d)->i] != '|') // == \0 ?
 			break ;
 		((*d)->i)++;
-		// put_pipe_to_d(d);
-		// if (pipe((*d)->pipe) == -1)
-		// 	return (free_all_and_exit("pipe failed", -1, d), FAILURE);
 	}
 	return (OK);
 }
