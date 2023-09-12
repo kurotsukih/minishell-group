@@ -6,7 +6,7 @@
 /*   By: akostrik <akostrik@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/02 15:22:31 by akostrik          #+#    #+#             */
-/*   Updated: 2023/09/12 14:19:19 by akostrik         ###   ########.fr       */
+/*   Updated: 2023/09/12 14:59:15 by akostrik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,16 +72,16 @@ typedef struct		s_lst
 
 typedef struct		s_data
 {
-	t_lst			**env;
-	int				saved_stdin;
-	int				saved_stdout;
+	t_lst			**env; // EXEC
+	int				saved_stdin; // (EXEC but not important)
+	int				saved_stdout; // (EXEC but not important)
 
 	int				i;      // cmd_line params
 
-	t_lst			**args; // cmd params
-	int				fd_in;
-	int				fd_out;
-	int				exit_c;
+	t_lst			**args; // cmd params // arg[0] = cmd name  // EXEC
+	int				fd_in; // bash (not zsh !)  // EXEC
+	int				fd_out;  // EXEC
+	int				exit_c;  // EXEC !!!!!!
 	int				there_are_redirs_out;
 
 	char			*token; // token params

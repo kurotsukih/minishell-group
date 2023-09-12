@@ -6,7 +6,7 @@
 /*   By: akostrik <akostrik@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/02 15:22:16 by akostrik          #+#    #+#             */
-/*   Updated: 2023/09/12 14:19:23 by akostrik         ###   ########.fr       */
+/*   Updated: 2023/09/12 14:32:13 by akostrik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -138,12 +138,12 @@ int	put_token_to_d(t_data **d)
 static int	put_nxt_token_to_d(char *s, t_data **d)
 {
 	skip_spaces(s, d);
-	if (s[(*d)->i] == '\'')
+	if (s[(*d)->i] == '\'') // des error  !!!
 	{
 		(*d)->token = calc_token("\'\0", &s[(*d)->i + 1], d);
 		(*d)->i += ft_strlen((*d)->token) + 2;
 	}
-	else if (s[(*d)->i] == '\"')
+	else if (s[(*d)->i] == '\"') // des error  !!!
 	{
 		(*d)->token = calc_token("\"\0", &s[(*d)->i + 1], d);
 		(*d)->i += ft_strlen((*d)->token) + 2;
