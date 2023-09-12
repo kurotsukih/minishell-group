@@ -6,7 +6,7 @@
 /*   By: akostrik <akostrik@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/02 15:22:31 by akostrik          #+#    #+#             */
-/*   Updated: 2023/09/12 14:59:15 by akostrik         ###   ########.fr       */
+/*   Updated: 2023/09/12 15:01:52 by akostrik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,26 +44,6 @@
 
 extern int g_signal;
 
-// *cmd = currectly traited cmd
-
-// структура, связанная с открытым файлом :
-// - ссылка на виртуальный Inode файла в памяти ядра
-// - флаги доступа к файлу (чтение, запись)
-// - текущая позиция чтения/записи 
-// - нек доп данные
-// Информация о блокировках используется совместно несколькими процессами,
-// потому вынесена в виртуальный Inode.
-
-// в момент запуска программы открыты ФД 0, 1 и 2
-// Другие ФД могут быть открыты, это не регламентируется
-// При выделении нового ФД при вызове open, pipe, du p, ... выбирается наименьший свободный ФД
-
-// Процесс может создавать новые ФД, которые будут ссылками на ту же структуру данных в ядре, что и оригинальный ФД, те же флаги, позицию чтения/записи. Закрытие ФД уменьшает количество ссылок на открытый файл
-// Фактическое закрытие файла произойдёт тогда, когда на него не будет ссылаться ни один ФД
-
-// du p возвращает первый свободный номер ФД
-// а dup2 указать номер нового ФД
-
 typedef struct		s_lst
 {
 	char			*val;
@@ -88,7 +68,10 @@ typedef struct		s_data
 	char			*redir;
 }					t_data;
 
-// utils parse 10
+// func. free_all_and_exit should have **d for free d in case of an error 
+// so all the functions have **d
+
+// utils parse (12 functions)
 int		all_quotes_are_closed(char *s);
 int		skip_spaces(char *s, t_data **d);
 void	calc_redir(char *s, t_data **d);
@@ -102,15 +85,15 @@ int		init_new_cmd(t_data **d);
 void	init_new_token(t_data **d);
 int		put_pipe_redir_if_necessary(char *s, t_data **d);
 
-// exec 10                          min args    max   accept <in
+// exec 10                        min args    max args  accept <in
 int		exec_cmd(t_data **d);
-int		exec_echo(t_data **d);   // 0           ...   no ?
-int		exec_cd(t_data **d);     // 0           1     no ?
-int		exec_pwd(t_data **d);    // 0           0     no
-int		exec_export(t_data **d); // 0           ...   no ?
-int		exec_unset(t_data **d);  // 1           ...   no ?
-int		exec_env(t_data **d);    // 0           0     no
-int		exec_exit(t_data **d);   // 0           1     no ?
+int		exec_echo(t_data **d);   // 0           ...       no ?
+int		exec_cd(t_data **d);     // 0           1         no ?
+int		exec_pwd(t_data **d);    // 0           0         no
+int		exec_export(t_data **d); // 0           ...       no ?
+int		exec_unset(t_data **d);  // 1           ...       no ?
+int		exec_env(t_data **d);    // 0           0         no
+int		exec_exit(t_data **d);   // 0           1         no ?
 char	*path_(t_data **d);
 char	*get_val_from_env(char *key, t_data **d);
 
@@ -137,6 +120,4 @@ void	sig_handler_main(int signal);
 void	sig_handler_fork(int signal);
 void	sig_handler_heredoc(int signal);
 
-// free_all_and_exit should have **d for free d in case of an error + exit
-// so all the functions have **d
 #endif
