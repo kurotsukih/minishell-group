@@ -6,7 +6,7 @@
 /*   By: akostrik <akostrik@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/02 15:22:31 by akostrik          #+#    #+#             */
-/*   Updated: 2023/09/12 16:15:27 by akostrik         ###   ########.fr       */
+/*   Updated: 2023/09/12 16:28:57 by akostrik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,8 +104,7 @@ char	**lst_to_arr(t_lst **lst, t_data **d);
 int		len_lst(t_lst **lst);
 void	del_from_lst(t_lst *to_del, t_lst **lst);
 void	del_all_from_lst(t_lst **lst);
-void	del_empty_args(t_data **d);
-void	del_2nd_and_last_empty_args(t_data **d);
+void	del_unnecessary_empty_args(t_data **d);
 void	free_lst(t_lst ***lst);
 
 // utils (12)

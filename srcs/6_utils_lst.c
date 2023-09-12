@@ -103,7 +103,7 @@ void	del_from_lst(t_lst *to_del, t_lst **lst)
 }
 
 // empty elts were added only for echo output
-void	del_empty_args(t_data **d)
+static void	del_all_empty_args(t_data **d)
 {
 	t_lst **lst;
 	t_lst	*cur;
@@ -122,7 +122,7 @@ void	del_empty_args(t_data **d)
 	}
 }
 
-void	del_2nd_and_last_empty_args(t_data **d)
+void	del_unnecessary_empty_args(t_data **d)
 {
 	t_lst **lst;
 	t_lst	*cur;
@@ -144,6 +144,8 @@ void	del_2nd_and_last_empty_args(t_data **d)
 		cur = cur->nxt;
 	if (ft_strcmp(cur->val, " ") == 0)
 		del_from_lst(cur, (*d)->args);
+	if (ft_strcmp(((*d)->args)[0]->val, "echo") != 0)
+		del_all_empty_args(d);
 }
 
 void	del_all_from_lst(t_lst **lst)

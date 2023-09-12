@@ -6,7 +6,7 @@
 /*   By: akostrik <akostrik@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/02 15:22:16 by akostrik          #+#    #+#             */
-/*   Updated: 2023/09/12 16:15:06 by akostrik         ###   ########.fr       */
+/*   Updated: 2023/09/12 16:28:40 by akostrik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -162,9 +162,7 @@ static int	parse_and_exec_cmd_line(char *cmd_line, t_data **d)
 				break ;
 		}
 		put_fd_if_the_out_is_pipe(cmd_line, d);
-		del_2nd_and_last_empty_args(d);
-		if (ft_strcmp(((*d)->args)[0]->val, "echo") != 0)
-			del_empty_args(d);
+		del_unnecessary_empty_args(d);
 		exec_cmd(d);
 		if (cmd_line[(*d)->i] != '|')
 			break ;
