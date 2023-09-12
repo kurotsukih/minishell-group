@@ -6,7 +6,7 @@
 /*   By: akostrik <akostrik@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/02 15:22:47 by akostrik          #+#    #+#             */
-/*   Updated: 2023/09/12 11:27:34 by akostrik         ###   ########.fr       */
+/*   Updated: 2023/09/12 14:19:12 by akostrik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -135,4 +135,45 @@ char	*calc_token(char *stop, char *s, t_data **d)
 	}
 	token[i] = '\0';
 	return (token);
+}
+
+int	init_new_cmd(t_data **d)
+{
+	int	fd_tmp;
+
+	del_all_from_lst((*d)->args);
+	(*d)->there_are_redirs_out = NO;
+	(*d)->fd_in = -1;
+	fd_tmp = open(TMP_FILE, O_RDONLY);
+	if (fd_tmp == -1)
+		(*d)->fd_in = dup(STDIN); // close ?
+	else
+		(*d)->fd_in = fd_tmp;
+	(*d)->fd_out = dup(STDOUT);
+	if ((*d)->fd_in == -1 || (*d)->fd_out == -1)
+		return (err_cmd("dup pb", -1, d));
+	return (OK);
+}
+
+int	init_new_cmd_line(char *s, t_data **d)
+{
+	if (all_quotes_are_closed(s) != OK)
+		return (err_cmd("uncloses quotes", -1, d));
+	(*d)->i = 0;
+	return (OK);
+}
+
+void	init_new_token(t_data **d)
+{
+	(*d)->redir = "";
+	(*d)->token = ""; // free((*d)->token); ?
+}
+
+int	put_pipe_redir_if_necessary(char *s, t_data **d)
+{
+	if ((*d)->there_are_redirs_out == NO && s[(*d)->i] == '|')
+		(*d)->fd_out = open(TMP_FILE, O_WRONLY | O_CREAT | O_TRUNC, 0666);
+	if ((*d)->fd_out == -1)
+		return (err_cmd("dup pb", -1, d));
+	return (OK);
 }

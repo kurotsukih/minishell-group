@@ -6,7 +6,7 @@
 /*   By: akostrik <akostrik@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/02 15:22:31 by akostrik          #+#    #+#             */
-/*   Updated: 2023/09/12 11:41:46 by akostrik         ###   ########.fr       */
+/*   Updated: 2023/09/12 14:19:19 by akostrik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,6 +82,7 @@ typedef struct		s_data
 	int				fd_in;
 	int				fd_out;
 	int				exit_c;
+	int				there_are_redirs_out;
 
 	char			*token; // token params
 	char			*redir;
@@ -96,6 +97,10 @@ char	*dedollarized_(char *s, t_data **d);
 int		mod_(char c);
 int		is_in(char c, char *s);
 int		heredoc_to_file(char *delim, t_data **d);
+int		init_new_cmd_line(char *s, t_data **d);
+int		init_new_cmd(t_data **d);
+void	init_new_token(t_data **d);
+int		put_pipe_redir_if_necessary(char *s, t_data **d);
 
 // exec 10                          min args    max   accept <in
 int		exec_cmd(t_data **d);

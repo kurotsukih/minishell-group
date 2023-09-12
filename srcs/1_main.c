@@ -6,7 +6,7 @@
 /*   By: akostrik <akostrik@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/02 15:22:16 by akostrik          #+#    #+#             */
-/*   Updated: 2023/09/12 13:45:27 by akostrik         ###   ########.fr       */
+/*   Updated: 2023/09/12 14:19:23 by akostrik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -114,7 +114,6 @@ int g_signal = 0;
 
 int	put_token_to_d(t_data **d)
 {
-
 	if (ft_strcmp((*d)->redir, "<<") == 0)
 	{
 		heredoc_to_file((*d)->token, d);
@@ -128,10 +127,10 @@ int	put_token_to_d(t_data **d)
 		(*d)->fd_out = open((*d)->token, O_WRONLY | O_CREAT | O_TRUNC, 0666);
 	else
 		put_to_lst((*d)->token, &((*d)->args), d);
-	// if (((*d)->redir)[0] == '<' && (*d)->in == -1)
-	//	return (NULL);
-	// if (((*d)->redir)[0] == '>' && out == -1)
-	// 	return (NULL);
+	// if (((*d)->redir)[0] == '<' && (*d)->in == -1) || ((*d)->redir)[0] == '>' && out == -1)
+	// 	return (FAILURE);
+	if (((*d)->redir)[0] == '>')
+		(*d)->there_are_redirs_out = YES;
 	return (OK);
 }
 
@@ -139,8 +138,6 @@ int	put_token_to_d(t_data **d)
 static int	put_nxt_token_to_d(char *s, t_data **d)
 {
 	skip_spaces(s, d);
-	(*d)->redir = "";
-	(*d)->token = ""; // free((*d)->token); ?
 	if (s[(*d)->i] == '\'')
 	{
 		(*d)->token = calc_token("\'\0", &s[(*d)->i + 1], d);
@@ -171,42 +168,24 @@ static int	put_nxt_token_to_d(char *s, t_data **d)
 // no matter what this func returns
 static int	exec_cmd_line(char *s, t_data **d)
 {
-	int	fd_tmp;
-
-	if (all_quotes_are_closed(s) != OK)
-		return (err_cmd("uncloses quotes", -1, d));
-	(*d)->i = 0;
-	while (1) // cmds
+	if (init_new_cmd_line(s, d) == FAILURE)
+		return (FAILURE);
+	while (1)
 	{
-		del_all_from_lst((*d)->args);
-		(*d)->fd_in = -1;
-		fd_tmp = open(TMP_FILE, O_RDONLY);
-		if (fd_tmp == -1)
-			(*d)->fd_in = dup(STDIN); // close ?
-		else
-			(*d)->fd_in = fd_tmp;
-		(*d)->fd_out = dup(STDOUT);
-		if ((*d)->fd_in == -1 || (*d)->fd_out == -1)
-			return (err_cmd("dup pb", -1, d));
-		fd_tmp = (*d)->fd_out;
-		while (1) // tokens, token = arg or fd, while token != NULL // do while ?
+		if (init_new_cmd(d) == FAILURE)
+			return (FAILURE);
+		while (1) // tokens, token = arg or fd
 		{
+			init_new_token(d);
 			put_nxt_token_to_d(s, d);
 			if (ft_strlen((*d)->token) == 0)
 				break ;
 		}
-		if ((*d)->fd_out == fd_tmp && s[(*d)->i] == '|')
-			(*d)->fd_out = open(TMP_FILE, O_WRONLY | O_CREAT | O_TRUNC, 0666);
-		if ((*d)->fd_out == -1)
-			return (err_cmd("dup pb", -1, d));
-		//print_d("parsed", d);
+		put_pipe_redir_if_necessary(s, d);
 		exec_cmd(d);
-		if (s[(*d)->i] != '|') // == \0 ?
-		{
-			// cat (the last out)
+		if (s[(*d)->i] != '|')
 			break ;
-		}
-		// unlink(TMP_FILE);
+		// unlink(TMP_FILE); doesn't work
 		// unlink(TMP_FILE_H);
 		((*d)->i)++;
 	}
