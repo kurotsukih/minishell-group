@@ -6,7 +6,7 @@
 /*   By: akostrik <akostrik@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/02 15:22:55 by akostrik          #+#    #+#             */
-/*   Updated: 2023/09/12 13:04:37 by akostrik         ###   ########.fr       */
+/*   Updated: 2023/09/12 15:17:33 by akostrik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,27 +71,6 @@ void	free_all_and_exit(char *msg, int exit_c, t_data **d)
 	exit(exit_c);
 }
 
-void	print_d(char *msg, t_data **d)
-{
-	t_lst	*cur;
-
-	printf("%s : ", msg);
-	if ((*d)->args == NULL)
-		printf("no args");
-	else
-	{
-		printf("%d args ", len_lst((*d)->args));
-		cur = *((*d)->args);
-		while (cur != NULL)
-		{
-			printf("[%s] ", cur->val);
-			cur= cur->nxt;
-		}
-	}
-	printf(" : %d : %d ", (*d)->fd_in, (*d)->fd_out);
-	printf(" (tok=[%s] redir=[%s] i=%d sav.in=%d sav.out=%d)\n", (*d)->token, (*d)->redir, (*d)->i, (*d)->saved_stdin, (*d)->saved_stdout);
-}
-
 int	write_fd(int fd, char *s){
 	return (write(fd, s, ft_strlen(s)));
 }
@@ -131,4 +110,26 @@ void	sig_handler_fork(int signal) // ???
 		exit(130);
 	if (signal == SIGQUIT)
 		exit(131);
+}
+
+// only for debugging
+void	print_d(char *msg, t_data **d)
+{
+	t_lst	*cur;
+
+	printf("%s : ", msg);
+	if ((*d)->args == NULL)
+		printf("no args");
+	else
+	{
+		printf("%d args ", len_lst((*d)->args));
+		cur = *((*d)->args);
+		while (cur != NULL)
+		{
+			printf("[%s] ", cur->val);
+			cur= cur->nxt;
+		}
+	}
+	printf(" : %d : %d ", (*d)->fd_in, (*d)->fd_out);
+	printf(" (tok=[%s] redir=[%s] i=%d sav.in=%d sav.out=%d)\n", (*d)->token, (*d)->redir, (*d)->i, (*d)->saved_stdin, (*d)->saved_stdout);
 }

@@ -6,7 +6,7 @@
 /*   By: akostrik <akostrik@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/02 15:22:31 by akostrik          #+#    #+#             */
-/*   Updated: 2023/09/12 15:01:52 by akostrik         ###   ########.fr       */
+/*   Updated: 2023/09/12 15:16:04 by akostrik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,14 +61,14 @@ typedef struct		s_data
 	t_lst			**args; // cmd params // arg[0] = cmd name  // EXEC
 	int				fd_in; // bash (not zsh !)  // EXEC
 	int				fd_out;  // EXEC
-	int				exit_c;  // EXEC !!!!!!
+	int				exit_c;  // EXEC // exit code TO DO !!!!!!!!!!!!!!!!!!!!!
 	int				there_are_redirs_out;
 
 	char			*token; // token params
 	char			*redir;
 }					t_data;
 
-// func. free_all_and_exit should have **d for free d in case of an error 
+// func. free_all_and_exit should have **d for free d in case of an error
 // so all the functions have **d
 
 // utils parse (12 functions)
@@ -77,13 +77,13 @@ int		skip_spaces(char *s, t_data **d);
 void	calc_redir(char *s, t_data **d);
 char	*calc_token(char *stop, char *s, t_data **d);
 char	*dedollarized_(char *s, t_data **d);
-int		mod_(char c);
-int		is_in(char c, char *s);
 int		heredoc_to_file(char *delim, t_data **d);
 int		init_new_cmd_line(char *s, t_data **d);
 int		init_new_cmd(t_data **d);
 void	init_new_token(t_data **d);
-int		put_pipe_redir_if_necessary(char *s, t_data **d);
+int		put_redir_to_pipe_if_necessary(char *cmd_line, t_data **d);
+int		mod_(char c);
+int		char_is_in_str(char c, char *s);
 
 // exec 10                        min args    max args  accept <in
 int		exec_cmd(t_data **d);
