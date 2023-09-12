@@ -6,7 +6,7 @@
 /*   By: akostrik <akostrik@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/02 15:22:31 by akostrik          #+#    #+#             */
-/*   Updated: 2023/09/12 15:16:04 by akostrik         ###   ########.fr       */
+/*   Updated: 2023/09/12 15:30:01 by akostrik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,8 +58,8 @@ typedef struct		s_data
 
 	int				i;      // cmd_line params
 
-	t_lst			**args; // cmd params // arg[0] = cmd name  // EXEC
-	int				fd_in; // bash (not zsh !)  // EXEC
+	t_lst			**args;  // cmd params // arg[0] = cmd name  // EXEC
+	int				fd_in;   // EXEC
 	int				fd_out;  // EXEC
 	int				exit_c;  // EXEC // exit code TO DO !!!!!!!!!!!!!!!!!!!!!
 	int				there_are_redirs_out;
@@ -76,7 +76,7 @@ int		all_quotes_are_closed(char *s);
 int		skip_spaces(char *s, t_data **d);
 void	calc_redir(char *s, t_data **d);
 char	*calc_token(char *stop, char *s, t_data **d);
-char	*dedollarized_(char *s, t_data **d);
+char	*dedollarize_str(char *s, t_data **d);
 int		heredoc_to_file(char *delim, t_data **d);
 int		init_new_cmd_line(char *s, t_data **d);
 int		init_new_cmd(t_data **d);

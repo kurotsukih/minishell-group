@@ -6,7 +6,7 @@
 /*   By: akostrik <akostrik@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/02 15:22:16 by akostrik          #+#    #+#             */
-/*   Updated: 2023/09/12 15:23:45 by akostrik         ###   ########.fr       */
+/*   Updated: 2023/09/12 15:29:46 by akostrik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,6 +51,8 @@ pour les process zombie - la macro sigaction avec SIGCHLD et SA_NOCLDWAIT (?)
 
 
 ***** TESTS - TO DO !!!!!!!!!!!!!!!!!!!!!!
+to test in bash (not zsh !) (chqnge with the command ">bash")   !!!!!!!!!!!!!!!!!!!!!!
+
 double quote s insdide simple ones 
 " $ "
 export a="s -la" | l$a
@@ -78,7 +80,6 @@ on reviens au shell d'origine
 echo $? affiche 12
 
 */
-
 
 #include "headers.h"
 
@@ -121,7 +122,7 @@ static int	put_nxt_token_to_d(char *cmd_line, t_data **d)
 	{
 		(*d)->token = calc_token("\"\0", &cmd_line[(*d)->i + 1], d);
 		(*d)->i += ft_strlen((*d)->token) + 2;
-		(*d)->token = dedollarized_((*d)->token, d);
+		(*d)->token = dedollarize_str((*d)->token, d);
 	}
 	else
 	{
@@ -129,17 +130,18 @@ static int	put_nxt_token_to_d(char *cmd_line, t_data **d)
 		skip_spaces(cmd_line, d);
 		(*d)->token = calc_token(" \"\'<>|", &cmd_line[(*d)->i], d);
 		((*d)->i) += ft_strlen((*d)->token);
-		(*d)->token = dedollarized_((*d)->token, d);
+		(*d)->token = dedollarize_str((*d)->token, d);
 	}
 	if (ft_strlen((*d)->token) > 0 && put_token_to_d(d) == FAILURE)
 		return (err_cmd("get token pb", -1, d));
 	if (skip_spaces(cmd_line, d) == YES)
-		{} // to add a space to the token (for echo) // add a space in any case ?
+		{} // to add a space to the token (for echo)
 	return (OK);
 }
 
 // parsing and execution of the cmd line
-// arg[0] = prog name
+// arg[0] = cmd name
+// arg[1], arg[2], ... = arguments
 // no matter what this func returns
 static int	exec_cmd_line(char *cmd_line, t_data **d)
 {
@@ -160,7 +162,7 @@ static int	exec_cmd_line(char *cmd_line, t_data **d)
 		exec_cmd(d);
 		if (cmd_line[(*d)->i] != '|')
 			break ;
-		// unlink(TMP_FILE); doesn't work
+		// unlink(TMP_FILE); doesn't work !!!!!!!!!!!!!
 		// unlink(TMP_FILE_H);
 		((*d)->i)++;
 	}

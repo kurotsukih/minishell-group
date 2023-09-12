@@ -6,7 +6,7 @@
 /*   By: akostrik <akostrik@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/02 15:22:29 by akostrik          #+#    #+#             */
-/*   Updated: 2023/09/12 15:04:28 by akostrik         ###   ########.fr       */
+/*   Updated: 2023/09/12 15:25:42 by akostrik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,7 +81,7 @@ static int	exec_extern_cmd(t_data **d)
 		if (execve(path, args_arr, env_arr) == -1)
 			return(err_cmd("", -1, d));
 		free_2_array(args_arr); // Not executed because execve has replaced the child process? 
-		free_2_array(env_arr); // Does execve free args_arr and env_arr ?
+		free_2_array(env_arr);  // Does execve free args_arr and env_arr ?
 	}
 	else
 		wait(&status);

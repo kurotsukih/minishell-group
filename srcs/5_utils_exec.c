@@ -6,7 +6,7 @@
 /*   By: akostrik <akostrik@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/02 15:22:47 by akostrik          #+#    #+#             */
-/*   Updated: 2023/09/12 11:13:41 by akostrik         ###   ########.fr       */
+/*   Updated: 2023/09/12 15:29:19 by akostrik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ char	*get_val_from_env(char *key, t_data **d)
 	return (err_cmd("env variable not found", -1, d), NULL);
 }
 
-static char	*dedollarized_1(char *s, int i, t_data **d)
+static char	*dedollarize_1_var(char *s, int i, t_data **d)
 {
 	char	*dedollarized;
 	int		len;
@@ -65,8 +65,8 @@ static char	*dedollarized_1(char *s, int i, t_data **d)
 	return (dedollarized);
 }
 
-// if fails ?
-char	*dedollarized_(char *s, t_data **d)
+// if fails 
+char	*dedollarize_str(char *s, t_data **d)
 {
 	char	*dedollarized;
 	int		i;
@@ -78,7 +78,7 @@ char	*dedollarized_(char *s, t_data **d)
 			if (s[i + 1] == '?')
 				{} // dedollarized = ft_itoa(exit_code);
 			else
-				dedollarized = dedollarized_1(s, i, d);
+				dedollarized = dedollarize_1_var(s, i, d);
 			free_(s);
 			s = dedollarized;
 		}

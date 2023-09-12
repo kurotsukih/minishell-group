@@ -6,7 +6,7 @@
 /*   By: akostrik <akostrik@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/02 15:22:47 by akostrik          #+#    #+#             */
-/*   Updated: 2023/09/12 15:16:31 by akostrik         ###   ########.fr       */
+/*   Updated: 2023/09/12 15:28:37 by akostrik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -135,7 +135,7 @@ int	init_new_cmd_line(char *s, t_data **d)
 void	init_new_token(t_data **d)
 {
 	(*d)->redir = "";
-	(*d)->token = ""; // free((*d)->token); ?
+	(*d)->token = ""; // free((*d)->token) will work ???
 }
 
 int	put_redir_to_pipe_if_necessary(char *cmd_line, t_data **d)
