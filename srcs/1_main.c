@@ -6,7 +6,7 @@
 /*   By: akostrik <akostrik@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/02 15:22:16 by akostrik          #+#    #+#             */
-/*   Updated: 2023/09/12 13:43:27 by akostrik         ###   ########.fr       */
+/*   Updated: 2023/09/12 13:45:27 by akostrik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -199,7 +199,7 @@ static int	exec_cmd_line(char *s, t_data **d)
 			(*d)->fd_out = open(TMP_FILE, O_WRONLY | O_CREAT | O_TRUNC, 0666);
 		if ((*d)->fd_out == -1)
 			return (err_cmd("dup pb", -1, d));
-		print_d("parsed", d);
+		//print_d("parsed", d);
 		exec_cmd(d);
 		if (s[(*d)->i] != '|') // == \0 ?
 		{
