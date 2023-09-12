@@ -6,7 +6,7 @@
 /*   By: akostrik <akostrik@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/02 15:22:31 by akostrik          #+#    #+#             */
-/*   Updated: 2023/09/12 15:30:01 by akostrik         ###   ########.fr       */
+/*   Updated: 2023/09/12 16:15:27 by akostrik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,11 +81,11 @@ int		heredoc_to_file(char *delim, t_data **d);
 int		init_new_cmd_line(char *s, t_data **d);
 int		init_new_cmd(t_data **d);
 void	init_new_token(t_data **d);
-int		put_redir_to_pipe_if_necessary(char *cmd_line, t_data **d);
+int		put_fd_if_the_out_is_pipe(char *cmd_line, t_data **d);
 int		mod_(char c);
 int		char_is_in_str(char c, char *s);
 
-// exec 10                        min args    max args  accept <in
+// exec (10)                      min args    max args  accept <in
 int		exec_cmd(t_data **d);
 int		exec_echo(t_data **d);   // 0           ...       no ?
 int		exec_cd(t_data **d);     // 0           1         no ?
@@ -97,16 +97,18 @@ int		exec_exit(t_data **d);   // 0           1         no ?
 char	*path_(t_data **d);
 char	*get_val_from_env(char *key, t_data **d);
 
-// utils lst 7
+// utils lst (7)
 void	put_to_lst(char *val, t_lst ***lst, t_data **d);
 t_lst	**arr_to_lst(char **arr, t_data **d);
 char	**lst_to_arr(t_lst **lst, t_data **d);
 int		len_lst(t_lst **lst);
 void	del_from_lst(t_lst *to_del, t_lst **lst);
 void	del_all_from_lst(t_lst **lst);
+void	del_empty_args(t_data **d);
+void	del_2nd_and_last_empty_args(t_data **d);
 void	free_lst(t_lst ***lst);
 
-// utils 12
+// utils (12)
 int		init_d(t_data **d, char **env);
 void	*malloc_(int size, t_data **d);
 void	print_d(char *msg, t_data **d);

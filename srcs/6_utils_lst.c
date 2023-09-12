@@ -22,7 +22,6 @@ void	put_to_lst(char *val, t_lst ***lst, t_data **d)
 	t_lst	*new;
 	t_lst	*cur;
 
-	//printf("put_to_lst %s\n", val);
 	new = (t_lst *)malloc_(sizeof(t_lst), d);
 	new->val = val;
 	new->nxt = NULL;
@@ -95,12 +94,56 @@ void	del_from_lst(t_lst *to_del, t_lst **lst)
 				else if (prv == NULL)
 					*lst = cur->nxt;
 				//free_(cur->val);
-				free_(cur);
+				//free_(cur); // error segm
 				break ;
 			}
 		prv = cur;
 		cur = cur->nxt;
 	}
+}
+
+// empty elts were added only for echo output
+void	del_empty_args(t_data **d)
+{
+	t_lst **lst;
+	t_lst	*cur;
+	t_lst	*nxt;
+
+	lst = (*d)->args;
+	if (lst == NULL)
+		return ;
+	cur = *lst;
+	while (cur != NULL)
+	{
+		nxt = cur->nxt;
+		if (strcmp(cur->val, " ") == 0)
+			del_from_lst(cur, lst);
+		cur = nxt;
+	}
+}
+
+void	del_2nd_and_last_empty_args(t_data **d)
+{
+	t_lst **lst;
+	t_lst	*cur;
+
+	lst = (*d)->args;
+	if (lst == NULL)
+		return ;
+	cur = *lst;
+	if (cur == NULL)
+		return ;
+	cur = cur->nxt;
+	if (cur == NULL)
+		return ;
+	if (ft_strcmp(cur->val, "") == 0)
+		return ;
+	if (ft_strcmp(cur->val, " ") == 0)
+		del_from_lst(cur, (*d)->args);
+	while (cur != NULL && cur->nxt != NULL)
+		cur = cur->nxt;
+	if (ft_strcmp(cur->val, " ") == 0)
+		del_from_lst(cur, (*d)->args);
 }
 
 void	del_all_from_lst(t_lst **lst)

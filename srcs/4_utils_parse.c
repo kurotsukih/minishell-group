@@ -6,7 +6,7 @@
 /*   By: akostrik <akostrik@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/02 15:22:47 by akostrik          #+#    #+#             */
-/*   Updated: 2023/09/12 15:28:37 by akostrik         ###   ########.fr       */
+/*   Updated: 2023/09/12 16:15:20 by akostrik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -138,7 +138,7 @@ void	init_new_token(t_data **d)
 	(*d)->token = ""; // free((*d)->token) will work ???
 }
 
-int	put_redir_to_pipe_if_necessary(char *cmd_line, t_data **d)
+int	put_fd_if_the_out_is_pipe(char *cmd_line, t_data **d)
 {
 	if ((*d)->there_are_redirs_out == NO && cmd_line[(*d)->i] == '|')
 		(*d)->fd_out = open(TMP_FILE, O_WRONLY | O_CREAT | O_TRUNC, 0666);

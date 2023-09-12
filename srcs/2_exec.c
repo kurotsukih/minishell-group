@@ -6,7 +6,7 @@
 /*   By: akostrik <akostrik@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/02 15:22:29 by akostrik          #+#    #+#             */
-/*   Updated: 2023/09/12 15:25:42 by akostrik         ###   ########.fr       */
+/*   Updated: 2023/09/12 16:23:48 by akostrik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,11 +24,7 @@ int	exec_echo(t_data **d)
 		if (ft_strcmp(cur->val, "-n") == 0)
 			option_n = YES;
 		else
-		{
 			write_fd(1, cur->val);
-			if (cur->nxt != NULL)
-				write_fd(1, " ");  // but for [ echo "$A"R ]: we should not print " "
-		}
 		cur = cur->nxt;
 	}
 	if (option_n == NO)
