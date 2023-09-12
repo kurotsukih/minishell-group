@@ -6,7 +6,7 @@
 /*   By: akostrik <akostrik@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/02 15:22:16 by akostrik          #+#    #+#             */
-/*   Updated: 2023/09/12 14:32:13 by akostrik         ###   ########.fr       */
+/*   Updated: 2023/09/12 15:02:45 by akostrik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,9 +30,7 @@ pour les process zombie j'ai utilisé la macro sigaction avec SIGCHLD et SA_NOCL
 
 à la premiere erreur (le droit decriture pour les redir out, etc) ca fait tout fail
 
-execve creates a new process with the same ope n file descriptors as the parent
-
-//// REDIRS
+/// REDIRS
 les redir se font ds lordre
 les redir peuvent etre située n'importe ou par rapport a la commande et ses eventuels arguments
 pour ce qui est des redir out ca cree un fichier

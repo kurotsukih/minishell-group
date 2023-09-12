@@ -6,7 +6,7 @@
 /*   By: akostrik <akostrik@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/02 15:22:29 by akostrik          #+#    #+#             */
-/*   Updated: 2023/09/12 13:03:10 by akostrik         ###   ########.fr       */
+/*   Updated: 2023/09/12 15:04:28 by akostrik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,6 +59,7 @@ int	exec_cd(t_data **d)
 	return (OK);
 }
 
+// execve creates a new process with the same ope n file descriptors as the parent
 static int	exec_extern_cmd(t_data **d)
 {
 	int		pid;
@@ -79,8 +80,8 @@ static int	exec_extern_cmd(t_data **d)
 		env_arr = lst_to_arr((*d)->env, d);
 		if (execve(path, args_arr, env_arr) == -1)
 			return(err_cmd("", -1, d));
-		free_2_array(args_arr); //not executed ? execve does free?
-		free_2_array(env_arr);
+		free_2_array(args_arr); // Not executed because execve has replaced the child process? 
+		free_2_array(env_arr); // Does execve free args_arr and env_arr ?
 	}
 	else
 		wait(&status);
