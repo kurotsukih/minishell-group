@@ -6,7 +6,7 @@
 /*   By: akostrik <akostrik@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/02 15:22:16 by akostrik          #+#    #+#             */
-/*   Updated: 2023/09/05 21:22:55 by akostrik         ###   ########.fr       */
+/*   Updated: 2023/09/12 10:26:19 by akostrik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -175,20 +175,19 @@ static int	calc_redir_and_token(char *s, t_data **d)
 }
 
 // arg[0] = prog name
-// no matter what p"arse_and_exec_cmd_line returns
+// no matter what this func returns
 static int	exec_cmd_line(char *s, t_data **d)
 {
-	int k = 0;
-
 	if (all_quotes_are_closed(s) != OK)
 		return (err_cmd("uncloses quotes", -1, d));
 	(*d)->i = 0;
+	(*d)->num_cmd = 0;
 	while (1) // cmds
 	{
 		del_all_from_lst((*d)->args);
 		del_all_from_lst((*d)->fds_out);
 		// put_fd_to_in(STDIN_FILENO, d);
-		put_fd_to_in((*d)->pipe[k % 2][OUT], d);
+		put_fd_to_in((*d)->pipe[((*d)->num_cmd) % 2][OUT], d);
 		while (1) // tokens
 		{
 			calc_redir_and_token(s, d);
@@ -196,20 +195,18 @@ static int	exec_cmd_line(char *s, t_data **d)
 				break ;
 		}
 		if (s[(*d)->i] == '|')
-			put_fd_to_outs((*d)->pipe[(k + 1) % 2][IN], d);
+			put_fd_to_outs((*d)->pipe[((*d)->num_cmd + 1) % 2][IN], d);
 		if (len_lst((*d)->fds_out) == 0)
 			put_fd_to_outs(STDOUT_FILENO, d);
 		print_d("parsed", d);
 		exec_cmd(d);
-		printf("s[%d] = %c, break ?\n", (*d)->i, s[(*d)->i]);
 		if (s[(*d)->i] != '|') // == \0 ?
 		{
-			// fflush(the last out)
-			printf("break\n");
+			// cat (the last out)
 			break ;
 		}
 		((*d)->i)++;
-		k++;
+		((*d)->num_cmd)++;
 	}
 	return (OK);
 }

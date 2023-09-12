@@ -6,7 +6,7 @@
 /*   By: akostrik <akostrik@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/02 15:22:31 by akostrik          #+#    #+#             */
-/*   Updated: 2023/09/05 21:43:23 by akostrik         ###   ########.fr       */
+/*   Updated: 2023/09/12 10:18:10 by akostrik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,6 +82,7 @@ typedef struct		s_data
 	int				fd_in;
 	int				exit_c;
 	int				pipe[2][2];
+	int				num_cmd;
 
 	char			*token; // token params
 	char			*redir;
