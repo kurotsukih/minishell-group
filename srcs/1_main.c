@@ -146,6 +146,10 @@ static int	parse_nxt_token(char *cmd_line, t_data **d)
 // arg[0] = cmd name
 // arg[1], arg[2], ... = arguments
 // no matter what this func returns
+
+// unlink() deletes a name from the filesystem.
+// If that name was the last link to a file and no processes have the file open, 
+// the file is deleted
 static int	parse_and_exec_cmd_line(char *cmd_line, t_data **d)
 {
 	if (init_new_cmd_line(cmd_line, d) == FAILURE)
@@ -166,8 +170,6 @@ static int	parse_and_exec_cmd_line(char *cmd_line, t_data **d)
 		exec_cmd(d);
 		if (cmd_line[(*d)->i] != '|')
 			break ;
-		// unlink(TMP_FILE); doesn't work !!!!!!!!!!!!!
-		// unlink(TMP_FILE_H);
 		((*d)->i)++;
 	}
 	return (OK);
@@ -197,6 +199,8 @@ int	main(int argc, char **argv, char **env)
 		add_history(cmd_line);
 		parse_and_exec_cmd_line(cmd_line, &d);
 		free_(cmd_line);
+		unlink(TMP_FILE);
+		unlink(TMP_FILE_H);
 	}
 	free_all_and_exit("", 0, &d); // never executed ?
 	return (0);

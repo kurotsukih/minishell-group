@@ -12,49 +12,6 @@
 
 #include "headers.h"
 
-int	exec_echo(t_data **d)
-{
-	t_lst	*cur;
-	int		option_n;
-
-	option_n = NO;
-	cur = (*((*d)->args))->nxt;
-	while (cur != NULL)
-	{
-		if (ft_strcmp(cur->val, "-n") == 0)
-			option_n = YES;
-		else
-			write_fd(1, cur->val);
-		cur = cur->nxt;
-	}
-	if (option_n == NO)
-		write_fd(1, "\n");
-	return (OK);
-}
-
-int	exec_cd(t_data **d)
-{
-	char	*dir;
-	int		res;
-
-	if (len_lst((*d)->args) > 2)
-		return (err_cmd("cd : too many arguments", -1, d));
-	if (len_lst((*d)->args) == 1)
-	{
-		dir = get_val_from_env("HOME", d);
-		if (dir == NULL)
-			return (err_cmd("cd : variable HOME not found", -1, d));
-	}
-	else if (len_lst((*d)->args) == 2)
-		dir = (*((*d)->args))->nxt->val;
-	res = chdir(dir);
-	// if (len_lst((*d)->args) == 1)
-	// 	free_(dir);
-	if (res == -1)
-		return (err_cmd("cd : chdir failure", -1, d));
-	return (OK);
-}
-
 // execve creates a new process with the same ope n file descriptors as the parent
 static int	exec_extern_cmd(t_data **d)
 {
@@ -115,5 +72,62 @@ int	exec_cmd(t_data **d)
 		return (err_cmd("dup2 end stdin pb", -1, d));
 	if (dup2((*d)->saved_stdout, STDOUT) == -1)
 		return (err_cmd("dup2 stdout pb", -1, d));
+	return (OK);
+}
+
+int	exec_echo(t_data **d)
+{
+	t_lst	*cur;
+	int		option_n;
+
+	option_n = NO;
+	cur = (*((*d)->args))->nxt;
+	while (cur != NULL)
+	{
+		if (ft_strcmp(cur->val, "-n") == 0)
+			option_n = YES;
+		else
+			write_fd(1, cur->val);
+		cur = cur->nxt;
+	}
+	if (option_n == NO)
+		write_fd(1, "\n");
+	return (OK);
+}
+
+int	exec_cd(t_data **d)
+{
+	char	*dir;
+	int		res;
+
+	if (len_lst((*d)->args) > 2)
+		return (err_cmd("cd : too many arguments", -1, d));
+	if (len_lst((*d)->args) == 1)
+	{
+		dir = get_val_from_env("HOME", d);
+		if (dir == NULL)
+			return (err_cmd("cd : variable HOME not found", -1, d));
+	}
+	else if (len_lst((*d)->args) == 2)
+		dir = (*((*d)->args))->nxt->val;
+	res = chdir(dir);
+	// if (len_lst((*d)->args) == 1)
+	// 	free_(dir);
+	if (res == -1)
+		return (err_cmd("cd : chdir failure", -1, d));
+	return (OK);
+}
+
+int	exec_pwd(t_data **d)
+{
+	char	*s;
+
+	if (len_lst((*d)->args) > 1)
+		return (err_cmd("pwd : too many arguments", -1, d));
+	s = getcwd(NULL, 0);
+	if (s == NULL)
+		return (err_cmd("pwd : getcwd failed", -1, d));
+	write_fd_with_n(1, s);
+	free_(s);
 	return (OK);
 }

@@ -12,20 +12,6 @@
 
 #include "headers.h"
 
-int	exec_pwd(t_data **d)
-{
-	char	*s;
-
-	if (len_lst((*d)->args) > 1)
-		return (err_cmd("pwd : too many arguments", -1, d));
-	s = getcwd(NULL, 0);
-	if (s == NULL)
-		return (err_cmd("pwd : getcwd failed", -1, d));
-	write_fd_with_n(1, s);
-	free_(s);
-	return (OK);
-}
-
 int	exec_export(t_data **d)
 {
 	t_lst	*cur;

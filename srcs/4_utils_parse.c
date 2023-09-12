@@ -87,10 +87,10 @@ char	*calc_token(char *stop, char *s, t_data **d)
 int	heredoc_to_file(char *delim, t_data **d)
 {
 	char	*line;
-	int		fd;
+	int		fd_write;
 
-	fd = open(TMP_FILE_H, O_WRONLY | O_CREAT | O_TRUNC, 0666);
-	if (!fd)
+	fd_write = open(TMP_FILE_H, O_WRONLY | O_CREAT | O_TRUNC, 0666);
+	if (!fd_write)
 		return (err_cmd("heredoc open tmp file pb", -1, d));
 	line = NULL;
 	while (1)
@@ -98,11 +98,11 @@ int	heredoc_to_file(char *delim, t_data **d)
 		line = readline(">");
 		if (line == NULL || ft_strcmp(line, delim) == 0)
 			break ;
-		write_fd(fd, line);
-		write_fd(fd, " ");
+		write_fd(fd_write, line);
+		write_fd(fd_write, " ");
 		free_(line);
 	}
-	close(fd);
+	close(fd_write);
 	return (OK);
 }
 
