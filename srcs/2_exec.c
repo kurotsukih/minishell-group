@@ -6,7 +6,7 @@
 /*   By: akostrik <akostrik@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/02 15:22:29 by akostrik          #+#    #+#             */
-/*   Updated: 2023/09/12 12:18:37 by akostrik         ###   ########.fr       */
+/*   Updated: 2023/09/12 13:03:10 by akostrik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,8 +26,8 @@ int	exec_echo(t_data **d)
 		else
 		{
 			write_fd(1, cur->val);
-			if (cur->nxt != NULL) // echo "$A"R : we should not print " "
-				write_fd(1, " ");
+			if (cur->nxt != NULL)
+				write_fd(1, " ");  // but for [ echo "$A"R ]: we should not print " "
 		}
 		cur = cur->nxt;
 	}

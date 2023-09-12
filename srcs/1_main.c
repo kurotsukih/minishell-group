@@ -6,7 +6,7 @@
 /*   By: akostrik <akostrik@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/02 15:22:16 by akostrik          #+#    #+#             */
-/*   Updated: 2023/09/12 12:22:32 by akostrik         ###   ########.fr       */
+/*   Updated: 2023/09/12 13:43:27 by akostrik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -171,7 +171,7 @@ static int	put_nxt_token_to_d(char *s, t_data **d)
 // no matter what this func returns
 static int	exec_cmd_line(char *s, t_data **d)
 {
-	int	fd_tmp_file;
+	int	fd_tmp;
 
 	if (all_quotes_are_closed(s) != OK)
 		return (err_cmd("uncloses quotes", -1, d));
@@ -179,23 +179,26 @@ static int	exec_cmd_line(char *s, t_data **d)
 	while (1) // cmds
 	{
 		del_all_from_lst((*d)->args);
-		(*d)->fd_in = dup(STDIN);
-		fd_tmp_file = open(TMP_FILE, O_RDONLY);
-		if (fd_tmp_file != -1)
-			(*d)->fd_in = fd_tmp_file;
+		(*d)->fd_in = -1;
+		fd_tmp = open(TMP_FILE, O_RDONLY);
+		if (fd_tmp == -1)
+			(*d)->fd_in = dup(STDIN); // close ?
+		else
+			(*d)->fd_in = fd_tmp;
 		(*d)->fd_out = dup(STDOUT);
-		while (1) // tokens, token = arg or fd, while token != NULL
+		if ((*d)->fd_in == -1 || (*d)->fd_out == -1)
+			return (err_cmd("dup pb", -1, d));
+		fd_tmp = (*d)->fd_out;
+		while (1) // tokens, token = arg or fd, while token != NULL // do while ?
 		{
 			put_nxt_token_to_d(s, d);
 			if (ft_strlen((*d)->token) == 0)
 				break ;
 		}
-		if ((*d)->fd_out == (*d)->saved_stdout && s[(*d)->i] == '|')
-		{
+		if ((*d)->fd_out == fd_tmp && s[(*d)->i] == '|')
 			(*d)->fd_out = open(TMP_FILE, O_WRONLY | O_CREAT | O_TRUNC, 0666);
-			if ((*d)->fd_out == -1)
-				return (err_cmd("dup stdin pb", -1, d));
-		}
+		if ((*d)->fd_out == -1)
+			return (err_cmd("dup pb", -1, d));
 		print_d("parsed", d);
 		exec_cmd(d);
 		if (s[(*d)->i] != '|') // == \0 ?
@@ -203,8 +206,8 @@ static int	exec_cmd_line(char *s, t_data **d)
 			// cat (the last out)
 			break ;
 		}
-		unlink(TMP_FILE);
-		unlink(TMP_FILE_H);
+		// unlink(TMP_FILE);
+		// unlink(TMP_FILE_H);
 		((*d)->i)++;
 	}
 	return (OK);

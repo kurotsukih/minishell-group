@@ -6,7 +6,7 @@
 /*   By: akostrik <akostrik@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/02 15:22:55 by akostrik          #+#    #+#             */
-/*   Updated: 2023/09/12 12:17:27 by akostrik         ###   ########.fr       */
+/*   Updated: 2023/09/12 13:04:37 by akostrik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,7 +89,7 @@ void	print_d(char *msg, t_data **d)
 		}
 	}
 	printf(" : %d : %d ", (*d)->fd_in, (*d)->fd_out);
-	printf(" (tok=[%s] redir=[%s] i=%d)\n", (*d)->token, (*d)->redir, (*d)->i);
+	printf(" (tok=[%s] redir=[%s] i=%d sav.in=%d sav.out=%d)\n", (*d)->token, (*d)->redir, (*d)->i, (*d)->saved_stdin, (*d)->saved_stdout);
 }
 
 int	write_fd(int fd, char *s){
