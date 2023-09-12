@@ -6,7 +6,7 @@
 /*   By: akostrik <akostrik@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/02 15:22:29 by akostrik          #+#    #+#             */
-/*   Updated: 2023/09/05 21:04:08 by akostrik         ###   ########.fr       */
+/*   Updated: 2023/09/12 12:18:37 by akostrik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ int	exec_echo(t_data **d)
 	cur = (*((*d)->args))->nxt;
 	while (cur != NULL)
 	{
-		if (ft_strcmp((char *)(cur->val), "-n") == 0)
+		if (ft_strcmp(cur->val, "-n") == 0)
 			option_n = YES;
 		else
 		{
@@ -77,7 +77,8 @@ static int	exec_extern_cmd(t_data **d)
 			path = "."; // ?
 		args_arr = lst_to_arr((*d)->args, d);
 		env_arr = lst_to_arr((*d)->env, d);
-		execve(path, args_arr, env_arr); //if env_array == NULL ?
+		if (execve(path, args_arr, env_arr) == -1)
+			return(err_cmd("", -1, d));
 		free_2_array(args_arr); //not executed ? execve does free?
 		free_2_array(env_arr);
 	}
@@ -86,14 +87,17 @@ static int	exec_extern_cmd(t_data **d)
 	return (OK);
 }
 
-static int	exec_cmd_fd(int fd, t_data **d)
+int	exec_cmd(t_data **d)
 {
 	char *cmd;
 
-	if (dup2(fd, STDOUT_FILENO) == -1)
+	if (dup2((*d)->fd_in, STDIN) == -1)
+		return (err_cmd("dup2 start stdin pb", -1, d));
+	close((*d)->fd_in);
+	if (dup2((*d)->fd_out, STDOUT) == -1)
 		return (err_cmd("dup2 stdout pb", -1, d));
-	close(fd);
-	cmd = ((char *)((((*d)->args[0]))->val));
+	close((*d)->fd_out);
+	cmd = (((*d)->args[0])->val);
 	if (ft_strcmp(cmd, "echo") == 0)
 		exec_echo(d);
 	else if (ft_strcmp(cmd, "cd") == 0)
@@ -110,26 +114,9 @@ static int	exec_cmd_fd(int fd, t_data **d)
 		exec_exit(d);
 	else
 		exec_extern_cmd(d);
-	if (dup2((*d)->saved_stdout, STDOUT_FILENO) == -1)
-		return (err_cmd("dup2 stdout pb", -1, d));
-	unlink(TMP_FILE);
-	return (OK);
-}
-
-int	exec_cmd(t_data **d)
-{
-	t_lst *fd;
-
-	if (dup2((*d)->fd_in, STDIN_FILENO) == -1)
-		return (err_cmd("dup2 start stdin pb", -1, d));
-	close((*d)->fd_in);
-	fd = *((*d)->fds_out);
-	while (fd != NULL)
-	{
-		exec_cmd_fd(*((int *)(fd->val)), d);
-		fd = fd->nxt;
-	}
-	if (dup2((*d)->saved_stdin, STDIN_FILENO) == -1)
+	if (dup2((*d)->saved_stdin, STDIN) == -1)
 		return (err_cmd("dup2 end stdin pb", -1, d));
+	if (dup2((*d)->saved_stdout, STDOUT) == -1)
+		return (err_cmd("dup2 stdout pb", -1, d));
 	return (OK);
 }

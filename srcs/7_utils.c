@@ -1,48 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   8_utils.c                                          :+:      :+:    :+:   */
+/*   7_utils.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: akostrik <akostrik@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/02 15:22:55 by akostrik          #+#    #+#             */
-/*   Updated: 2023/09/05 20:41:32 by akostrik         ###   ########.fr       */
+/*   Updated: 2023/09/12 12:17:27 by akostrik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "headers.h"
-
-void	sig_handler_main(int signal) // ???
-{
-	if (signal == SIGINT)
-	{
-		write_fd(1, "\n");
-		rl_on_new_line();
-		rl_replace_line("", 0);
-		rl_redisplay();
-		g_signal = 1;
-	}
-}
-
-void	sig_handler_heredoc(int signal) // ???
-{
-	if (signal == SIGINT)
-	{
-		write_fd(1, "\n");
-		rl_replace_line("", 0);
-		rl_redisplay();
-		close(STDIN_FILENO);
-		g_signal = 1;
-	}
-}
-
-void	sig_handler_fork(int signal) // ???
-{
-	if (signal == SIGINT)
-		exit(130);
-	if (signal == SIGQUIT)
-		exit(131);
-}
 
 int	init_d(t_data **d, char **env) // **d ?
 {
@@ -50,13 +18,8 @@ int	init_d(t_data **d, char **env) // **d ?
 	(*d)->env = arr_to_lst(env, d);
 	(*d)->redir = "";
 	(*d)->token = "";
-	if (pipe((*d)->pipe[0]) == -1 || pipe((*d)->pipe[1]) == -1)
-		return (err_cmd("pipe pb", -1, d), FAILURE);
 	(*d)->saved_stdin = dup(STDIN_FILENO); // if fail s ?
 	(*d)->saved_stdout = dup(STDOUT_FILENO);
-	(*d)->pipe[0][IN] = dup(STDIN_FILENO);
-	// signal(SIGQUIT, SIG_IGN);
-	// signal(SIGINT, &sig_handler_main);
 	return (OK);
 }
 
@@ -91,8 +54,9 @@ int		err_cmd(char *msg, int exit_c, t_data **d)
 {
 	if (msg == NULL)
 		msg = "";
+	if (ft_strlen(msg) > 0)
 	write_fd_with_n(2, msg);
-	(*d)->exit_c = exit_c;
+		(*d)->exit_c = exit_c;
 	return (FAILURE);
 }
 
@@ -120,31 +84,51 @@ void	print_d(char *msg, t_data **d)
 		cur = *((*d)->args);
 		while (cur != NULL)
 		{
-			printf("[%s] ", (char *)(cur->val));
+			printf("[%s] ", cur->val);
 			cur= cur->nxt;
 		}
 	}
-	printf(" : %d : ", (*d)->fd_in);
-	if ((*d)->fds_out == NULL)
-		printf("no outs");
-	else
-	{
-		printf("%d outs ", len_lst((*d)->fds_out));
-		cur = *((*d)->fds_out);
-		while (cur != NULL)
-		{
-			printf("%d ", *((int *)(cur->val)));
-			cur= cur->nxt;
-		}
-	}
-	printf("\n  token = [%s], redir = [%s], i = %d\n", (*d)->token, (*d)->redir, (*d)->i);
+	printf(" : %d : %d ", (*d)->fd_in, (*d)->fd_out);
+	printf(" (tok=[%s] redir=[%s] i=%d)\n", (*d)->token, (*d)->redir, (*d)->i);
 }
 
 int	write_fd(int fd, char *s){
-	return (write(fd, (char *)s, ft_strlen((char *)s)));
+	return (write(fd, s, ft_strlen(s)));
 }
 
 int	write_fd_with_n(int fd, char *s)
 {
-	return (write(fd, (char *)s, ft_strlen((char *)s)) + write(fd, "\n", 1));
+	return (write(fd, s, ft_strlen(s)) + write(fd, "\n", 1));
+}
+
+void	sig_handler_main(int signal) // ???
+{
+	if (signal == SIGINT)
+	{
+		write_fd(1, "\n");
+		rl_on_new_line();
+		rl_replace_line("", 0);
+		rl_redisplay();
+		g_signal = 1;
+	}
+}
+
+void	sig_handler_heredoc(int signal) // ???
+{
+	if (signal == SIGINT)
+	{
+		write_fd(1, "\n");
+		rl_replace_line("", 0);
+		rl_redisplay();
+		close(STDIN);
+		g_signal = 1;
+	}
+}
+
+void	sig_handler_fork(int signal) // ???
+{
+	if (signal == SIGINT)
+		exit(130);
+	if (signal == SIGQUIT)
+		exit(131);
 }

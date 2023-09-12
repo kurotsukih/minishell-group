@@ -17,11 +17,12 @@ int	len_lst(t_lst **lst)
 	return (i);
 }
 
-void	put_to_lst(void *val, t_lst ***lst, t_data **d)
+void	put_to_lst(char *val, t_lst ***lst, t_data **d)
 {
 	t_lst	*new;
 	t_lst	*cur;
 
+	//printf("put_to_lst %s\n", val);
 	new = (t_lst *)malloc_(sizeof(t_lst), d);
 	new->val = val;
 	new->nxt = NULL;
@@ -46,9 +47,10 @@ t_lst	**arr_to_lst(char **arr, t_data **d)
 	int		i;
 	t_lst **lst;
 
+	lst = NULL;
 	i = -1;
 	while (arr[++i] != NULL)
-		put_to_lst((void *)(arr[i]), &lst, d);
+		put_to_lst(arr[i], &lst, d);
 	return (lst);
 }
 
@@ -67,7 +69,7 @@ char	**lst_to_arr(t_lst **lst, t_data **d)
 	i = 0;
 	while (i < len_arr - 1)
 	{
-		arr[i] = (char *)(cur->val);
+		arr[i] = cur->val;
 		cur = cur->nxt;
 		i++;
 	}
@@ -92,7 +94,7 @@ void	del_from_lst(t_lst *to_del, t_lst **lst)
 					prv->nxt = cur->nxt;
 				else if (prv == NULL)
 					*lst = cur->nxt;
-				//free_(cur->val); // core dumped
+				//free_(cur->val);
 				free_(cur);
 				break ;
 			}

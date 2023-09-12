@@ -6,7 +6,7 @@
 /*   By: akostrik <akostrik@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/02 15:22:31 by akostrik          #+#    #+#             */
-/*   Updated: 2023/09/12 10:18:10 by akostrik         ###   ########.fr       */
+/*   Updated: 2023/09/12 11:41:46 by akostrik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,12 +34,13 @@
 # define QUOTES1 1
 # define QUOTES2 2
 # define TMP_FILE "tmp"
+# define TMP_FILE_H "tmp_h"
 # define OK 0
 # define FAILURE -1
 # define YES 1
 # define NO 0
-# define IN 1
-# define OUT 0
+# define STDIN STDIN_FILENO
+# define STDOUT STDOUT_FILENO
 
 extern int g_signal;
 
@@ -65,7 +66,7 @@ extern int g_signal;
 
 typedef struct		s_lst
 {
-	void			*val;
+	char			*val;
 	struct s_lst	*nxt;
 }					t_lst;
 
@@ -78,11 +79,9 @@ typedef struct		s_data
 	int				i;      // cmd_line params
 
 	t_lst			**args; // cmd params
-	t_lst			**fds_out;
 	int				fd_in;
+	int				fd_out;
 	int				exit_c;
-	int				pipe[2][2];
-	int				num_cmd;
 
 	char			*token; // token params
 	char			*redir;
@@ -92,12 +91,10 @@ typedef struct		s_data
 int		all_quotes_are_closed(char *s);
 int		skip_spaces(char *s, t_data **d);
 void	calc_redir(char *s, t_data **d);
-char	*calc_token_str(char *stop, char *s, t_data **d);
+char	*calc_token(char *stop, char *s, t_data **d);
 char	*dedollarized_(char *s, t_data **d);
 int		mod_(char c);
 int		is_in(char c, char *s);
-int		put_fd_to_outs(int fd, t_data **d);
-int		put_fd_to_in(int fd, t_data **d);
 int		heredoc_to_file(char *delim, t_data **d);
 
 // exec 10                          min args    max   accept <in
@@ -113,7 +110,7 @@ char	*path_(t_data **d);
 char	*get_val_from_env(char *key, t_data **d);
 
 // utils lst 7
-void	put_to_lst(void *val, t_lst ***lst, t_data **d);
+void	put_to_lst(char *val, t_lst ***lst, t_data **d);
 t_lst	**arr_to_lst(char **arr, t_data **d);
 char	**lst_to_arr(t_lst **lst, t_data **d);
 int		len_lst(t_lst **lst);

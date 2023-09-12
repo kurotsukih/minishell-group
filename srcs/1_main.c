@@ -6,7 +6,7 @@
 /*   By: akostrik <akostrik@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/02 15:22:16 by akostrik          #+#    #+#             */
-/*   Updated: 2023/09/12 10:26:19 by akostrik         ###   ########.fr       */
+/*   Updated: 2023/09/12 12:22:32 by akostrik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,33 +106,26 @@ extern cmd change the env ?
 
 // printf("%d ", *((int *)(cur->val)));
 
+// Par ailleurs, tu fais tes tests dans zsh pas bash
+
 #include "headers.h"
 
 int g_signal = 0;
 
 int	put_token_to_d(t_data **d)
 {
-	int *out;
 
 	if (ft_strcmp((*d)->redir, "<<") == 0)
 	{
 		heredoc_to_file((*d)->token, d);
-		(*d)->fd_in = open(TMP_FILE, O_RDONLY);
+		(*d)->fd_in = open(TMP_FILE_H, O_RDONLY);
 	}
 	else if (ft_strcmp((*d)->redir, "<") == 0)
 		(*d)->fd_in = open((*d)->token, O_RDONLY);
 	else if (ft_strcmp((*d)->redir, ">>") == 0)
-	{
-		out = (int *)malloc(sizeof(int));
-		*out = open((*d)->token, O_WRONLY | O_CREAT | O_APPEND, 0666);
-		put_to_lst((void *)out, &((*d)->fds_out), d);
-	}
+		(*d)->fd_out = open((*d)->token, O_WRONLY | O_CREAT | O_APPEND, 0666);
 	else if (ft_strcmp((*d)->redir, ">") == 0)
-	{
-		out = (int *)malloc(sizeof(int));
-		*out = open((*d)->token, O_WRONLY | O_CREAT | O_TRUNC, 0666);
-		put_to_lst((void *)out, &((*d)->fds_out), d);
-	}
+		(*d)->fd_out = open((*d)->token, O_WRONLY | O_CREAT | O_TRUNC, 0666);
 	else
 		put_to_lst((*d)->token, &((*d)->args), d);
 	// if (((*d)->redir)[0] == '<' && (*d)->in == -1)
@@ -142,35 +135,35 @@ int	put_token_to_d(t_data **d)
 	return (OK);
 }
 
-// no matter what calc_next_token returns
-static int	calc_redir_and_token(char *s, t_data **d)
+// no matter what this func returns
+static int	put_nxt_token_to_d(char *s, t_data **d)
 {
 	skip_spaces(s, d);
 	(*d)->redir = "";
 	(*d)->token = ""; // free((*d)->token); ?
 	if (s[(*d)->i] == '\'')
 	{
-		(*d)->token = calc_token_str("\'\0", &s[(*d)->i + 1], d);
-		(*d)->i += ft_strlen((*d)->token) + 2; ////
+		(*d)->token = calc_token("\'\0", &s[(*d)->i + 1], d);
+		(*d)->i += ft_strlen((*d)->token) + 2;
 	}
 	else if (s[(*d)->i] == '\"')
 	{
-		(*d)->token = calc_token_str("\"\0", &s[(*d)->i + 1], d);
-		(*d)->i += ft_strlen((*d)->token) + 2; ////
+		(*d)->token = calc_token("\"\0", &s[(*d)->i + 1], d);
+		(*d)->i += ft_strlen((*d)->token) + 2;
 		(*d)->token = dedollarized_((*d)->token, d);
 	}
 	else
 	{
 		calc_redir(s, d);
 		skip_spaces(s, d);
-		(*d)->token = calc_token_str(" \"\'<>|", &s[(*d)->i], d);
+		(*d)->token = calc_token(" \"\'<>|", &s[(*d)->i], d);
 		((*d)->i) += ft_strlen((*d)->token);
 		(*d)->token = dedollarized_((*d)->token, d);
 	}
-	if (ft_strlen((*d)->token) > 0 && put_token_to_d(d) == FAILURE) // token = arg or fd
+	if (ft_strlen((*d)->token) > 0 && put_token_to_d(d) == FAILURE)
 		return (err_cmd("get token pb", -1, d));
 	if (skip_spaces(s, d) == YES)
-		{} // to add a space tp the token (for echo)
+		{} // to add a space to the token (for echo) // add a space in any case ?
 	return (OK);
 }
 
@@ -178,26 +171,31 @@ static int	calc_redir_and_token(char *s, t_data **d)
 // no matter what this func returns
 static int	exec_cmd_line(char *s, t_data **d)
 {
+	int	fd_tmp_file;
+
 	if (all_quotes_are_closed(s) != OK)
 		return (err_cmd("uncloses quotes", -1, d));
 	(*d)->i = 0;
-	(*d)->num_cmd = 0;
 	while (1) // cmds
 	{
 		del_all_from_lst((*d)->args);
-		del_all_from_lst((*d)->fds_out);
-		// put_fd_to_in(STDIN_FILENO, d);
-		put_fd_to_in((*d)->pipe[((*d)->num_cmd) % 2][OUT], d);
-		while (1) // tokens
+		(*d)->fd_in = dup(STDIN);
+		fd_tmp_file = open(TMP_FILE, O_RDONLY);
+		if (fd_tmp_file != -1)
+			(*d)->fd_in = fd_tmp_file;
+		(*d)->fd_out = dup(STDOUT);
+		while (1) // tokens, token = arg or fd, while token != NULL
 		{
-			calc_redir_and_token(s, d);
+			put_nxt_token_to_d(s, d);
 			if (ft_strlen((*d)->token) == 0)
 				break ;
 		}
-		if (s[(*d)->i] == '|')
-			put_fd_to_outs((*d)->pipe[((*d)->num_cmd + 1) % 2][IN], d);
-		if (len_lst((*d)->fds_out) == 0)
-			put_fd_to_outs(STDOUT_FILENO, d);
+		if ((*d)->fd_out == (*d)->saved_stdout && s[(*d)->i] == '|')
+		{
+			(*d)->fd_out = open(TMP_FILE, O_WRONLY | O_CREAT | O_TRUNC, 0666);
+			if ((*d)->fd_out == -1)
+				return (err_cmd("dup stdin pb", -1, d));
+		}
 		print_d("parsed", d);
 		exec_cmd(d);
 		if (s[(*d)->i] != '|') // == \0 ?
@@ -205,8 +203,9 @@ static int	exec_cmd_line(char *s, t_data **d)
 			// cat (the last out)
 			break ;
 		}
+		unlink(TMP_FILE);
+		unlink(TMP_FILE_H);
 		((*d)->i)++;
-		((*d)->num_cmd)++;
 	}
 	return (OK);
 }
@@ -216,9 +215,10 @@ int	main(int argc, char **argv, char **env)
 	char	*cmd_line;
 	t_data	*d;
 
-	(void)argc;
-	(void)argv;
+	((void)argc, (void)argv);
 	init_d(&d, env);
+	// signal(SIGQUIT, SIG_IGN);
+	// signal(SIGINT, &sig_handler_main);
 	while (1)
 	{
 		cmd_line = NULL;

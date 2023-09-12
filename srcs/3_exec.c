@@ -6,7 +6,7 @@
 /*   By: akostrik <akostrik@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/02 15:22:39 by akostrik          #+#    #+#             */
-/*   Updated: 2023/09/05 21:03:11 by akostrik         ###   ########.fr       */
+/*   Updated: 2023/09/12 11:13:15 by akostrik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,11 +54,11 @@ int	exec_unset(t_data **d)
 	arg = (*((*d)->args))->nxt;
 	while (arg != NULL)
 	{
-		key_arg = calc_token_str("=\0", (char *)(arg->val), d);
+		key_arg = calc_token("=\0", arg->val, d);
 		env = *((*d)->env);
 		while (env != NULL)
 		{
-			key_env = calc_token_str("=\0", (char *)(env->val), d);
+			key_env = calc_token("=\0", env->val, d);
 			if (ft_strcmp(key_arg, key_env) == 0)
 			{
 				del_from_lst(env, (*d)->env);

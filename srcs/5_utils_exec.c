@@ -6,7 +6,7 @@
 /*   By: akostrik <akostrik@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/02 15:22:47 by akostrik          #+#    #+#             */
-/*   Updated: 2023/09/05 21:40:09 by akostrik         ###   ########.fr       */
+/*   Updated: 2023/09/12 11:13:41 by akostrik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,10 +24,10 @@ char	*get_val_from_env(char *key, t_data **d)
 	env = *((*d)->env);
 	while (env != NULL)
 	{
-		key_env = calc_token_str("=\0", (char *)(env->val), d);
+		key_env = calc_token("=\0", env->val, d);
 		if (ft_strcmp(key, key_env) == 0)
 		{
-			val_env = &(((char *)(env->val))[ft_strlen(key) + 1]);
+			val_env = &((env->val)[ft_strlen(key) + 1]);
 			if (val_env == NULL)
 				return (err_cmd("env variable not found", -1, d), NULL);
 			return (val_env);
@@ -122,7 +122,7 @@ char	*path_(t_data **d)
 	i = 0;
 	while (i < ft_strlen(paths))
 	{
-		path = calc_token_str(":\0", &(paths[i_beg]), d);
+		path = calc_token(":\0", &(paths[i_beg]), d);
 		full_path = full_path_(path, (*((*d)->args))->val, d);
 		if (access(full_path, X_OK) == 0)
 			return (full_path);

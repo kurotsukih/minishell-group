@@ -6,7 +6,7 @@
 /*   By: akostrik <akostrik@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/02 15:22:47 by akostrik          #+#    #+#             */
-/*   Updated: 2023/09/05 21:51:55 by akostrik         ###   ########.fr       */
+/*   Updated: 2023/09/12 11:27:34 by akostrik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,7 +64,7 @@ int	heredoc_to_file(char *delim, t_data **d)
 	char	*line;
 	int		fd;
 
-	fd = open(TMP_FILE, O_WRONLY | O_CREAT | O_TRUNC, 0666);
+	fd = open(TMP_FILE_H, O_WRONLY | O_CREAT | O_TRUNC, 0666);
 	if (!fd)
 		return (err_cmd("heredoc open tmp file pb", -1, d));
 	line = NULL;
@@ -112,7 +112,7 @@ int	mod_(char c)
 	return (mod);
 }
 
-char	*calc_token_str(char *stop, char *s, t_data **d)
+char	*calc_token(char *stop, char *s, t_data **d)
 {
 	char	*token;
 	int		i;
@@ -135,24 +135,4 @@ char	*calc_token_str(char *stop, char *s, t_data **d)
 	}
 	token[i] = '\0';
 	return (token);
-}
-
-int	put_fd_to_outs(int fd, t_data **d)
-{
-	int *out;
-
-	out = (int *)malloc(sizeof(int)); // malloc for func free_all_and_exit
-	out[0] = dup(fd);
-	if (out[0] == -1)
-		return (err_cmd("dup stdout pb", -1, d));
-	put_to_lst((void *)(&out[0]), &((*d)->fds_out), d);
-	return (OK);
-}
-
-int	put_fd_to_in(int fd, t_data **d)
-{
-	(*d)->fd_in = dup(fd);
-	if ((*d)->fd_in == -1)
-		return (err_cmd("dup stdin pb", -1, d));
-	return (OK);
 }
