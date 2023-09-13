@@ -12,6 +12,56 @@
 
 #include "headers.h"
 
+int	init_minishell(int argc, char **argv, char **env, t_data **d) // **d ?
+{
+	(void)argc;
+	(void)argv;
+	*d = (t_data *)malloc_(sizeof(t_data), d);
+	(*d)->env = arr_to_lst(env, d);
+	(*d)->redir = ""; // no need ?
+	(*d)->token = "";
+	(*d)->saved_stdin = dup(STDIN_FILENO); // if fail s ?
+	(*d)->saved_stdout = dup(STDOUT_FILENO);
+	(*d)->exit_c = 0;
+	if (signal(SIGINT, &sig_handler) == SIG_ERR) 
+		free_all_and_exit("Could not set signal handler", -1, d);
+	if (signal(SIGQUIT, SIG_IGN) == SIG_ERR) 
+		free_all_and_exit("Could not set signal handler", -1, d);
+	return (OK);
+}
+
+int	init_new_line(char *s, t_data **d)
+{
+	if (all_quotes_are_closed(s) != OK)
+		return (err_cmd("uncloses quotes", 1, d)); // 1 ?
+	(*d)->i = 0;
+	return (OK);
+}
+
+int	init_cmd(t_data **d)
+{
+	int	fd_tmp;
+
+	del_all_from_lst((*d)->args);
+	(*d)->there_are_redirs_out = NO;
+	(*d)->fd_in = -1;
+	fd_tmp = open(TMP_FILE, O_RDONLY);
+	if (fd_tmp == -1)
+		(*d)->fd_in = dup(STDIN); // close ?
+	else
+		(*d)->fd_in = fd_tmp;
+	(*d)->fd_out = dup(STDOUT);
+	if ((*d)->fd_in == -1 || (*d)->fd_out == -1)
+		return (err_cmd("dup pb", -1, d));
+	return (OK);
+}
+
+void	init_token(t_data **d)
+{
+	(*d)->redir = "";
+	(*d)->token = ""; // free((*d)->token) will work ???
+}
+
 int	all_quotes_are_closed(char *cmd_line)
 {
 	int		mod;
@@ -104,38 +154,6 @@ int	heredoc_to_file(char *delim, t_data **d)
 	}
 	close(fd_write);
 	return (OK);
-}
-
-int	init_new_cmd(t_data **d)
-{
-	int	fd_tmp;
-
-	del_all_from_lst((*d)->args);
-	(*d)->there_are_redirs_out = NO;
-	(*d)->fd_in = -1;
-	fd_tmp = open(TMP_FILE, O_RDONLY);
-	if (fd_tmp == -1)
-		(*d)->fd_in = dup(STDIN); // close ?
-	else
-		(*d)->fd_in = fd_tmp;
-	(*d)->fd_out = dup(STDOUT);
-	if ((*d)->fd_in == -1 || (*d)->fd_out == -1)
-		return (err_cmd("dup pb", -1, d));
-	return (OK);
-}
-
-int	init_new_cmd_line(char *s, t_data **d)
-{
-	if (all_quotes_are_closed(s) != OK)
-		return (err_cmd("uncloses quotes", -1, d));
-	(*d)->i = 0;
-	return (OK);
-}
-
-void	init_new_token(t_data **d)
-{
-	(*d)->redir = "";
-	(*d)->token = ""; // free((*d)->token) will work ???
 }
 
 int	put_fd_if_the_out_is_pipe(char *cmd_line, t_data **d)

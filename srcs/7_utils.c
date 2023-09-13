@@ -12,17 +12,6 @@
 
 #include "headers.h"
 
-int	init_d(t_data **d, char **env) // **d ?
-{
-	*d = (t_data *)malloc_(sizeof(t_data), d);
-	(*d)->env = arr_to_lst(env, d);
-	(*d)->redir = "";
-	(*d)->token = "";
-	(*d)->saved_stdin = dup(STDIN_FILENO); // if fail s ?
-	(*d)->saved_stdout = dup(STDOUT_FILENO);
-	return (OK);
-}
-
 void	*malloc_(int size, t_data **d)
 {
 	void	*mem;
@@ -52,11 +41,11 @@ void	free_2_array(char **arr)
 
 int		err_cmd(char *msg, int exit_c, t_data **d)
 {
-	if (msg == NULL)
-		msg = "";
+	// if (msg == NULL)
+	// 	msg = "";
 	if (ft_strlen(msg) > 0)
-	write_fd_with_n(2, msg);
-		(*d)->exit_c = exit_c;
+		write_fd_with_n(2, msg);
+	(*d)->exit_c = exit_c;
 	return (FAILURE);
 }
 
@@ -71,45 +60,14 @@ void	free_all_and_exit(char *msg, int exit_c, t_data **d)
 	exit(exit_c);
 }
 
-int	write_fd(int fd, char *s){
+int	write_fd(int fd, char *s)
+{
 	return (write(fd, s, ft_strlen(s)));
 }
 
 int	write_fd_with_n(int fd, char *s)
 {
 	return (write(fd, s, ft_strlen(s)) + write(fd, "\n", 1));
-}
-
-void	sig_handler_main(int signal) // ???
-{
-	if (signal == SIGINT)
-	{
-		write_fd(1, "\n");
-		rl_on_new_line();
-		rl_replace_line("", 0);
-		rl_redisplay();
-		g_signal = 1;
-	}
-}
-
-void	sig_handler_heredoc(int signal) // ???
-{
-	if (signal == SIGINT)
-	{
-		write_fd(1, "\n");
-		rl_replace_line("", 0);
-		rl_redisplay();
-		close(STDIN);
-		g_signal = 1;
-	}
-}
-
-void	sig_handler_fork(int signal) // ???
-{
-	if (signal == SIGINT)
-		exit(130);
-	if (signal == SIGQUIT)
-		exit(131);
 }
 
 // only for debugging

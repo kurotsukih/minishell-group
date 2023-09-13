@@ -11,44 +11,35 @@
 /* ************************************************************************** */
 
 /*
+are there processus zombie ?
+
+
 ***** REDIRECTIONS (< << > >>)
-- les redir se font ds lordre
-- les redir peuvent etre située n'importe ou par rapport a la commande et ses eventuels arguments
-pour ce qui est des redir out ca cree un fichier
-- à la premiere erreur (le droit decriture pour les redir out, etc) ca fait tout fail
-- mm logique pr les redirs in, à la premiere erreur (le droit decriture pour les redir out, etc) ca fait tout fail
+- les redirs se font ds lordre
+- peuvent etre située n'importe ou par rapport a la commande et ses arguments
+- pour ce qui est des redir out ca cree un fichier
+- à la premiere erreur (le droit decriture pour les redir out, etc) ca fait tout fail (!)
+- mm logique pr les redirs in
 - heredoc = redir in, mais au lieu de rediriger le contenu d'un fichier ds le stdin ca redirige un input 
 le fichier qui répresent le heredo c peut etre implementé en tant que fichier temp, qui se delete a la fin de la cmd
 
 
-**** EXIT CODES - TO DO !!!!!!!!!!!!!
-1	  les erreurs générales, comme une division par zéro
+**** EXIT CODES - TO DO
+1	  les erreurs générales (une division par zéro, ...)
 2	  mauvaise utilisation de commandes intégrées, d'après la documentation de Bash
-126	la commande appelée ne peut s'exécuter, problème de droits ou commande non exécutable
-127	commande introuvable, problème possible avec $PATH ou erreur de frappe
-128	argument de commande invalide
-128+n	128 + le numéro du signal
-130	terminé avec Ctrl-C (130 = 128 + 2)
-255	code de sortie en dehors de la limite par ex exit -1
-126 команда найдена, но не может быть выполнена
-127 команда не найдена, дочерний процесс, созданный для ее выполнения, возвращает 127
-
-le fils s'est terminé normalement, exit(3), _exit(2), retour de main() :
-WIFEXITED(status)   = true
-WEXITSTATUS(status) = le code de sortie du fils
-
-le fils s'est terminé à cause d'un signal:
-WIFSIGNALED(status) = vrai 
-WTERMSIG(status) = le numéro du signal
+126	  la commande ne peut s'exécuter (problème de droits, commande non exécutable)
+127	  commande introuvable, дочерний возвращает 127 (problème $PATH, erreur de frappe)
+128	  argument de commande invalide
+128+n 128 + le numéro du sig
+130	  terminé avec Ctrl-C (13 0 = 128 + 2)
+255	  code de sortie en dehors de la limite (ex exit -1)
 
 
-**** SIGNALS - TO DO !!!!!!!!!!!!!!!!!
-SIGIN T = the user types C-c
-SIGQUI T = SIGIN T, except that it’s controlled by C-\ + produces a core dump when it terminates the process, 
-CTRL-\ causes a program to terminate and dump core
-
-pour les process zombie - la macro sigaction avec SIGCHLD et SA_NOCLDWAIT (?)
-
+**** SIGNA LS
+ctrl + \ = SIGQUI T = do nothing
+ctrl + C = SIGIN T  = stop cmd, show new line
+ctrl + D = SIGIN T  = quit shell
+Ctrl + D does not send a sig, it sends EOF to the terminal
 
 ***** TESTS - TO DO !!!!!!!!!!!!!!!!!!!!!!
 to test in bash (not zsh !) (chqnge with the command ">bash")   !!!!!!!!!!!!!!!!!!!!!!
@@ -133,12 +124,12 @@ static int	parse_nxt_token(char *cmd_line, t_data **d)
 		(*d)->token = dedollarize_str((*d)->token, d);
 	}
 	if (ft_strlen((*d)->token) > 0 && put_token_to_d(d) == FAILURE)
-		return (err_cmd("get token pb", -1, d));
-	if (skip_spaces(cmd_line, d) == YES) 
+		return (err_cmd("get token pb", 1, d)); // 1 ?
+	if (skip_spaces(cmd_line, d) == YES)
 		{
 			(*d)->token=" "; // can we free it in the end ?
 			if (put_token_to_d(d) == FAILURE) // (only for spaces in echo outpub)
-				return (err_cmd("get token pb", -1, d));
+				return (err_cmd("get token pb", 1, d)); // 1 ?
 		} 
 	return (OK);
 }
@@ -152,15 +143,15 @@ static int	parse_nxt_token(char *cmd_line, t_data **d)
 // the file is deleted
 static int	parse_and_exec_cmd_line(char *cmd_line, t_data **d)
 {
-	if (init_new_cmd_line(cmd_line, d) == FAILURE)
+	if (init_new_line(cmd_line, d) == FAILURE)
 		return (FAILURE);
 	while (1)
 	{
-		if (init_new_cmd(d) == FAILURE)
+		if (init_cmd(d) == FAILURE)
 			return (FAILURE);
 		while (1) // tokens, token = arg or fd
 		{
-			init_new_token(d);
+			init_token(d);
 			parse_nxt_token(cmd_line, d);
 			if (ft_strlen((*d)->token) == 0)
 				break ;
@@ -180,28 +171,25 @@ int	main(int argc, char **argv, char **env)
 	char	*cmd_line;
 	t_data	*d;
 
-	((void)argc, (void)argv);
-	init_d(&d, env);
-	// signal(SIGQUIT, SIG_IGN); // TO DO !!!!!!!!!!!!!!!!!!!!!
-	// signal(SIGINT, &sig_handler_main);
+	init_minishell(argc, argv, env, &d);
 	while (1)
 	{
 		cmd_line = NULL;
 		cmd_line = readline("$");
-		if (cmd_line == NULL) // EOF
+		if (cmd_line == NULL) // EOF = ctrl + D ?
 			break ;
-		// if (g_signal == 1)
-		// {
-		// 	g_signal = 0;
-		// 	(d*)->exit_code = 130;
-		// 	continue;
-		// }
+		if (g_signal == 1)
+		{
+			g_signal = 0;
+			d->exit_c = 130;
+			continue;
+		}
 		add_history(cmd_line);
 		parse_and_exec_cmd_line(cmd_line, &d);
 		free_(cmd_line);
 		unlink(TMP_FILE);
 		unlink(TMP_FILE_H);
 	}
-	free_all_and_exit("", 0, &d); // never executed ?
+	free_all_and_exit("", 0, &d); // only if ctrl + D ?
 	return (0);
 }

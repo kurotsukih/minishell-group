@@ -36,7 +36,7 @@ int	exec_unset(t_data **d)
 	char	*key_env;
 
 	if (len_lst((*d)->args) == 1)
-		return (err_cmd("unset : too few arguments", -1, d));
+		return (err_cmd("unset : too few arguments", 0, d)); // 0 +
 	arg = (*((*d)->args))->nxt;
 	while (arg != NULL)
 	{
@@ -64,7 +64,7 @@ int	exec_env(t_data **d)
 	if ((*d)->env == NULL)
 		return( OK);
 	if (len_lst((*d)->args) > 1)
-		return (err_cmd("env : too many arguments", -1, d));
+		return (err_cmd("env : too many arguments", 127, d)); // 127 +
 	env = *((*d)->env);
 	while (env != NULL && env->val != NULL)
 	{
@@ -77,9 +77,9 @@ int	exec_env(t_data **d)
 int	exec_exit(t_data **d)
 {
 	if (len_lst((*d)->args) > 2)
-		return (err_cmd("exit : too many arguments", -1, d));
+		return (err_cmd("exit : too many arguments", 1, d)); // 1 +
 	if (len_lst((*d)->args) == 2 && !ft_atoi((*((*d)->args))->nxt->val))
-		return (err_cmd("exit : numeric arg. required", -1, d));
+		return (err_cmd("exit : numeric arg. required", 2, d)); // 2 +
 	if (len_lst((*d)->args) == 2)
 		free_all_and_exit("", ft_atoi((*((*d)->args))->nxt->val), d);
 	else if (len_lst((*d)->args) == 1)

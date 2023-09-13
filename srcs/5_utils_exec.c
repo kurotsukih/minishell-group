@@ -133,3 +133,39 @@ char	*path_(t_data **d)
 	}
 	return (err_cmd("cmd not found", 127, d), NULL); // 127? if (errno != 2) 126 ?
 }
+
+// rl_clear_history
+// rl_on_new_line
+// rl_replace_line
+// rl_redisplay
+void	sig_handler(int sig)
+{
+	if (sig == SIGINT)
+	{
+		write_fd(1, "\n");
+		rl_on_new_line(); //
+		rl_replace_line("", 0);
+		rl_redisplay();
+		g_signal = 1;
+	}
+}
+
+void	sig_handler_heredoc(int sig)
+{
+	if (sig == SIGINT)
+	{
+		write_fd(1, "\n");
+		rl_replace_line("", 0);
+		rl_redisplay();
+		close(STDIN);
+		g_signal = 1;
+	}
+}
+
+void	sig_handler_fork(int sig)
+{
+	if (sig == SIGINT)
+		exit(130); // ?
+	if (sig == SIGQUIT)
+		exit(131);
+}

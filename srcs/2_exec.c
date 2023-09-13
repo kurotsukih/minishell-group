@@ -12,7 +12,7 @@
 
 #include "headers.h"
 
-// execve creates a new process with the same ope n file descriptors as the parent
+// execve creates a new process with the same ope n file descriptors
 static int	exec_extern_cmd(t_data **d)
 {
 	int		pid;
@@ -26,6 +26,8 @@ static int	exec_extern_cmd(t_data **d)
 		free_all_and_exit("fork pb", -1, d);
 	if (pid == 0)
 	{
+		signal(SIGINT, &sig_handler_fork);
+		signal(SIGQUIT, &sig_handler_fork);
 		path = path_(d); // un chemin relatif ou absolu ?
 		if (path == NULL)
 			path = "."; // ?
@@ -37,7 +39,20 @@ static int	exec_extern_cmd(t_data **d)
 		free_2_array(env_arr);  // Does execve free args_arr and env_arr ?
 	}
 	else
+	{
 		wait(&status);
+		if (WIFEXITED(status)) // le fils s'est terminé normalement, exit(3), _exit(2)
+			(*d)->exit_c = WEXITSTATUS(status); //le code de sortie du fils
+		else if (WIFSIGNALED(status)) // le fils s'est terminé à cause d'un sig
+		{
+			(*d)->exit_c = WTERMSIG(status); // le numéro du sig
+			// *is_success = WTERMSIG(status) + 128;
+			// if (*is_success == 130)
+			// 	ft_merror("\n", NULL);
+			// if (*is_success == 131)
+			// 	err_cmd("Quit (core dumped)", 131, d); // ?
+		}
+	}
 	return (OK);
 }
 
@@ -46,10 +61,10 @@ int	exec_cmd(t_data **d)
 	char *cmd;
 
 	if (dup2((*d)->fd_in, STDIN) == -1)
-		return (err_cmd("dup2 start stdin pb", -1, d));
+		return (err_cmd("dup2 start stdin pb", 1, d)); // 1 = general errors
 	close((*d)->fd_in);
 	if (dup2((*d)->fd_out, STDOUT) == -1)
-		return (err_cmd("dup2 stdout pb", -1, d));
+		return (err_cmd("dup2 stdout pb", 1, d)); // 1 = general errors
 	close((*d)->fd_out);
 	cmd = (((*d)->args[0])->val);
 	if (ft_strcmp(cmd, "echo") == 0)
@@ -69,9 +84,9 @@ int	exec_cmd(t_data **d)
 	else
 		exec_extern_cmd(d);
 	if (dup2((*d)->saved_stdin, STDIN) == -1)
-		return (err_cmd("dup2 end stdin pb", -1, d));
+		return (err_cmd("dup2 end stdin pb", 1, d)); // 1 = general errors
 	if (dup2((*d)->saved_stdout, STDOUT) == -1)
-		return (err_cmd("dup2 stdout pb", -1, d));
+		return (err_cmd("dup2 stdout pb", 1, d)); // 1 = general errors
 	return (OK);
 }
 
@@ -101,12 +116,12 @@ int	exec_cd(t_data **d)
 	int		res;
 
 	if (len_lst((*d)->args) > 2)
-		return (err_cmd("cd : too many arguments", -1, d));
+		return (err_cmd("cd : too many arguments", 1, d)); // 1 +
 	if (len_lst((*d)->args) == 1)
 	{
 		dir = get_val_from_env("HOME", d);
 		if (dir == NULL)
-			return (err_cmd("cd : variable HOME not found", -1, d));
+			return (err_cmd("cd : HOME not defined", 1, d)); // 1 +
 	}
 	else if (len_lst((*d)->args) == 2)
 		dir = (*((*d)->args))->nxt->val;
@@ -114,7 +129,7 @@ int	exec_cd(t_data **d)
 	// if (len_lst((*d)->args) == 1)
 	// 	free_(dir);
 	if (res == -1)
-		return (err_cmd("cd : chdir failure", -1, d));
+		return (err_cmd("cd : chdir failure", 1, d)); // 1 = general errors
 	return (OK);
 }
 
@@ -122,8 +137,6 @@ int	exec_pwd(t_data **d)
 {
 	char	*s;
 
-	if (len_lst((*d)->args) > 1)
-		return (err_cmd("pwd : too many arguments", -1, d));
 	s = getcwd(NULL, 0);
 	if (s == NULL)
 		return (err_cmd("pwd : getcwd failed", -1, d));
