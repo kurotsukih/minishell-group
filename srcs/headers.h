@@ -108,7 +108,6 @@ char	**lst_to_arr(t_lst **lst, t_data **d);
 int		len_lst(t_lst **lst);
 void	del_from_lst(t_lst *to_del, t_lst **lst);
 void	del_all_from_lst(t_lst **lst);
-void	del_unnecessary_empty_args(t_data **d);
 void	free_lst(t_lst ***lst);
 
 // utils (9)

@@ -98,10 +98,9 @@ int	put_token_to_d(t_data **d)
 	return (OK);
 }
 
-// parsing next token
 // token = name of the cmd  OR  un arg of the cmd  OR  un redir (<, <<, > or >>)
 // no matter what this func returns
-static int	parse_nxt_token(char *cmd_line, t_data **d)
+static int	get_nxt_token(char *cmd_line, t_data **d)
 {
 	skip_spaces(cmd_line, d);
 	if (cmd_line[(*d)->i] == '\'') // to verify !!!
@@ -125,7 +124,7 @@ static int	parse_nxt_token(char *cmd_line, t_data **d)
 	}
 	if (ft_strlen((*d)->token) > 0 && put_token_to_d(d) == FAILURE)
 		return (err_cmd("get token pb", 1, d)); // 1 ?
-	if (skip_spaces(cmd_line, d) == YES)
+	if (skip_spaces(cmd_line, d) == YES && ft_strcmp(((*d)->args)[0]->val, "echo") == 0 && len_lst((*d)->args) > 1)
 		{
 			(*d)->token=" "; // can we free it in the end ?
 			if (put_token_to_d(d) == FAILURE) // (only for spaces in echo outpub)
@@ -152,12 +151,11 @@ static int	parse_and_exec_cmd_line(char *cmd_line, t_data **d)
 		while (1) // tokens, token = arg or fd
 		{
 			init_token(d);
-			parse_nxt_token(cmd_line, d);
+			get_nxt_token(cmd_line, d);
 			if (ft_strlen((*d)->token) == 0)
 				break ;
 		}
 		put_fd_if_the_out_is_pipe(cmd_line, d);
-		del_unnecessary_empty_args(d);
 		exec_cmd(d);
 		if (cmd_line[(*d)->i] != '|')
 			break ;
@@ -176,7 +174,7 @@ int	main(int argc, char **argv, char **env)
 	{
 		cmd_line = NULL;
 		cmd_line = readline("$");
-		if (cmd_line == NULL) // EOF = ctrl + D ?
+		if (cmd_line == NULL) // EOF = ctrl + D
 			break ;
 		if (g_signal == 1)
 		{

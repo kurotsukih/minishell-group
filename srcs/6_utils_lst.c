@@ -122,32 +122,6 @@ static void	del_all_empty_args(t_data **d)
 	}
 }
 
-void	del_unnecessary_empty_args(t_data **d)
-{
-	t_lst **lst;
-	t_lst	*cur;
-
-	lst = (*d)->args;
-	if (lst == NULL)
-		return ;
-	cur = *lst;
-	if (cur == NULL)
-		return ;
-	cur = cur->nxt;
-	if (cur == NULL)
-		return ;
-	if (ft_strcmp(cur->val, "") == 0)
-		return ;
-	if (ft_strcmp(cur->val, " ") == 0)
-		del_from_lst(cur, (*d)->args);
-	while (cur != NULL && cur->nxt != NULL)
-		cur = cur->nxt;
-	if (ft_strcmp(cur->val, " ") == 0)
-		del_from_lst(cur, (*d)->args);
-	if (ft_strcmp(((*d)->args)[0]->val, "echo") != 0)
-		del_all_empty_args(d);
-}
-
 void	del_all_from_lst(t_lst **lst)
 {
 	t_lst	*cur;
