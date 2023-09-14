@@ -6,7 +6,7 @@
 /*   By: akostrik <akostrik@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/02 15:22:16 by akostrik          #+#    #+#             */
-/*   Updated: 2023/09/14 15:26:07 by akostrik         ###   ########.fr       */
+/*   Updated: 2023/09/14 15:46:38 by akostrik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,13 +96,39 @@ static int	init_minishell(int argc, char **argv, char **env, t_data **d) // **d 
 	return (OK);
 }
 
+// no matter what this func returns
+static int	parse_and_exec_cmd_line(char *cmd_line, t_data **d)
+{
+	if (init_new_line(cmd_line, d) == FAILURE)
+		return (FAILURE);
+	while (1) // loop on commands, command = what is between | and |
+	{
+		if (init_cmd(d) == FAILURE)
+			return (FAILURE);
+		while (1) // loop on tokens, token = cmd name OR un arg of the cmd
+		{
+			init_token(d);
+			put_nxt_token_to_d(cmd_line, d);
+			if (ft_strlen((*d)->token) == 0)
+				break ;
+		}
+		put_tmpfile_as_fd_out_if_pipe(cmd_line, d);
+		exec_cmd(d);
+		if (cmd_line[(*d)->i] != '|')
+			break ;
+		((*d)->i)++;
+		unlink(TMP_FILE_HEREDOC);
+	}
+	return (OK);
+}
+
 int	main(int argc, char **argv, char **env)
 {
 	char	*cmd_line;
 	t_data	*d;
 
 	init_minishell(argc, argv, env, &d);
-	while (1) // loop command line
+	while (1) // loop on command lines
 	{
 		cmd_line = NULL;
 		cmd_line = readline("$");
@@ -118,7 +144,6 @@ int	main(int argc, char **argv, char **env)
 		parse_and_exec_cmd_line(cmd_line, &d);
 		free_(cmd_line);
 		unlink(TMP_FILE); // deletes a name from the filesystem
-		unlink(TMP_FILE_HEREDOC);
 	}
 	free_all_and_exit("", 0, &d); // executed only if ctrl + D ?
 	return (0);

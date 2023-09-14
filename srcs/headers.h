@@ -6,7 +6,7 @@
 /*   By: akostrik <akostrik@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/02 15:22:31 by akostrik          #+#    #+#             */
-/*   Updated: 2023/09/14 15:31:14 by akostrik         ###   ########.fr       */
+/*   Updated: 2023/09/14 15:47:26 by akostrik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,10 +58,10 @@ typedef struct		s_data
 
 	int				i;      // cmd_line params
 
-	t_lst			**args;  // cmd params // arg[0] = cmd name  // EXEC
+	t_lst			**args;  // cmd params // arg[0] = cmd name, arg[1], arg[2], ... = args of the cmd // EXEC
 	int				fd_in;   // EXEC
 	int				fd_out;  // EXEC
-	int				exit_c;  // EXEC // exit code TO DO !!!!!!!!!!!!!!!!!!!!!
+	int				exit_c;  // exit code TO DO !!!!!!!!!!!!!!!!!!!!! // EXEC 
 	int				there_are_redirs_out;
 
 	char			*token; // token params
@@ -72,7 +72,7 @@ typedef struct		s_data
 // so all the functions have **d
 
 // 2_parse
-int	parse_and_exec_cmd_line(char *cmd_line, t_data **d);
+int	put_nxt_token_to_d(char *cmd_line, t_data **d);
 
 // 3_exec                        min args    max args  accept <in
 int		exec_cmd(t_data **d);
@@ -95,7 +95,7 @@ int		skip_spaces(char *s, t_data **d);
 void	calc_redir(char *s, t_data **d);
 char	*calc_token(char *stop, char *s, t_data **d);
 int		heredoc_to_file(char *delim, t_data **d);
-int		put_fd_if_the_out_is_pipe(char *cmd_line, t_data **d);
+int		put_tmpfile_as_fd_out_if_pipe(char *cmd_line, t_data **d);
 int		mod_(char c);
 int		char_is_in_str(char c, char *s);
 

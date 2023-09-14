@@ -6,7 +6,7 @@
 /*   By: akostrik <akostrik@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/02 15:22:16 by akostrik          #+#    #+#             */
-/*   Updated: 2023/09/14 15:32:28 by akostrik         ###   ########.fr       */
+/*   Updated: 2023/09/14 15:47:13 by akostrik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,9 +34,8 @@ static int	put_token_itself_to_d(t_data **d)
 	return (OK);
 }
 
-// token = cmd name OR un arg of the cmd
 // no matter what this func returns
-static int	put_nxt_token_to_d(char *cmd_line, t_data **d)
+int	put_nxt_token_to_d(char *cmd_line, t_data **d)
 {
 	skip_spaces(cmd_line, d);
 	if (cmd_line[(*d)->i] == '\'') // to verify !!!
@@ -68,31 +67,3 @@ static int	put_nxt_token_to_d(char *cmd_line, t_data **d)
 		} 
 	return (OK);
 }
-
-// arg[0] = cmd name
-// arg[1], arg[2], ... = arguments
-// no matter what this func returns
-int	parse_and_exec_cmd_line(char *cmd_line, t_data **d)
-{
-	if (init_new_line(cmd_line, d) == FAILURE)
-		return (FAILURE);
-	while (1) // loop command
-	{
-		if (init_cmd(d) == FAILURE)
-			return (FAILURE);
-		while (1) // loop token, token = arg or fd
-		{
-			init_token(d);
-			put_nxt_token_to_d(cmd_line, d);
-			if (ft_strlen((*d)->token) == 0)
-				break ;
-		}
-		put_fd_if_the_out_is_pipe(cmd_line, d);
-		exec_cmd(d);
-		if (cmd_line[(*d)->i] != '|')
-			break ;
-		((*d)->i)++;
-	}
-	return (OK);
-}
-
