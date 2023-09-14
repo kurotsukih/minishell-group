@@ -35,22 +35,21 @@ static int	exec_extern_cmd(t_data **d)
 		env_arr = lst_to_arr((*d)->env, d);
 		if (execve(path, args_arr, env_arr) == -1)
 			return(err_cmd("", -1, d));
-		free_2_array(args_arr); // Not executed because execve has replaced the child process? 
-		free_2_array(env_arr);  // Does execve free args_arr and env_arr ?
+		free_2_array(args_arr); // not executed because execve has replaced the child process? 
+		free_2_array(env_arr);  // does execve free args_arr and env_arr ?
 	}
 	else
 	{
 		wait(&status);
-		if (WIFEXITED(status)) // le fils s'est terminé normalement, exit(3), _exit(2)
+		if (WIFEXITED(status)) // le fils s'est terminé normalement
 			(*d)->exit_c = WEXITSTATUS(status); //le code de sortie du fils
 		else if (WIFSIGNALED(status)) // le fils s'est terminé à cause d'un sig
 		{
 			(*d)->exit_c = WTERMSIG(status); // le numéro du sig
-			// *is_success = WTERMSIG(status) + 128;
-			// if (*is_success == 130)
-			// 	ft_merror("\n", NULL);
-			// if (*is_success == 131)
-			// 	err_cmd("Quit (core dumped)", 131, d); // ?
+			if (WTERMSIG(status) == 2)
+				err_cmd(")", 130, d); // ?
+			if (WTERMSIG(status) == 3)
+				err_cmd("Quit (core dumped)", 131, d); // ?
 		}
 	}
 	return (OK);

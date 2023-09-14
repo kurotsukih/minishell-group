@@ -76,7 +76,7 @@ char	*dedollarize_str(char *s, t_data **d)
 		if (s[i] == '$')
 		{
 			if (s[i + 1] == '?')
-				{} // dedollarized = ft_itoa(exit_code);
+				dedollarized = ft_itoa((*d)->exit_c);
 			else
 				dedollarized = dedollarize_1_var(s, i, d);
 			free_(s);
@@ -85,7 +85,7 @@ char	*dedollarize_str(char *s, t_data **d)
 	return (s);
 }
 
-static char	*full_path_(char *s1, char *s2, t_data **d)
+static char	*full_path_(char *path, char *cmd, t_data **d)
 {
 	int		i;
 	int		s1_len;
@@ -93,18 +93,18 @@ static char	*full_path_(char *s1, char *s2, t_data **d)
 	char	*full_path;
 
 	s1_len = 0;
-	if (s1 != NULL)
-		s1_len = ft_strlen(s1); // 0 for NULL
-	s2_len = ft_strlen(s2);
+	if (path != NULL)
+		s1_len = ft_strlen(path); // 0 for NULL
+	s2_len = ft_strlen(cmd);
 	full_path = (char *)malloc_(s1_len + s2_len + 2, d);
 	i = -1;
 	while (++i < s1_len)
-		full_path[i] = s1[i];
-	if(s1 != NULL)
+		full_path[i] = path[i];
+	if(path != NULL)
 		full_path[i] = '/';
 	i = -1;
 	while (++i < s2_len)
-		full_path[s1_len + 1 + i] = s2[i];
+		full_path[s1_len + 1 + i] = cmd[i];
 	full_path[s1_len + 1 + i] = '\0';
 	return (full_path);
 }

@@ -30,9 +30,9 @@ int	init_minishell(int argc, char **argv, char **env, t_data **d) // **d ?
 	return (OK);
 }
 
-int	init_new_line(char *s, t_data **d)
+int	init_new_line(char *cmd_line, t_data **d)
 {
-	if (all_quotes_are_closed(s) != OK)
+	if (all_quotes_are_closed(cmd_line) != OK)
 		return (err_cmd("uncloses quotes", 1, d)); // 1 ?
 	(*d)->i = 0;
 	return (OK);
@@ -76,12 +76,12 @@ int	all_quotes_are_closed(char *cmd_line)
 	return (OK);
 }
 
-int	skip_spaces(char *cmd_line, t_data **d)
+int	skip_spaces(char *s, t_data **d)
 {
 	int	there_are_skipped_spaces;
 
 	there_are_skipped_spaces = NO;
-	while (cmd_line[(*d)->i] == ' ')
+	while (s[(*d)->i] == ' ')
 	{	
 		there_are_skipped_spaces = YES;
 		((*d)->i)++;
@@ -89,19 +89,19 @@ int	skip_spaces(char *cmd_line, t_data **d)
 	return (there_are_skipped_spaces);
 }
 
-void	calc_redir(char *cmd_line, t_data **d)
+void	calc_redir(char *s, t_data **d)
 {
 	char	*redir;
 
-	if (cmd_line[(*d)->i]== '\0')
+	if (s[(*d)->i]== '\0')
 		redir = "";
-	else if (cmd_line[(*d)->i] == '>' && cmd_line[(*d)->i + 1] != '>')
+	else if (s[(*d)->i] == '>' && s[(*d)->i + 1] != '>')
 		redir = ">";
-	else if (cmd_line[(*d)->i] == '<' && cmd_line[(*d)->i + 1] != '<')
+	else if (s[(*d)->i] == '<' && s[(*d)->i + 1] != '<')
 		redir = "<";
-	else if (cmd_line[(*d)->i] == '>' && cmd_line[(*d)->i + 1] == '>')
+	else if (s[(*d)->i] == '>' && s[(*d)->i + 1] == '>')
 		redir = ">>";
-	else if (cmd_line[(*d)->i] == '<' && cmd_line[(*d)->i + 1] == '<')
+	else if (s[(*d)->i] == '<' && s[(*d)->i + 1] == '<')
 		redir = "<<";
 	else
 		redir = "";

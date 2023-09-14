@@ -80,7 +80,6 @@ int		all_quotes_are_closed(char *s);
 int		skip_spaces(char *s, t_data **d);
 void	calc_redir(char *s, t_data **d);
 char	*calc_token(char *stop, char *s, t_data **d);
-char	*dedollarize_str(char *s, t_data **d);
 int		heredoc_to_file(char *delim, t_data **d);
 int		put_fd_if_the_out_is_pipe(char *cmd_line, t_data **d);
 int		mod_(char c);
@@ -95,6 +94,9 @@ int		exec_export(t_data **d); // 0           ...       no ?
 int		exec_unset(t_data **d);  // 1           ...       no ?
 int		exec_env(t_data **d);    // 0           0         no
 int		exec_exit(t_data **d);   // 0           1         no ?
+
+// utils exec
+char	*dedollarize_str(char *s, t_data **d);
 char	*path_(t_data **d);
 char	*get_val_from_env(char *key, t_data **d);
 void	sig_handler(int signal);
