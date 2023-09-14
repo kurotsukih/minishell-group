@@ -6,7 +6,7 @@
 /*   By: akostrik <akostrik@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/02 15:22:31 by akostrik          #+#    #+#             */
-/*   Updated: 2023/09/12 16:28:57 by akostrik         ###   ########.fr       */
+/*   Updated: 2023/09/14 15:31:14 by akostrik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@
 # define QUOTES1 1
 # define QUOTES2 2
 # define TMP_FILE "tmp"
-# define TMP_FILE_H "tmp_h"
+# define TMP_FILE_HEREDOC "tmp_heredoc"
 # define OK 0
 # define FAILURE -1
 # define YES 1
@@ -71,8 +71,22 @@ typedef struct		s_data
 // func. free_all_and_exit should have **d for free d in case of an error
 // so all the functions have **d
 
-// utils parse (13 functions)
-int		init_minishell(int argc, char **argv, char **env, t_data **d); // **d ?
+// 2_parse
+int	parse_and_exec_cmd_line(char *cmd_line, t_data **d);
+
+// 3_exec                        min args    max args  accept <in
+int		exec_cmd(t_data **d);
+
+// 4_builtins
+int		exec_echo(t_data **d);   // 0           ...       no ?
+int		exec_cd(t_data **d);     // 0           1         no ?
+int		exec_pwd(t_data **d);    // 0           0         no
+int		exec_export(t_data **d); // 0           ...       no ?
+int		exec_unset(t_data **d);  // 1           ...       no ?
+int		exec_env(t_data **d);    // 0           0         no
+int		exec_exit(t_data **d);   // 0           1         no ?
+
+// 5_utils_parse (13 functions)
 int		init_new_line(char *s, t_data **d);
 int		init_cmd(t_data **d);
 void	init_token(t_data **d);
@@ -85,17 +99,7 @@ int		put_fd_if_the_out_is_pipe(char *cmd_line, t_data **d);
 int		mod_(char c);
 int		char_is_in_str(char c, char *s);
 
-// exec (13)                      min args    max args  accept <in
-int		exec_cmd(t_data **d);
-int		exec_echo(t_data **d);   // 0           ...       no ?
-int		exec_cd(t_data **d);     // 0           1         no ?
-int		exec_pwd(t_data **d);    // 0           0         no
-int		exec_export(t_data **d); // 0           ...       no ?
-int		exec_unset(t_data **d);  // 1           ...       no ?
-int		exec_env(t_data **d);    // 0           0         no
-int		exec_exit(t_data **d);   // 0           1         no ?
-
-// utils exec
+// 6_utils_exec
 char	*dedollarize_str(char *s, t_data **d);
 char	*path_(t_data **d);
 char	*get_val_from_env(char *key, t_data **d);
@@ -103,7 +107,7 @@ void	sig_handler(int signal);
 void	sig_handler_fork(int signal);
 void	sig_handler_heredoc(int signal);
 
-// utils lst (7)
+// 7_utils_lst (7)
 void	put_to_lst(char *val, t_lst ***lst, t_data **d);
 t_lst	**arr_to_lst(char **arr, t_data **d);
 char	**lst_to_arr(t_lst **lst, t_data **d);

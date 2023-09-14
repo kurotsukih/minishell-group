@@ -6,7 +6,7 @@
 /*   By: akostrik <akostrik@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/02 15:22:16 by akostrik          #+#    #+#             */
-/*   Updated: 2023/09/12 16:28:40 by akostrik         ###   ########.fr       */
+/*   Updated: 2023/09/14 15:26:07 by akostrik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ ctrl + D = SIGIN T  = quit shell
 Ctrl + D does not send a sig, it sends EOF to the terminal
 
 ***** TESTS - TO DO !!!!!!!!!!!!!!!!!!!!!!
-to test in bash (not zsh !) (chqnge with the command ">bash")   !!!!!!!!!!!!!!!!!!!!!!
+to test in bash (not zsh !) (to change with the command ">bash")   !!!!!!!!!!!!!!!!!!!!!!
 
 double quote s insdide simple ones 
 " $ "
@@ -51,7 +51,7 @@ export $a=" " |ls$a-la$a"Makefile"
 wc -l < infile
 wc -l < infile > outfile
 extern cmd change the env ?
-2 heredocs
+2 heredo cs
 
 >out1 >out2 > out3 < in >> out2 < in+ <in++
 out1 et 2 sont vide vu qu'ils ont été créés puis finalement la ligne de cmd indique un autre fichier d'output (???)
@@ -70,93 +70,29 @@ la cmd lance bash, puis dans ce bash execute echo ahah puis exit 12,
 on reviens au shell d'origine
 echo $? affiche 12
 
+||
+
 */
 
 #include "headers.h"
 
 int g_signal = 0;
 
-int	put_token_itself_to_d(t_data **d)
+static int	init_minishell(int argc, char **argv, char **env, t_data **d) // **d ?
 {
-	if (ft_strcmp((*d)->redir, "<<") == 0)
-	{
-		heredoc_to_file((*d)->token, d);
-		(*d)->fd_in = open(TMP_FILE_H, O_RDONLY);
-	}
-	else if (ft_strcmp((*d)->redir, "<") == 0)
-		(*d)->fd_in = open((*d)->token, O_RDONLY);
-	else if (ft_strcmp((*d)->redir, ">>") == 0)
-		(*d)->fd_out = open((*d)->token, O_WRONLY | O_CREAT | O_APPEND, 0666);
-	else if (ft_strcmp((*d)->redir, ">") == 0)
-		(*d)->fd_out = open((*d)->token, O_WRONLY | O_CREAT | O_TRUNC, 0666);
-	else
-		put_to_lst((*d)->token, &((*d)->args), d);
-	// if (((*d)->redir)[0] == '<' && (*d)->in == -1) || ((*d)->redir)[0] == '>' && out == -1)
-	// 	return (FAILURE);
-	if (((*d)->redir)[0] == '>')
-		(*d)->there_are_redirs_out = YES;
-	return (OK);
-}
-
-// token = cmd name OR un arg of the cmd
-// no matter what this func returns
-static int	put_nxt_token_to_d(char *cmd_line, t_data **d)
-{
-	skip_spaces(cmd_line, d);
-	if (cmd_line[(*d)->i] == '\'') // to verify !!!
-	{
-		(*d)->token = calc_token("\'\0", &cmd_line[(*d)->i + 1], d);
-		(*d)->i += ft_strlen((*d)->token) + 2;
-	}
-	else if (cmd_line[(*d)->i] == '\"') // to verify !!!
-	{
-		(*d)->token = calc_token("\"\0", &cmd_line[(*d)->i + 1], d);
-		(*d)->i += ft_strlen((*d)->token) + 2;
-		(*d)->token = dedollarize_str((*d)->token, d);
-	}
-	else
-	{
-		calc_redir(cmd_line, d);
-		skip_spaces(cmd_line, d);
-		(*d)->token = calc_token(" \"\'<>|", &cmd_line[(*d)->i], d);
-		((*d)->i) += ft_strlen((*d)->token);
-		(*d)->token = dedollarize_str((*d)->token, d);
-	}
-	if (ft_strlen((*d)->token) > 0 && put_token_itself_to_d(d) == FAILURE)
-		return (err_cmd("put token pb", 1, d)); // code 1 ?
-	if (skip_spaces(cmd_line, d) == YES && ft_strcmp(((*d)->args)[0]->val, "echo") == 0 && len_lst((*d)->args) > 1) // for spaces in echo
-		{
-			(*d)->token=" "; // can we free it in the end ?
-			if (put_token_itself_to_d(d) == FAILURE)
-				return (err_cmd("get token pb", 1, d)); // code 1 ?
-		} 
-	return (OK);
-}
-
-// arg[0] = cmd name
-// arg[1], arg[2], ... = arguments
-// no matter what this func returns
-static int	parse_and_exec_cmd_line(char *cmd_line, t_data **d)
-{
-	if (init_new_line(cmd_line, d) == FAILURE)
-		return (FAILURE);
-	while (1) // loop command
-	{
-		if (init_cmd(d) == FAILURE)
-			return (FAILURE);
-		while (1) // loop token, token = arg or fd
-		{
-			init_token(d);
-			put_nxt_token_to_d(cmd_line, d);
-			if (ft_strlen((*d)->token) == 0)
-				break ;
-		}
-		put_fd_if_the_out_is_pipe(cmd_line, d);
-		exec_cmd(d);
-		if (cmd_line[(*d)->i] != '|')
-			break ;
-		((*d)->i)++;
-	}
+	(void)argc;
+	(void)argv;
+	*d = (t_data *)malloc_(sizeof(t_data), d);
+	(*d)->env = arr_to_lst(env, d);
+	(*d)->redir = ""; // no need ?
+	(*d)->token = "";
+	(*d)->saved_stdin = dup(STDIN_FILENO); // if fail s ?
+	(*d)->saved_stdout = dup(STDOUT_FILENO);
+	(*d)->exit_c = 0;
+	if (signal(SIGINT, &sig_handler) == SIG_ERR) 
+		free_all_and_exit("Could not set signal handler", -1, d); // is it necessary ?
+	if (signal(SIGQUIT, SIG_IGN) == SIG_ERR) 
+		free_all_and_exit("Could not set signal handler", -1, d);
 	return (OK);
 }
 
@@ -182,7 +118,7 @@ int	main(int argc, char **argv, char **env)
 		parse_and_exec_cmd_line(cmd_line, &d);
 		free_(cmd_line);
 		unlink(TMP_FILE); // deletes a name from the filesystem
-		unlink(TMP_FILE_H);
+		unlink(TMP_FILE_HEREDOC);
 	}
 	free_all_and_exit("", 0, &d); // executed only if ctrl + D ?
 	return (0);

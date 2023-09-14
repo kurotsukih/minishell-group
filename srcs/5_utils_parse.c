@@ -6,29 +6,12 @@
 /*   By: akostrik <akostrik@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/02 15:22:47 by akostrik          #+#    #+#             */
-/*   Updated: 2023/09/12 16:15:20 by akostrik         ###   ########.fr       */
+/*   Updated: 2023/09/14 15:19:58 by akostrik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "headers.h"
 
-int	init_minishell(int argc, char **argv, char **env, t_data **d) // **d ?
-{
-	(void)argc;
-	(void)argv;
-	*d = (t_data *)malloc_(sizeof(t_data), d);
-	(*d)->env = arr_to_lst(env, d);
-	(*d)->redir = ""; // no need ?
-	(*d)->token = "";
-	(*d)->saved_stdin = dup(STDIN_FILENO); // if fail s ?
-	(*d)->saved_stdout = dup(STDOUT_FILENO);
-	(*d)->exit_c = 0;
-	if (signal(SIGINT, &sig_handler) == SIG_ERR) 
-		free_all_and_exit("Could not set signal handler", -1, d);
-	if (signal(SIGQUIT, SIG_IGN) == SIG_ERR) 
-		free_all_and_exit("Could not set signal handler", -1, d);
-	return (OK);
-}
 
 int	init_new_line(char *cmd_line, t_data **d)
 {
@@ -139,10 +122,11 @@ int	heredoc_to_file(char *delim, t_data **d)
 	char	*line;
 	int		fd_write;
 
-	fd_write = open(TMP_FILE_H, O_WRONLY | O_CREAT | O_TRUNC, 0666);
+	fd_write = open(TMP_FILE_HEREDOC, O_WRONLY | O_CREAT | O_TRUNC, 0666);
 	if (!fd_write)
 		return (err_cmd("heredoc open tmp file pb", -1, d));
 	line = NULL;
+	signal(SIGINT, &sig_handler_heredoc);
 	while (1)
 	{
 		line = readline(">");
@@ -153,6 +137,7 @@ int	heredoc_to_file(char *delim, t_data **d)
 		free_(line);
 	}
 	close(fd_write);
+	signal(SIGINT, &sig_handler);
 	return (OK);
 }
 
