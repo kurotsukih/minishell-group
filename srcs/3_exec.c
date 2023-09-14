@@ -41,16 +41,7 @@ static int	exec_extern_cmd(t_data **d)
 	else
 	{
 		wait(&status);
-		if (WIFEXITED(status)) // le fils s'est terminé normalement
-			(*d)->exit_c = WEXITSTATUS(status); //le code de sortie du fils
-		else if (WIFSIGNALED(status)) // le fils s'est terminé à cause d'un sig
-		{
-			(*d)->exit_c = WTERMSIG(status); // le numéro du sig
-			if (WTERMSIG(status) == 2)
-				err_cmd("", 130, d); // ?
-			if (WTERMSIG(status) == 3)
-				err_cmd("Quit (core dumped)", 131, d); // ?
-		}
+		verify_child_exit_code(status, d);
 	}
 	signal(SIGINT, &sig_handler);
 	return (OK);

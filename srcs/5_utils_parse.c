@@ -28,7 +28,7 @@ int	init_cmd(t_data **d)
 	del_all_from_lst((*d)->args);
 	(*d)->there_are_redirs_out = NO;
 	(*d)->fd_in = -1;
-	fd_tmp = open(TMP_FILE, O_RDONLY);
+	fd_tmp = open(TMP_FILE_OUT, O_RDONLY);
 	if (fd_tmp == -1)
 		(*d)->fd_in = dup(STDIN); // close ?
 	else
@@ -144,7 +144,7 @@ int	heredoc_to_file(char *delim, t_data **d)
 int	put_tmpfile_as_fd_out_if_pipe(char *cmd_line, t_data **d)
 {
 	if ((*d)->there_are_redirs_out == NO && cmd_line[(*d)->i] == '|')
-		(*d)->fd_out = open(TMP_FILE, O_WRONLY | O_CREAT | O_TRUNC, 0666);
+		(*d)->fd_out = open(TMP_FILE_OUT, O_WRONLY | O_CREAT | O_TRUNC, 0666);
 	if ((*d)->fd_out == -1)
 		return (err_cmd("dup pb", -1, d));
 	return (OK);

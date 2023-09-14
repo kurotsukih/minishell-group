@@ -33,7 +33,7 @@
 # define QUOTES0 0
 # define QUOTES1 1
 # define QUOTES2 2
-# define TMP_FILE "tmp"
+# define TMP_FILE_OUT "tmp"
 # define TMP_FILE_HEREDOC "tmp_heredoc"
 # define OK 0
 # define FAILURE -1
@@ -52,16 +52,17 @@ typedef struct		s_lst
 
 typedef struct		s_data
 {
-	t_lst			**env; // EXEC
-	int				saved_stdin; // (EXEC but not important)
-	int				saved_stdout; // (EXEC but not important)
+	t_lst			**env;
+	int				saved_stdin;
+	int				saved_stdout;
 
 	int				i;      // cmd_line params
 
-	t_lst			**args;  // cmd params // arg[0] = cmd name, arg[1], arg[2], ... = args of the cmd // EXEC
-	int				fd_in;   // EXEC
-	int				fd_out;  // EXEC
-	int				exit_c;  // exit code TO DO !!!!!!!!!!!!!!!!!!!!! // EXEC 
+	t_lst			**args;  // cmd params // arg[0] = cmd name, arg[1], arg[2], ... = args of the cmd
+	int				fd_in;
+	int				fd_out; 	
+	int				fd_to_give_to_the_nxt_cmd;
+	int				exit_c;  // exit code TO DO !!!!!!!!!!!!!!!!!!!!!
 	int				there_are_redirs_out;
 
 	char			*token; // token params
@@ -103,6 +104,7 @@ int		char_is_in_str(char c, char *s);
 char	*dedollarize_str(char *s, t_data **d);
 char	*path_(t_data **d);
 char	*get_val_from_env(char *key, t_data **d);
+void	verify_child_exit_code(int status, t_data **d);
 void	sig_handler(int signal);
 void	sig_handler_fork(int signal);
 void	sig_handler_heredoc(int signal);

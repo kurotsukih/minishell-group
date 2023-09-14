@@ -134,6 +134,20 @@ char	*path_(t_data **d)
 	return (err_cmd("cmd not found", 127, d), NULL); // 127? if (errno != 2) 126 ?
 }
 
+void	verify_child_exit_code(int status, t_data **d)
+{
+	if (WIFEXITED(status)) // le fils s'est terminé normalement
+		(*d)->exit_c = WEXITSTATUS(status); //le code de sortie du fils
+	else if (WIFSIGNALED(status)) // le fils s'est terminé à cause d'un sig
+	{
+		(*d)->exit_c = WTERMSIG(status); // le numéro sig
+		if (WTERMSIG(status) == 2)
+			err_cmd("", 130, d); // ?
+		if (WTERMSIG(status) == 3)
+			err_cmd("Quit (core dumped)", 131, d); // ?
+	}
+}
+
 // rl_clear_history
 // rl_on_new_line
 // rl_replace_line

@@ -143,7 +143,7 @@ int	main(int argc, char **argv, char **env)
 		add_history(cmd_line);
 		parse_and_exec_cmd_line(cmd_line, &d);
 		free_(cmd_line);
-		unlink(TMP_FILE); // deletes a name from the filesystem
+		unlink(TMP_FILE_OUT); // deletes a name from the filesystem
 	}
 	free_all_and_exit("", 0, &d); // executed only if ctrl + D ?
 	return (0);
