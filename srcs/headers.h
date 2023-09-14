@@ -60,8 +60,7 @@ typedef struct		s_data
 
 	t_lst			**args;  // cmd params // arg[0] = cmd name, arg[1], arg[2], ... = args of the cmd
 	int				fd_in;
-	int				fd_out; 	
-	int				fd_to_give_to_the_nxt_cmd;
+	int				fd_out;
 	int				exit_c;  // exit code TO DO !!!!!!!!!!!!!!!!!!!!!
 	int				there_are_redirs_out;
 

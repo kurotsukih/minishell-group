@@ -89,6 +89,7 @@ static int	init_minishell(int argc, char **argv, char **env, t_data **d) // **d 
 	(*d)->saved_stdin = dup(STDIN_FILENO); // if fail s ?
 	(*d)->saved_stdout = dup(STDOUT_FILENO);
 	(*d)->exit_c = 0;
+	(*d)->fd_in = dup(STDIN);
 	if (signal(SIGINT, &sig_handler) == SIG_ERR) 
 		free_all_and_exit("Could not set signal handler", -1, d); // is it necessary ?
 	if (signal(SIGQUIT, SIG_IGN) == SIG_ERR) 
@@ -116,6 +117,17 @@ static int	parse_and_exec_cmd_line(char *cmd_line, t_data **d)
 		exec_cmd(d);
 		if (cmd_line[(*d)->i] != '|')
 			break ;
+		if ((*d)->there_are_redirs_out == NO)
+		{
+			close((*d)->fd_in);
+			(*d)->fd_in = open(TMP_FILE_OUT, O_RDONLY); // for the nxt cmd
+		}
+		else
+			{
+			(*d)->fd_in = dup(STDIN); // for the nxt cmd
+			if ((*d)->fd_in == -1)
+				return (err_cmd("dup pb", -1, d)); // code
+			}
 		((*d)->i)++;
 		unlink(TMP_FILE_HEREDOC);
 	}

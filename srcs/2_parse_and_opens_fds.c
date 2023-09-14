@@ -52,6 +52,7 @@ int	put_nxt_token_to_d(char *cmd_line, t_data **d)
 	else
 	{
 		calc_redir(cmd_line, d);
+		// printf("redir = %s\n", (*d)->redir);
 		skip_spaces(cmd_line, d);
 		(*d)->token = calc_token(" \"\'<>|", &cmd_line[(*d)->i], d);
 		((*d)->i) += ft_strlen((*d)->token);

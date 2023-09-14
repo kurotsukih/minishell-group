@@ -23,18 +23,18 @@ int	init_new_line(char *cmd_line, t_data **d)
 
 int	init_cmd(t_data **d)
 {
-	int	fd_tmp;
-
 	del_all_from_lst((*d)->args);
 	(*d)->there_are_redirs_out = NO;
-	(*d)->fd_in = -1;
-	fd_tmp = open(TMP_FILE_OUT, O_RDONLY);
-	if (fd_tmp == -1)
-		(*d)->fd_in = dup(STDIN); // close ?
-	else
-		(*d)->fd_in = fd_tmp;
+	// (*d)->fd_in is already initialzed
+	// fd_tmp = open(TMP_FILE_OUT, O_RDONLY);
+	// if ((*d)->fd_between_cmmds != -1)
+	// 	// (*d)->fd_in = dup(STDIN); // close ?
+	// 	// (*d)->fd_in = open(TMP_FILE_OUT, O_RDONLY);
+	// 	(*d)->fd_in = fd_between_cmmds;
+	// else
+	// 	(*d)->fd_in = fd_tmp;
 	(*d)->fd_out = dup(STDOUT);
-	if ((*d)->fd_in == -1 || (*d)->fd_out == -1)
+	if ((*d)->fd_out == -1)
 		return (err_cmd("dup pb", -1, d));
 	return (OK);
 }
@@ -89,7 +89,7 @@ void	calc_redir(char *s, t_data **d)
 	else
 		redir = "";
 	(*d)->redir = redir;
-	((*d)->i) += ft_strlen((*d)->redir);
+	((*d)->i) += ft_strlen(redir);
 }
 
 char	*calc_token(char *stop, char *s, t_data **d)
