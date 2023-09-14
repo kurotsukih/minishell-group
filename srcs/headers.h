@@ -33,7 +33,7 @@
 # define QUOTES0 0
 # define QUOTES1 1
 # define QUOTES2 2
-# define TMP_FILE_OUT "tmp"
+// # define TMP_FILE_OUT "tmp"
 # define TMP_FILE_HEREDOC "tmp_heredoc"
 # define OK 0
 # define FAILURE -1
@@ -55,6 +55,7 @@ typedef struct		s_data
 	t_lst			**env;
 	int				saved_stdin;
 	int				saved_stdout;
+	char			*tmp_file;
 
 	int				i;      // cmd_line params
 

@@ -25,7 +25,7 @@ char	*ft_substr(char const *s, unsigned int start, size_t len)
 	size_t	i;
 	char	*substr;
 
-	if (start >= ft_strlen(s))
+	if (start >= (unsigned int)ft_strlen(s))
 	{
 		substr = (char *)malloc(1);
 		if (substr == NULL)
@@ -33,8 +33,8 @@ char	*ft_substr(char const *s, unsigned int start, size_t len)
 		substr[0] = '\0';
 		return (substr);
 	}
-	if (start + len > ft_strlen(s))
-		len = ft_strlen(s) - start;
+	if (start + len > (unsigned int)ft_strlen(s))
+		len = (unsigned int)ft_strlen(s) - start;
 	substr = (char *)malloc(len + 1);
 	if (substr == NULL)
 		return (NULL);
