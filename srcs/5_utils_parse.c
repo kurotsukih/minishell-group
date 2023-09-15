@@ -144,7 +144,7 @@ int	heredoc_to_file(char *delim, t_data **d)
 int	put_tmpfile_as_fd_out_if_pipe(char *cmd_line, t_data **d)
 {
 	if ((*d)->there_are_redirs_out == NO && cmd_line[(*d)->i] == '|')
-		(*d)->fd_out = open((*d)->tmp_file, O_WRONLY | O_CREAT | O_TRUNC, 0666);
+		(*d)->fd_out = open(tmp_file_name("write"), O_WRONLY | O_CREAT | O_TRUNC, 0666);
 	if ((*d)->fd_out == -1)
 		return (err_cmd("dup pb", -1, d));
 	return (OK);

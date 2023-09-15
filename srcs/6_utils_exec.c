@@ -183,3 +183,16 @@ void	sig_handler_fork(int sig)
 	if (sig == SIGQUIT)
 		exit(131);
 }
+
+// action = "read" or "write"
+char	*tmp_file_name(char *action)
+{
+	static int i = 0;
+
+	if (ft_strcmp(action, "write") == 0)
+		i = (i + 1) % 2;
+	if (i == 0)
+		return ("tmp_file_0");
+	else
+		return ("tmp_file_1");
+}

@@ -55,7 +55,6 @@ typedef struct		s_data
 	t_lst			**env;
 	int				saved_stdin;
 	int				saved_stdout;
-	char			*tmp_file;
 
 	int				i;      // cmd_line params
 
@@ -108,6 +107,7 @@ void	verify_child_exit_code(int status, t_data **d);
 void	sig_handler(int signal);
 void	sig_handler_fork(int signal);
 void	sig_handler_heredoc(int signal);
+char	*tmp_file_name();
 
 // 7_utils_lst (7)
 void	put_to_lst(char *val, t_lst ***lst, t_data **d);

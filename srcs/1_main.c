@@ -90,7 +90,6 @@ static int	init_minishell(int argc, char **argv, char **env, t_data **d) // **d 
 	(*d)->saved_stdout = dup(STDOUT_FILENO);
 	(*d)->exit_c = 0;
 	(*d)->fd_in = dup(STDIN);
-	(*d)->tmp_file = "tmp_file";
 	if (signal(SIGINT, &sig_handler) == SIG_ERR) 
 		free_all_and_exit("Could not set signal handler", -1, d); // is it necessary ?
 	if (signal(SIGQUIT, SIG_IGN) == SIG_ERR) 
@@ -120,8 +119,9 @@ static int	parse_and_exec_cmd_line(char *cmd_line, t_data **d)
 			break ;
 		if ((*d)->there_are_redirs_out == NO)
 		{
-			close((*d)->fd_in);
-			(*d)->fd_in = open((*d)->tmp_file, O_RDONLY); // for the nxt cmd
+			// close((*d)->fd_in);
+			// printf("fd_in = %d (close after exec)\n", (*d)->fd_in); // already closed int exec ?
+			(*d)->fd_in = open(tmp_file_name("read"), O_RDONLY); // for the nxt cmd
 		}
 		else
 			{
@@ -132,6 +132,8 @@ static int	parse_and_exec_cmd_line(char *cmd_line, t_data **d)
 		((*d)->i)++;
 		unlink(TMP_FILE_HEREDOC);
 	}
+	// unlink("tmp_file_0"); // deletes a name from the filesystem
+	// unlink("tmp_file_1");
 	return (OK);
 }
 
@@ -156,7 +158,6 @@ int	main(int argc, char **argv, char **env)
 		add_history(cmd_line);
 		parse_and_exec_cmd_line(cmd_line, &d);
 		free_(cmd_line);
-		unlink(d->tmp_file); // deletes a name from the filesystem
 	}
 	free_all_and_exit("", 0, &d); // executed only if ctrl + D ?
 	return (0);

@@ -51,6 +51,7 @@ int	exec_cmd(t_data **d)
 {
 	char *cmd;
 
+	dup2((*d)->fd_in, STDIN);
 	if (dup2((*d)->fd_in, STDIN) == -1)
 		return (err_cmd("dup2 start stdin pb", 1, d)); // 1 = general errors
 	close((*d)->fd_in);
