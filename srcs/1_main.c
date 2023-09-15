@@ -6,7 +6,7 @@
 /*   By: akostrik <akostrik@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/02 15:22:16 by akostrik          #+#    #+#             */
-/*   Updated: 2023/09/15 12:29:59 by akostrik         ###   ########.fr       */
+/*   Updated: 2023/09/15 15:59:53 by akostrik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -109,7 +109,7 @@ int	put_fd_in_for_nxt_cmd(t_data **d)
 		(*d)->fd_in = open(tmp_file_name("read"), O_RDONLY); //-
 	else
 		{
-		(*d)->fd_in = dup(STDIN);
+		(*d)->fd_in = dup(STDIN); // to try (*d)->fd_in = STDIN
 		if ((*d)->fd_in == -1)
 			return (err_cmd("dup pb", -1, d)); // code
 		}

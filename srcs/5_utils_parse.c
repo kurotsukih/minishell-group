@@ -6,7 +6,7 @@
 /*   By: akostrik <akostrik@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/02 15:22:47 by akostrik          #+#    #+#             */
-/*   Updated: 2023/09/15 12:33:11 by akostrik         ###   ########.fr       */
+/*   Updated: 2023/09/15 15:29:00 by akostrik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ int	init_cmd_line(char *cmd_line, t_data **d)
 	if (all_quotes_are_closed(cmd_line) != OK)
 		return (err_cmd("uncloses quotes", 1, d)); // code 1 ?
 	(*d)->i = 0;
-	(*d)->fd_in = dup(STDIN);
+	(*d)->fd_in = dup(STDIN); // = ?
 	return (OK);
 }
 
