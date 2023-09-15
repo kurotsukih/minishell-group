@@ -6,7 +6,7 @@
 /*   By: akostrik <akostrik@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/02 15:22:16 by akostrik          #+#    #+#             */
-/*   Updated: 2023/09/15 11:34:14 by akostrik         ###   ########.fr       */
+/*   Updated: 2023/09/15 12:17:53 by akostrik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,7 +89,6 @@ static int	init_minishell(int argc, char **argv, char **env, t_data **d) // **d 
 	(*d)->saved_stdin = dup(STDIN_FILENO); // if fail s ?
 	(*d)->saved_stdout = dup(STDOUT_FILENO);
 	(*d)->exit_c = 0;
-	(*d)->fd_in = dup(STDIN);
 	if (signal(SIGINT, &sig_handler) == SIG_ERR) 
 		free_all_and_exit("Could not set signal handler", -1, d); // is it necessary ?
 	if (signal(SIGQUIT, SIG_IGN) == SIG_ERR) 
@@ -97,10 +96,23 @@ static int	init_minishell(int argc, char **argv, char **env, t_data **d) // **d 
 	return (OK);
 }
 
+int	put_fd_in_for_nxt_cmd(t_data **d)
+{
+	if ((*d)->there_are_redirs_out == NO)
+		(*d)->fd_in = open(tmp_file_name("read"), O_RDONLY); //-
+	else
+		{
+		(*d)->fd_in = dup(STDIN);
+		if ((*d)->fd_in == -1)
+			return (err_cmd("dup pb", -1, d)); // code
+		}
+		return (OK);
+}
+
 // no matter what this func returns
 static int	parse_and_exec_cmd_line(char *cmd_line, t_data **d)
 {
-	if (init_new_line(cmd_line, d) == FAILURE)
+	if (init_cmd_line(cmd_line, d) == FAILURE)
 		return (FAILURE);
 	while (1) // loop on commands, command = what is between | and |
 	{
@@ -117,14 +129,7 @@ static int	parse_and_exec_cmd_line(char *cmd_line, t_data **d)
 		exec_cmd(d);
 		if (cmd_line[(*d)->i] != '|')
 			break ;
-		if ((*d)->there_are_redirs_out == NO)
-			(*d)->fd_in = open(tmp_file_name("read"), O_RDONLY); // for the nxt cmd
-		else
-			{
-			(*d)->fd_in = dup(STDIN); // for the nxt cmd
-			if ((*d)->fd_in == -1)
-				return (err_cmd("dup pb", -1, d)); // code
-			}
+		put_fd_in_for_nxt_cmd(d);
 		((*d)->i)++;
 		unlink(TMP_FILE_HEREDOC);
 	}

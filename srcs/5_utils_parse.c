@@ -6,18 +6,19 @@
 /*   By: akostrik <akostrik@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/02 15:22:47 by akostrik          #+#    #+#             */
-/*   Updated: 2023/09/15 11:29:01 by akostrik         ###   ########.fr       */
+/*   Updated: 2023/09/15 12:18:33 by akostrik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "headers.h"
 
 
-int	init_new_line(char *cmd_line, t_data **d)
+int	init_cmd_line(char *cmd_line, t_data **d)
 {
 	if (all_quotes_are_closed(cmd_line) != OK)
 		return (err_cmd("uncloses quotes", 1, d)); // 1 ?
 	(*d)->i = 0;
+	(*d)->fd_in = dup(STDIN);
 	return (OK);
 }
 
@@ -34,7 +35,6 @@ int	init_cmd(t_data **d)
 	// else
 	// 	(*d)->fd_in = fd_tmp;
 	(*d)->fd_out = dup(STDOUT);
-	print_d("init cmd call dup stdout", d);
 	if ((*d)->fd_out == -1)
 		return (err_cmd("dup pb", -1, d));
 	return (OK);
@@ -145,8 +145,8 @@ int	heredoc_to_file(char *delim, t_data **d)
 int	put_tmpfile_as_fd_out_if_pipe(char *cmd_line, t_data **d)
 {
 	if ((*d)->there_are_redirs_out == NO && cmd_line[(*d)->i] == '|')
-		(*d)->fd_out = open(tmp_file_name("write"), O_WRONLY | O_CREAT | O_TRUNC, 0666); // not now
-	if ((*d)->fd_out == -1) // deplace
+		(*d)->fd_out = open(tmp_file_name("write"), O_WRONLY | O_CREAT | O_TRUNC, 0666); //-
+	if ((*d)->fd_out == -1) // deplace //-
 		return (err_cmd("dup pb", -1, d));
 	return (OK);
 }

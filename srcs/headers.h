@@ -6,7 +6,7 @@
 /*   By: akostrik <akostrik@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/02 15:22:31 by akostrik          #+#    #+#             */
-/*   Updated: 2023/09/14 15:47:26 by akostrik         ###   ########.fr       */
+/*   Updated: 2023/09/15 12:16:01 by akostrik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,7 +72,7 @@ typedef struct		s_data
 // so all the functions have **d
 
 // 2_parse
-int	put_nxt_token_to_d(char *cmd_line, t_data **d);
+int	parse_nxt_token_and_put_to_d(char *cmd_line, t_data **d);
 
 // 3_exec                        min args    max args  accept <in
 int		exec_cmd(t_data **d);
@@ -87,7 +87,7 @@ int		exec_env(t_data **d);    // 0           0         no
 int		exec_exit(t_data **d);   // 0           1         no ?
 
 // 5_utils_parse (13 functions)
-int		init_new_line(char *s, t_data **d);
+int		init_cmd_line(char *s, t_data **d);
 int		init_cmd(t_data **d);
 void	init_token(t_data **d);
 int		all_quotes_are_closed(char *s);

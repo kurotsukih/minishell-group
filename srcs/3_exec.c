@@ -6,7 +6,7 @@
 /*   By: akostrik <akostrik@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/02 15:22:29 by akostrik          #+#    #+#             */
-/*   Updated: 2023/09/15 11:03:23 by akostrik         ###   ########.fr       */
+/*   Updated: 2023/09/15 12:18:25 by akostrik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,9 +55,6 @@ int	exec_cmd(t_data **d)
 	if (dup2((*d)->fd_in, STDIN) == -1)
 		return (err_cmd("dup2 start stdin pb", 1, d)); // 1 = general errors
 	close((*d)->fd_in);
-	print_d("exec call dup2 stdout before", d);
-	if (dup2((*d)->fd_out, STDOUT) == -1)
-	print_d("exec call dup2 stdout after", d);
 	if (dup2((*d)->fd_out, STDOUT) == -1)
 		return (err_cmd("dup2 stdout pb 1", 1, d)); // 1 = general errors
 	close((*d)->fd_out);
