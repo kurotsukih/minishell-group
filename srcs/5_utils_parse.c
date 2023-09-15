@@ -6,7 +6,7 @@
 /*   By: akostrik <akostrik@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/02 15:22:47 by akostrik          #+#    #+#             */
-/*   Updated: 2023/09/15 15:29:00 by akostrik         ###   ########.fr       */
+/*   Updated: 2023/09/15 16:02:35 by akostrik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -141,6 +141,19 @@ int	put_tmpfile_as_fd_out_if_pipe(char *cmd_line, t_data **d)
 	if ((*d)->fd_out == -1) // to deplace
 		return (err_cmd("dup pb", -1, d));
 	return (OK);
+}
+
+int	put_fd_in_for_nxt_cmd(t_data **d)
+{
+	if ((*d)->there_are_redirs_out == NO)
+		(*d)->fd_in = open(tmp_file_name("read"), O_RDONLY); //-
+	else
+		{
+		(*d)->fd_in = dup(STDIN); // to try (*d)->fd_in = STDIN
+		if ((*d)->fd_in == -1)
+			return (err_cmd("dup pb", -1, d)); // code
+		}
+		return (OK);
 }
 
 int char_is_in_str(char c, char *s)

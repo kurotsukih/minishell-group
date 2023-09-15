@@ -6,7 +6,7 @@
 /*   By: akostrik <akostrik@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/02 15:22:31 by akostrik          #+#    #+#             */
-/*   Updated: 2023/09/15 12:20:25 by akostrik         ###   ########.fr       */
+/*   Updated: 2023/09/15 16:02:48 by akostrik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,6 +97,7 @@ void	calc_redir(char *s, t_data **d);
 char	*calc_token(char *stop, char *s, t_data **d);
 int		heredoc_to_file(char *delim, t_data **d);
 int		put_tmpfile_as_fd_out_if_pipe(char *cmd_line, t_data **d);
+int		put_fd_in_for_nxt_cmd(t_data **d);
 int		mod_(char c);
 int		char_is_in_str(char c, char *s);
 

@@ -6,7 +6,7 @@
 /*   By: akostrik <akostrik@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/02 15:22:16 by akostrik          #+#    #+#             */
-/*   Updated: 2023/09/15 15:59:53 by akostrik         ###   ########.fr       */
+/*   Updated: 2023/09/15 16:02:22 by akostrik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,19 +103,6 @@ static int	init_minishell(int argc, char **argv, char **env, t_data **d)
 	return (OK);
 }
 
-int	put_fd_in_for_nxt_cmd(t_data **d)
-{
-	if ((*d)->there_are_redirs_out == NO)
-		(*d)->fd_in = open(tmp_file_name("read"), O_RDONLY); //-
-	else
-		{
-		(*d)->fd_in = dup(STDIN); // to try (*d)->fd_in = STDIN
-		if ((*d)->fd_in == -1)
-			return (err_cmd("dup pb", -1, d)); // code
-		}
-		return (OK);
-}
-
 // no matter what this func returns
 static int	parse_and_exec_cmd_line(char *cmd_line, t_data **d)
 {
@@ -167,6 +154,6 @@ int	main(int argc, char **argv, char **env)
 		parse_and_exec_cmd_line(cmd_line, &d); //////// THE ONLY PRINCIPAL LINE HERE
 		free_(cmd_line);
 	}
-	free_all_and_exit("", 0, &d); // executed only if ctrl + D ?
+	free_all_and_exit("", 0, &d); // executed only if ctrl + D
 	return (0);
 }
