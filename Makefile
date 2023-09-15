@@ -1,27 +1,53 @@
-SRCS = 1_main.c 2_parse_and_opens_fds.c 3_exec.c 4_builtins.c \
-       5_utils_parse.c 6_utils_exec.c 7_utils_lst.c 8_utils.c 
-OBJS = $(addprefix ./.build/, $(SRCS))
-OBJS := $(OBJS:%.c=%.o)
+#############################################################################################
+#                                                                                           #
+#                                           MAKEFILE                                        #
+#                                                                                           #
+#############################################################################################
 
-all : minishell
+NAME	= minishell
 
-minishell : ${OBJS}
-	cc $(OBJS) -o minishell -L /usr/local/opt/readline/lib -lreadline -Llibft -lft
+LIBFT	= make -C ./libft
 
-./.build/%.o : ./srcs/%.c ./libft/libft.a
-	@mkdir ./.build/ 2> /dev/null || true
-	cc -g3 -Wall -Werror -Wextra -I ./srcs -I ./libft -I /usr/local/opt/readline/include -c $< -o $@
+SRC_DIR	= srcs/
 
-./libft/libft.a	:
-	make -C ./libft
+OBJ_DIR	= objs/
 
-clean :
-	make -C ./libft clean
-	rm -rf ${OBJS}
+FILES	=	1_main.c \
+			2_parse_and_opens_fds.c \
+			3_exec.c 4_builtins.c \
+			5_utils_parse.c \
+			6_utils_exec.c \
+			7_utils_lst.c \
+			8_utils.c 
 
-fclean : clean
-	rm -rf minishell ./libft/libft.a
+SRCS	= $(addprefix $(SRC_DIR), $(FILES))
 
-re : fclean all
+OBJS	= $(SRCS:$(SRC_DIR)%.c=$(OBJ_DIR)%.o)
 
-.PHONY : all clean fclean re
+FLAGS	= -Wall -Wextra -Werror -g3
+
+LIB		= -Llibft -lft -lreadline # -L /usr/local/opt/readline/lib
+
+INCL	= -I ./includes/ -I ./libft # -I /usr/local/opt/readline/include
+
+
+objs/%.o : ./srcs/%.c
+			mkdir -p $(OBJ_DIR)
+			cc $(FLAGS) $(INCL) -c $< -o $@
+
+all:		$(NAME)
+
+$(NAME):	$(OBJS)
+			@$(LIBFT)
+			cc $(OBJS) -o $(NAME) $(LIB)
+
+clean:
+			make -C ./libft clean
+			rm -rf ${OBJ_DIR}
+
+fclean: 	clean
+			rm -rf $(NAME) ./libft/libft.a
+
+re: 		fclean all
+
+.PHONY : 	all clean fclean re
