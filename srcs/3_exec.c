@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   2_exec.c                                           :+:      :+:    :+:   */
+/*   3_exec.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: akostrik <akostrik@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/02 15:22:29 by akostrik          #+#    #+#             */
-/*   Updated: 2023/09/14 15:24:59 by akostrik         ###   ########.fr       */
+/*   Updated: 2023/09/15 11:03:23 by akostrik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,8 +55,11 @@ int	exec_cmd(t_data **d)
 	if (dup2((*d)->fd_in, STDIN) == -1)
 		return (err_cmd("dup2 start stdin pb", 1, d)); // 1 = general errors
 	close((*d)->fd_in);
+	print_d("exec call dup2 stdout before", d);
 	if (dup2((*d)->fd_out, STDOUT) == -1)
-		return (err_cmd("dup2 stdout pb", 1, d)); // 1 = general errors
+	print_d("exec call dup2 stdout after", d);
+	if (dup2((*d)->fd_out, STDOUT) == -1)
+		return (err_cmd("dup2 stdout pb 1", 1, d)); // 1 = general errors
 	close((*d)->fd_out);
 	cmd = (((*d)->args[0])->val);
 	if (ft_strcmp(cmd, "echo") == 0)
@@ -78,7 +81,7 @@ int	exec_cmd(t_data **d)
 	if (dup2((*d)->saved_stdin, STDIN) == -1)
 		return (err_cmd("dup2 end stdin pb", 1, d)); // 1 = general errors
 	if (dup2((*d)->saved_stdout, STDOUT) == -1)
-		return (err_cmd("dup2 stdout pb", 1, d)); // 1 = general errors
+		return (err_cmd("dup2 stdout pb 2", 1, d)); // 1 = general errors
 	return (OK);
 }
 

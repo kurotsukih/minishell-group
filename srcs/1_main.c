@@ -6,7 +6,7 @@
 /*   By: akostrik <akostrik@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/02 15:22:16 by akostrik          #+#    #+#             */
-/*   Updated: 2023/09/14 15:46:38 by akostrik         ###   ########.fr       */
+/*   Updated: 2023/09/15 11:34:14 by akostrik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -109,7 +109,7 @@ static int	parse_and_exec_cmd_line(char *cmd_line, t_data **d)
 		while (1) // loop on tokens, token = cmd name OR un arg of the cmd
 		{
 			init_token(d);
-			put_nxt_token_to_d(cmd_line, d);
+			parse_nxt_token_and_put_to_d(cmd_line, d);
 			if (ft_strlen((*d)->token) == 0)
 				break ;
 		}
@@ -118,11 +118,7 @@ static int	parse_and_exec_cmd_line(char *cmd_line, t_data **d)
 		if (cmd_line[(*d)->i] != '|')
 			break ;
 		if ((*d)->there_are_redirs_out == NO)
-		{
-			// close((*d)->fd_in);
-			// printf("fd_in = %d (close after exec)\n", (*d)->fd_in); // already closed int exec ?
 			(*d)->fd_in = open(tmp_file_name("read"), O_RDONLY); // for the nxt cmd
-		}
 		else
 			{
 			(*d)->fd_in = dup(STDIN); // for the nxt cmd

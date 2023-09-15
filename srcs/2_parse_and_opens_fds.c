@@ -1,18 +1,18 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   2_parse.c                                          :+:      :+:    :+:   */
+/*   2_parse_and_opens_fds.c                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: akostrik <akostrik@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/02 15:22:16 by akostrik          #+#    #+#             */
-/*   Updated: 2023/09/14 15:47:13 by akostrik         ###   ########.fr       */
+/*   Updated: 2023/09/15 11:33:22 by akostrik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "headers.h"
 
-static int	put_token_itself_to_d(t_data **d)
+static int	put_token_or_fd_to_d(t_data **d)
 {
 	if (ft_strcmp((*d)->redir, "<<") == 0)
 	{
@@ -35,7 +35,7 @@ static int	put_token_itself_to_d(t_data **d)
 }
 
 // no matter what this func returns
-int	put_nxt_token_to_d(char *cmd_line, t_data **d)
+int	parse_nxt_token_and_put_to_d(char *cmd_line, t_data **d)
 {
 	skip_spaces(cmd_line, d);
 	if (cmd_line[(*d)->i] == '\'') // to verify !!!
@@ -57,7 +57,7 @@ int	put_nxt_token_to_d(char *cmd_line, t_data **d)
 		((*d)->i) += ft_strlen((*d)->token);
 		(*d)->token = dedollarize_str((*d)->token, d);
 	}
-	if (ft_strlen((*d)->token) > 0 && put_token_itself_to_d(d) == FAILURE)
+	if (ft_strlen((*d)->token) > 0 && put_token_or_fd_to_d(d) == FAILURE)
 		return (err_cmd("put token pb", 1, d)); // code 1 ?
 	if (skip_spaces(cmd_line, d) == YES && ft_strcmp(((*d)->args)[0]->val, "echo") == 0 && len_lst((*d)->args) > 1) // for spaces in echo
 		{
