@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   7_utils.c                                          :+:      :+:    :+:   */
+/*   8_utils.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: akostrik <akostrik@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/02 15:22:55 by akostrik          #+#    #+#             */
-/*   Updated: 2023/09/12 15:17:33 by akostrik         ###   ########.fr       */
+/*   Updated: 2023/09/15 12:34:58 by akostrik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,8 +41,6 @@ void	free_2_array(char **arr)
 
 int		err_cmd(char *msg, int exit_c, t_data **d)
 {
-	// if (msg == NULL)
-	// 	msg = "";
 	if (ft_strlen(msg) > 0)
 		write_fd_with_n(2, msg);
 	(*d)->exit_c = exit_c;

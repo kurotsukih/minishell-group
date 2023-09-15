@@ -94,7 +94,7 @@ void	del_from_lst(t_lst *to_del, t_lst **lst)
 				else if (prv == NULL)
 					*lst = cur->nxt;
 				//free_(cur->val);
-				//free_(cur); // error segm
+				//free_(cur); // error ?
 				break ;
 			}
 		prv = cur;

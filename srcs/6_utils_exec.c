@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   5_utils_exec.c                                     :+:      :+:    :+:   */
+/*   6_utils_exec.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: akostrik <akostrik@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/02 15:22:47 by akostrik          #+#    #+#             */
-/*   Updated: 2023/09/12 15:29:19 by akostrik         ###   ########.fr       */
+/*   Updated: 2023/09/15 12:34:18 by akostrik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,7 +94,7 @@ static char	*full_path_(char *path, char *cmd, t_data **d)
 
 	s1_len = 0;
 	if (path != NULL)
-		s1_len = ft_strlen(path); // 0 for NULL
+		s1_len = ft_strlen(path);
 	s2_len = ft_strlen(cmd);
 	full_path = (char *)malloc_(s1_len + s2_len + 2, d);
 	i = -1;
@@ -131,27 +131,23 @@ char	*path_(t_data **d)
 		free_(full_path);
 		free_(path);
 	}
-	return (err_cmd("cmd not found", 127, d), NULL); // 127? if (errno != 2) 126 ?
+	return (err_cmd("cmd not found", 127, d), NULL); // code 127? if (errno != 2) code 126 ?
 }
 
 void	verify_child_exit_code(int status, t_data **d)
 {
 	if (WIFEXITED(status)) // le fils s'est terminé normalement
-		(*d)->exit_c = WEXITSTATUS(status); //le code de sortie du fils
+		(*d)->exit_c = WEXITSTATUS(status); // exit code child
 	else if (WIFSIGNALED(status)) // le fils s'est terminé à cause d'un sig
 	{
 		(*d)->exit_c = WTERMSIG(status); // le numéro sig
 		if (WTERMSIG(status) == 2)
-			err_cmd("", 130, d); // ?
+			err_cmd("", 130, d); // code 130?
 		if (WTERMSIG(status) == 3)
-			err_cmd("Quit (core dumped)", 131, d); // ?
+			err_cmd("Quit (core dumped)", 131, d); // code 131 ?
 	}
 }
 
-// rl_clear_history
-// rl_on_new_line
-// rl_replace_line
-// rl_redisplay
 void	sig_handler(int sig)
 {
 	if (sig == SIGINT)
@@ -192,7 +188,7 @@ char	*tmp_file_name(char *action)
 	if (ft_strcmp(action, "write") == 0)
 		i = (i + 1) % 2;
 	if (i == 0)
-		return ("tmp_file_0");
+		return (TMP_FILE_0);
 	else
-		return ("tmp_file_1");
+		return (TMP_FILE_1);
 }

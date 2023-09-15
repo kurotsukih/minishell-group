@@ -6,7 +6,7 @@
 /*   By: akostrik <akostrik@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/02 15:22:31 by akostrik          #+#    #+#             */
-/*   Updated: 2023/09/15 12:16:01 by akostrik         ###   ########.fr       */
+/*   Updated: 2023/09/15 12:20:25 by akostrik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,8 @@
 # define QUOTES0 0
 # define QUOTES1 1
 # define QUOTES2 2
-// # define TMP_FILE_OUT "tmp"
+# define TMP_FILE_0 "tmp_0"
+# define TMP_FILE_1 "tmp_1"
 # define TMP_FILE_HEREDOC "tmp_heredoc"
 # define OK 0
 # define FAILURE -1

@@ -6,7 +6,7 @@
 /*   By: akostrik <akostrik@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/02 15:22:47 by akostrik          #+#    #+#             */
-/*   Updated: 2023/09/15 12:18:33 by akostrik         ###   ########.fr       */
+/*   Updated: 2023/09/15 12:33:11 by akostrik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@
 int	init_cmd_line(char *cmd_line, t_data **d)
 {
 	if (all_quotes_are_closed(cmd_line) != OK)
-		return (err_cmd("uncloses quotes", 1, d)); // 1 ?
+		return (err_cmd("uncloses quotes", 1, d)); // code 1 ?
 	(*d)->i = 0;
 	(*d)->fd_in = dup(STDIN);
 	return (OK);
@@ -26,14 +26,6 @@ int	init_cmd(t_data **d)
 {
 	del_all_from_lst((*d)->args);
 	(*d)->there_are_redirs_out = NO;
-	// (*d)->fd_in is already initialzed
-	// fd_tmp = open(TMP_FILE_OUT, O_RDONLY);
-	// if ((*d)->fd_between_cmmds != -1)
-	// 	// (*d)->fd_in = dup(STDIN); // close ?
-	// 	// (*d)->fd_in = open(TMP_FILE_OUT, O_RDONLY);
-	// 	(*d)->fd_in = fd_between_cmmds;
-	// else
-	// 	(*d)->fd_in = fd_tmp;
 	(*d)->fd_out = dup(STDOUT);
 	if ((*d)->fd_out == -1)
 		return (err_cmd("dup pb", -1, d));
@@ -43,7 +35,7 @@ int	init_cmd(t_data **d)
 void	init_token(t_data **d)
 {
 	(*d)->redir = "";
-	(*d)->token = ""; // free((*d)->token) will work ???
+	(*d)->token = ""; // free((*d)->token) will work ? do we need it ?
 }
 
 int	all_quotes_are_closed(char *cmd_line)
@@ -145,8 +137,8 @@ int	heredoc_to_file(char *delim, t_data **d)
 int	put_tmpfile_as_fd_out_if_pipe(char *cmd_line, t_data **d)
 {
 	if ((*d)->there_are_redirs_out == NO && cmd_line[(*d)->i] == '|')
-		(*d)->fd_out = open(tmp_file_name("write"), O_WRONLY | O_CREAT | O_TRUNC, 0666); //-
-	if ((*d)->fd_out == -1) // deplace //-
+		(*d)->fd_out = open(tmp_file_name("write"), O_WRONLY | O_CREAT | O_TRUNC, 0666);
+	if ((*d)->fd_out == -1) // to deplace
 		return (err_cmd("dup pb", -1, d));
 	return (OK);
 }
@@ -164,7 +156,7 @@ int char_is_in_str(char c, char *s)
 	return (NO);
 }
 
-// to detect if we are inside of quotes or not
+// if we are inside of quotes or not
 int	mod_(char c)
 {
 	static char	mod = QUOTES0;

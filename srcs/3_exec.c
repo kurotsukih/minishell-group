@@ -6,13 +6,12 @@
 /*   By: akostrik <akostrik@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/02 15:22:29 by akostrik          #+#    #+#             */
-/*   Updated: 2023/09/15 12:18:25 by akostrik         ###   ########.fr       */
+/*   Updated: 2023/09/15 12:31:41 by akostrik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "headers.h"
 
-// execve creates a new process with the same ope n file descriptors
 static int	exec_extern_cmd(t_data **d)
 {
 	int		pid;
@@ -27,13 +26,13 @@ static int	exec_extern_cmd(t_data **d)
 	if (pid == 0)
 	{
 		signal(SIGINT, &sig_handler_fork);
-		signal(SIGQUIT, &sig_handler_fork); // ???
+		signal(SIGQUIT, &sig_handler_fork);
 		path = path_(d); // un chemin relatif ou absolu ?
 		if (path == NULL)
 			path = "."; // ?
 		args_arr = lst_to_arr((*d)->args, d);
 		env_arr = lst_to_arr((*d)->env, d);
-		if (execve(path, args_arr, env_arr) == -1)
+		if (execve(path, args_arr, env_arr) == -1) // creates a new process with the same ope n file descriptors
 			return(err_cmd("", -1, d));
 		free_2_array(args_arr); // not executed because execve has replaced the child process? 
 		free_2_array(env_arr);  // does execve free args_arr and env_arr ?
@@ -53,10 +52,10 @@ int	exec_cmd(t_data **d)
 
 	dup2((*d)->fd_in, STDIN);
 	if (dup2((*d)->fd_in, STDIN) == -1)
-		return (err_cmd("dup2 start stdin pb", 1, d)); // 1 = general errors
+		return (err_cmd("dup2 start stdin pb", 1, d)); // code 1 = general errors
 	close((*d)->fd_in);
 	if (dup2((*d)->fd_out, STDOUT) == -1)
-		return (err_cmd("dup2 stdout pb 1", 1, d)); // 1 = general errors
+		return (err_cmd("dup2 stdout pb 1", 1, d)); // code 1 = general errors
 	close((*d)->fd_out);
 	cmd = (((*d)->args[0])->val);
 	if (ft_strcmp(cmd, "echo") == 0)

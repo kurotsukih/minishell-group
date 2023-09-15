@@ -6,7 +6,7 @@
 /*   By: akostrik <akostrik@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/02 15:22:16 by akostrik          #+#    #+#             */
-/*   Updated: 2023/09/15 12:17:53 by akostrik         ###   ########.fr       */
+/*   Updated: 2023/09/15 12:29:59 by akostrik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,8 @@ le fichier qui répresent le heredo c peut etre implementé en tant que fichier 
 ctrl + \ = SIGQUI T = do nothing
 ctrl + C = SIGIN T  = stop cmd, show new line
 ctrl + D = SIGIN T  = quit shell
-Ctrl + D does not send a sig, it sends EOF to the terminal
+Ctrl + D does not send a sig, sends EOF to the terminal
+
 
 ***** TESTS - TO DO !!!!!!!!!!!!!!!!!!!!!!
 to test in bash (not zsh !) (to change with the command ">bash")   !!!!!!!!!!!!!!!!!!!!!!
@@ -70,7 +71,11 @@ la cmd lance bash, puis dans ce bash execute echo ahah puis exit 12,
 on reviens au shell d'origine
 echo $? affiche 12
 
-||
+
+***** NOT FINISHED:
+- leaks
+- exit codes
+- do a lot of testes
 
 */
 
@@ -78,7 +83,7 @@ echo $? affiche 12
 
 int g_signal = 0;
 
-static int	init_minishell(int argc, char **argv, char **env, t_data **d) // **d ?
+static int	init_minishell(int argc, char **argv, char **env, t_data **d)
 {
 	(void)argc;
 	(void)argv;
@@ -86,11 +91,13 @@ static int	init_minishell(int argc, char **argv, char **env, t_data **d) // **d 
 	(*d)->env = arr_to_lst(env, d);
 	(*d)->redir = ""; // no need ?
 	(*d)->token = "";
-	(*d)->saved_stdin = dup(STDIN_FILENO); // if fail s ?
+	(*d)->saved_stdin = dup(STDIN_FILENO);
 	(*d)->saved_stdout = dup(STDOUT_FILENO);
+	if ((*d)->saved_stdin == -1|| (*d)->saved_stdout == -1)
+		free_all_and_exit("dup pb", 1, d);
 	(*d)->exit_c = 0;
 	if (signal(SIGINT, &sig_handler) == SIG_ERR) 
-		free_all_and_exit("Could not set signal handler", -1, d); // is it necessary ?
+		free_all_and_exit("Could not set signal handler", -1, d); // no need ?
 	if (signal(SIGQUIT, SIG_IGN) == SIG_ERR) 
 		free_all_and_exit("Could not set signal handler", -1, d);
 	return (OK);
@@ -114,27 +121,27 @@ static int	parse_and_exec_cmd_line(char *cmd_line, t_data **d)
 {
 	if (init_cmd_line(cmd_line, d) == FAILURE)
 		return (FAILURE);
-	while (1) // loop on commands, command = what is between | and |
+	while (1) // loop on commands, command = all between | and |
 	{
 		if (init_cmd(d) == FAILURE)
 			return (FAILURE);
 		while (1) // loop on tokens, token = cmd name OR un arg of the cmd
 		{
 			init_token(d);
-			parse_nxt_token_and_put_to_d(cmd_line, d);
+			parse_nxt_token_and_put_to_d(cmd_line, d); //////// PRINCIPAL LINE
 			if (ft_strlen((*d)->token) == 0)
 				break ;
 		}
-		put_tmpfile_as_fd_out_if_pipe(cmd_line, d);
-		exec_cmd(d);
+		put_tmpfile_as_fd_out_if_pipe(cmd_line, d);  //////// PRINCIPAL LINE
+		exec_cmd(d);                                 //////// PRINCIPAL LINE
 		if (cmd_line[(*d)->i] != '|')
 			break ;
-		put_fd_in_for_nxt_cmd(d);
+		put_fd_in_for_nxt_cmd(d);                    //////// PRINCIPAL LINE
 		((*d)->i)++;
 		unlink(TMP_FILE_HEREDOC);
 	}
-	// unlink("tmp_file_0"); // deletes a name from the filesystem
-	// unlink("tmp_file_1");
+	unlink(TMP_FILE_0);
+	unlink(TMP_FILE_1);
 	return (OK);
 }
 
@@ -157,7 +164,7 @@ int	main(int argc, char **argv, char **env)
 			continue;
 		}
 		add_history(cmd_line);
-		parse_and_exec_cmd_line(cmd_line, &d);
+		parse_and_exec_cmd_line(cmd_line, &d); //////// THE ONLY PRINCIPAL LINE HERE
 		free_(cmd_line);
 	}
 	free_all_and_exit("", 0, &d); // executed only if ctrl + D ?

@@ -6,7 +6,7 @@
 /*   By: akostrik <akostrik@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/02 15:22:39 by akostrik          #+#    #+#             */
-/*   Updated: 2023/09/14 15:25:05 by akostrik         ###   ########.fr       */
+/*   Updated: 2023/09/15 12:32:21 by akostrik         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,7 @@ int	exec_cd(t_data **d)
 	// if (len_lst((*d)->args) == 1)
 	// 	free_(dir);
 	if (res == -1)
-		return (err_cmd("cd : chdir failure", 1, d)); // 1 = general errors
+		return (err_cmd("cd : chdir failure", 1, d)); // code 1 = general errors
 	return (OK);
 }
 
@@ -91,7 +91,7 @@ int	exec_unset(t_data **d)
 	char	*key_env;
 
 	if (len_lst((*d)->args) == 1)
-		return (err_cmd("unset : too few arguments", 0, d)); // 0 +
+		return (err_cmd("unset : too few arguments", 0, d)); // code 0 ok
 	arg = (*((*d)->args))->nxt;
 	while (arg != NULL)
 	{
@@ -119,7 +119,7 @@ int	exec_env(t_data **d)
 	if ((*d)->env == NULL)
 		return( OK);
 	if (len_lst((*d)->args) > 1)
-		return (err_cmd("env : too many arguments", 127, d)); // 127 +
+		return (err_cmd("env : too many arguments", 127, d)); // code 127 ok
 	env = *((*d)->env);
 	while (env != NULL && env->val != NULL)
 	{
@@ -132,9 +132,9 @@ int	exec_env(t_data **d)
 int	exec_exit(t_data **d)
 {
 	if (len_lst((*d)->args) > 2)
-		return (err_cmd("exit : too many arguments", 1, d)); // 1 +
+		return (err_cmd("exit : too many arguments", 1, d)); // code 1 ok
 	if (len_lst((*d)->args) == 2 && !ft_atoi((*((*d)->args))->nxt->val))
-		return (err_cmd("exit : numeric arg. required", 2, d)); // 2 +
+		return (err_cmd("exit : numeric arg. required", 2, d)); // code 2 ok
 	if (len_lst((*d)->args) == 2)
 		free_all_and_exit("", ft_atoi((*((*d)->args))->nxt->val), d);
 	else if (len_lst((*d)->args) == 1)
