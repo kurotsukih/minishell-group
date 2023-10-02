@@ -6,7 +6,7 @@
 /*   By: akostrik <akostrik@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/02 15:22:47 by akostrik          #+#    #+#             */
-/*   Updated: 2023/09/15 12:34:18 by akostrik         ###   ########.fr       */
+/*   Updated: 2023/10/02 02:16:32 by aseremet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,7 @@ static char	*dedollarize_1_var(char *s, int i, t_data **d)
 	if (val == NULL)
 		return (err_cmd("doll conversion not found", -1, d), NULL);
 	len = ft_strlen(s) - ft_strlen(key) + ft_strlen(val);
-	dedollarized = (char*)malloc_(len + 1, d);
+	dedollarized = (char *)malloc_(len + 1, d);
 	k = -1;
 	while (++k < i)
 		dedollarized[k] = s[k];
@@ -58,7 +58,7 @@ static char	*dedollarize_1_var(char *s, int i, t_data **d)
 	while (++k < i + ft_strlen(val))
 		dedollarized[k] = val[k - i];
 	k--;
-	while(++k < len)
+	while (++k < len)
 		dedollarized[k] = s[k + ft_strlen(key) - ft_strlen(val) + 1];
 	dedollarized[k] = '\0';
 	//free_(key); NO NEED
@@ -73,6 +73,7 @@ char	*dedollarize_str(char *s, t_data **d)
 
 	i = -1;
 	while (s[++i] != '\0')
+	{
 		if (s[i] == '$')
 		{
 			if (s[i + 1] == '?')
@@ -82,6 +83,7 @@ char	*dedollarize_str(char *s, t_data **d)
 			free_(s);
 			s = dedollarized;
 		}
+	}
 	return (s);
 }
 
@@ -100,7 +102,7 @@ static char	*full_path_(char *path, char *cmd, t_data **d)
 	i = -1;
 	while (++i < s1_len)
 		full_path[i] = path[i];
-	if(path != NULL)
+	if (path != NULL)
 		full_path[i] = '/';
 	i = -1;
 	while (++i < s2_len)
@@ -131,7 +133,8 @@ char	*path_(t_data **d)
 		free_(full_path);
 		free_(path);
 	}
-	return (err_cmd("cmd not found", 127, d), NULL); // code 127? if (errno != 2) code 126 ?
+	ft_putstr_fd((*((*d)->args))->val, 2);
+	return (err_cmd(": command not found", 127, d), NULL); // code 127? if (errno != 2) code 126 ?
 }
 
 void	verify_child_exit_code(int status, t_data **d)
@@ -183,7 +186,7 @@ void	sig_handler_fork(int sig)
 // action = "read" or "write"
 char	*tmp_file_name(char *action)
 {
-	static int i = 0;
+	static int	i = 0;
 
 	if (ft_strcmp(action, "write") == 0)
 		i = (i + 1) % 2;

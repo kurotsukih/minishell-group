@@ -6,7 +6,7 @@
 /*   By: akostrik <akostrik@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/02 15:22:16 by akostrik          #+#    #+#             */
-/*   Updated: 2023/09/15 12:31:06 by akostrik         ###   ########.fr       */
+/*   Updated: 2023/10/02 01:14:19 by aseremet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,11 +59,13 @@ int	parse_nxt_token_and_put_to_d(char *cmd_line, t_data **d)
 	}
 	if (ft_strlen((*d)->token) > 0 && put_token_or_fd_to_d(d) == FAILURE)
 		return (err_cmd("put token pb", 1, d)); // code 1 ?
-	if (skip_spaces(cmd_line, d) == YES && ft_strcmp(((*d)->args)[0]->val, "echo") == 0 && len_lst((*d)->args) > 1) // echo needs spaces
-		{
-			(*d)->token=" "; // we should not free this memory in the end ?
-			if (put_token_or_fd_to_d(d) == FAILURE)
-				return (err_cmd("get token pb", 1, d)); // code 1 ?
-		} 
+	if (skip_spaces(cmd_line, d) == YES
+		&& ft_strcmp(((*d)->args)[0]->val, "echo") == 0
+		&& len_lst((*d)->args) > 1) // echo needs spaces
+	{
+		(*d)->token = " "; // we should not free this memory in the end ?
+		if (put_token_or_fd_to_d(d) == FAILURE)
+			return (err_cmd("get token pb", 1, d)); // code 1 ?
+	}
 	return (OK);
 }

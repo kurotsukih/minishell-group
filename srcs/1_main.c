@@ -6,7 +6,7 @@
 /*   By: akostrik <akostrik@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/02 15:22:16 by akostrik          #+#    #+#             */
-/*   Updated: 2023/09/15 16:02:22 by akostrik         ###   ########.fr       */
+/*   Updated: 2023/10/02 02:24:49 by aseremet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,7 +81,7 @@ echo $? affiche 12
 
 #include "headers.h"
 
-int g_signal = 0;
+int	g_signal = 0;
 
 static int	init_minishell(int argc, char **argv, char **env, t_data **d)
 {
@@ -91,14 +91,15 @@ static int	init_minishell(int argc, char **argv, char **env, t_data **d)
 	(*d)->env = arr_to_lst(env, d);
 	(*d)->redir = ""; // no need ?
 	(*d)->token = "";
+	(*d)->args = NULL;
 	(*d)->saved_stdin = dup(STDIN_FILENO);
 	(*d)->saved_stdout = dup(STDOUT_FILENO);
-	if ((*d)->saved_stdin == -1|| (*d)->saved_stdout == -1)
+	if ((*d)->saved_stdin == -1 || (*d)->saved_stdout == -1)
 		free_all_and_exit("dup pb", 1, d);
 	(*d)->exit_c = 0;
-	if (signal(SIGINT, &sig_handler) == SIG_ERR) 
+	if (signal(SIGINT, &sig_handler) == SIG_ERR)
 		free_all_and_exit("Could not set signal handler", -1, d); // no need ?
-	if (signal(SIGQUIT, SIG_IGN) == SIG_ERR) 
+	if (signal(SIGQUIT, SIG_IGN) == SIG_ERR)
 		free_all_and_exit("Could not set signal handler", -1, d);
 	return (OK);
 }
@@ -132,11 +133,14 @@ static int	parse_and_exec_cmd_line(char *cmd_line, t_data **d)
 	return (OK);
 }
 
+// want to use path_ fct to use argv[1] need to write another fct ?
 int	main(int argc, char **argv, char **env)
 {
 	char	*cmd_line;
 	t_data	*d;
 
+	if (argc != 1)
+		return (ft_putstr_fd(argv[1], 2), ft_putendl_fd(": No such file or directory", 2), 127);
 	init_minishell(argc, argv, env, &d);
 	while (1) // loop on command lines
 	{
@@ -148,7 +152,7 @@ int	main(int argc, char **argv, char **env)
 		{
 			g_signal = 0;
 			d->exit_c = 130;
-			continue;
+			continue ;
 		}
 		add_history(cmd_line);
 		parse_and_exec_cmd_line(cmd_line, &d); //////// THE ONLY PRINCIPAL LINE HERE

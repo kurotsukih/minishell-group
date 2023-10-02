@@ -6,7 +6,7 @@
 /*   By: akostrik <akostrik@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/02 15:22:39 by akostrik          #+#    #+#             */
-/*   Updated: 2023/09/15 15:42:14 by akostrik         ###   ########.fr       */
+/*   Updated: 2023/10/02 01:35:17 by aseremet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -117,7 +117,7 @@ int	exec_env(t_data **d)
 	t_lst	*env;
 
 	if ((*d)->env == NULL)
-		return( OK);
+		return (OK);
 	if (len_lst((*d)->args) > 1)
 		return (err_cmd("env : too many arguments", 127, d)); // code 127 ok
 	env = *((*d)->env);

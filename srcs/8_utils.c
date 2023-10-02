@@ -6,7 +6,7 @@
 /*   By: akostrik <akostrik@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/02 15:22:55 by akostrik          #+#    #+#             */
-/*   Updated: 2023/09/15 15:41:17 by akostrik         ###   ########.fr       */
+/*   Updated: 2023/10/02 01:43:52 by aseremet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ void	*malloc_(int size, t_data **d)
 	return (mem);
 }
 
-void free_(void *mem)
+void	free_(void *mem)
 {
 	if (mem != NULL)
 		free(mem);
@@ -39,7 +39,7 @@ void	free_2_array(char **arr)
 	free_(arr);
 }
 
-int		err_cmd(char *msg, int exit_c, t_data **d)
+int	err_cmd(char *msg, int exit_c, t_data **d)
 {
 	if (ft_strlen(msg) > 0)
 		write_fd_with_n(2, msg);
@@ -84,9 +84,10 @@ void	print_d(char *msg, t_data **d)
 		while (cur != NULL)
 		{
 			printf("[%s] ", cur->val);
-			cur= cur->nxt;
+			cur = cur->nxt;
 		}
 	}
 	printf(" : %d : %d ", (*d)->fd_in, (*d)->fd_out);
-	printf(" (tok=[%s] redir=[%s] i=%d sav.in=%d sav.out=%d)\n", (*d)->token, (*d)->redir, (*d)->i, (*d)->saved_stdin, (*d)->saved_stdout);
+	printf(" (tok=[%s] redir=[%s] i=%d sav.in=%d sav.out=%d)\n", (*d)->token,
+		(*d)->redir, (*d)->i, (*d)->saved_stdin, (*d)->saved_stdout);
 }
