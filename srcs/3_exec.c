@@ -6,7 +6,7 @@
 /*   By: akostrik <akostrik@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/02 15:22:29 by akostrik          #+#    #+#             */
-/*   Updated: 2023/10/02 01:38:37 by aseremet         ###   ########.fr       */
+/*   Updated: 2023/10/03 20:27:36 by aseremet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,8 @@ static int	exec_extern_cmd(t_data **d)
 	{
 		signal(SIGINT, &sig_handler_fork);
 		signal(SIGQUIT, &sig_handler_fork);
+		if (!(*d)->args)
+			return (ft_putendl_fd(": command not found", 2), -1);
 		path = path_(d); // un chemin relatif ou absolu ?
 		if (path == NULL)
 			path = "."; // ?
@@ -57,7 +59,9 @@ int	exec_cmd(t_data **d)
 	if (dup2((*d)->fd_out, STDOUT) == -1)
 		return (err_cmd("dup2 stdout pb 1", 1, d)); // code 1 = general errors
 	close((*d)->fd_out);
-	cmd = (((*d)->args[0])->val);
+	cmd = NULL;
+	if (((*d)->args))
+		cmd = (((*d)->args[0])->val);
 	if (ft_strcmp(cmd, "echo") == 0)
 		exec_echo(d);
 	else if (ft_strcmp(cmd, "cd") == 0)
