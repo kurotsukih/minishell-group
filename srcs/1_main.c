@@ -6,7 +6,7 @@
 /*   By: akostrik <akostrik@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/02 15:22:16 by akostrik          #+#    #+#             */
-/*   Updated: 2023/10/03 17:58:27 by aseremet         ###   ########.fr       */
+/*   Updated: 2023/10/06 13:44:21 by aseremet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -159,6 +159,7 @@ int	main(int argc, char **argv, char **env)
 			parse_and_exec_cmd_line(cmd_line, &d); //////// THE ONLY PRINCIPAL LINE HERE
 		free_(cmd_line);
 	}
+	write(2, "\nexit\n", 6);
 	free_all_and_exit("", 0, &d); // executed only if ctrl + D
 	return (0);
 }
