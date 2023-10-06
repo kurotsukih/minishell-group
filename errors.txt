@@ -1,0 +1,95 @@
+TO DO:
+
+norm!!!!
+
+(want to mute make libft by adding @ to the libft Makefile)
+
+priority goes from redirection then pipes, redirection are with their commands
+
+accept absolute path for cmds (why relative path work but not absolute)
+
+$? when a builtin cmd does not fail after a cmd failed isn’t reset to 0 (happened with echo
+
+cmd not found does not update the $? to 127
+
+after ctrl-\ update the $? to 0 (in general should update it after signals)
+
+when exit or ctrl + D, bash prints “exit\n” and exits, to verify
+
+when ctrl-C after yes sometimes double $ (= double readline) after that if i yes, then yes again the second yes doesnt work but the third does 
+-> the first readline after ctrl-c works weirdly, not taken into account same for crtl-D
+
+yes | head doesn’t work, not even in the history 
+
+cat | ls doesn’t work, doesnt ls and loops -> it does ls after ctrl-C
+
+echo $? didn’t appear in history after last cmd (cat | ls)
+
+echo machine             prout | wc -c 	-> output 15 when it should be 14
+even with option -n it should be 13 but still is 15
+
+echo machine\n             prout	-> should write “machinen prout” but writes “machine\n prout”
+
+first input valgrind error (see image at the end in ERRORS)
+need multiple ctrl-D to get out during valgrind depending on how many cmd I used, normal ?
+don’t think it’s normal because exit works normally
+(see leaks at the end in LEAKS)
+
+in fork, doesnt close fd nicely, 4 open fd at exit not nice, fd 6 (/dev/pts/0) stays open (opened by dup in initcmd), need to close it in childrens before execve and after finished executing line in parent 
+
+not sure about the rule for unclosed quotes and special characters, should we do as now just error msg or consider them as normal characters ?
+
+“echo test |” without quotes should probably return an error
+
+export t="hat" doesn’t work but works without quotes for hat
+
+cat $t > env variable not found, doll conversion not found, Segmentation fault (core dumped)
+i think it’s because he couldn’t find this env var but it should just not write anything if it doesnt exist
+
+< $t wc -c doesnt work, doesnt give any output, just newline, not even in history
+
+< hat wc -c doesnt work and segfault (see pagina 10 for valgrind details about this) hat is a  file
+
+useless space first char in output of echo -n
+
+why does pressing return key gives unclosed quotes error should just display a new prompt on a new line 
+
+“” empty string, segfault, should cmd not found -> page 11 for valgrind
+
+only spaces segfault, it should just display a new prompt on a nl, but “ “ does not segfault and just cmd not found -> page 11 for valgrind
+
+cat fichier1 | grep oui | grep non > fichier2 | wc -l does not what it should, should output 0 but act like wc -l at the end is not part of the pipe
+-> anything that ask for input acts like that	
+
+after every cmd not found, need to exit as many times to actually exit, the same for ctrl-D 
+
+need to change $_ to the path (or just the cmd) of the last extern command
+
+exit without numeric argument should still exits with error written
+need to see everything related to exit actually
+
+multiple heredoc segfault
+
+when export env var they appear at the end of env, in bash it’s random ?
+
+changing env var without export does not work
+
+cd failure should display perror just ??
+
+cd no such file or directory -> $? = 1
+
+pwd exit code update
+
+when unset PATH, error should just be no such or directory but it’s env var not found
+
+echo chat > file.txt > file.txt > file.txt does not work, multiple redirection same file ??
+-> redirections in builtin are bugged, the dup2 is done and not undone at the end so it stays like that in minishell
+
+>> append redirection just don’t work ? or echo with redirection ? 
+
+cat | cat | ls doesn’t behave how it should
+
+open files in order and first that has a error the cmd is cancelled
+
+infiles are opened after forks with their command if there is a pipe, so even if there is error (like file or directory not found) the next command in the pipe still works
+

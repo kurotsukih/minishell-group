@@ -6,12 +6,11 @@
 /*   By: akostrik <akostrik@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/02 15:22:47 by akostrik          #+#    #+#             */
-/*   Updated: 2023/09/15 16:02:35 by akostrik         ###   ########.fr       */
+/*   Updated: 2023/10/03 17:48:48 by aseremet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "headers.h"
-
 
 int	init_cmd_line(char *cmd_line, t_data **d)
 {
@@ -57,7 +56,7 @@ int	skip_spaces(char *s, t_data **d)
 	int	there_are_skipped_spaces;
 
 	there_are_skipped_spaces = NO;
-	while (s[(*d)->i] == ' ')
+	while (s[(*d)->i] == ' ' || s[(*d)->i] == '\t')
 	{	
 		there_are_skipped_spaces = YES;
 		((*d)->i)++;
@@ -69,7 +68,7 @@ void	calc_redir(char *s, t_data **d)
 {
 	char	*redir;
 
-	if (s[(*d)->i]== '\0')
+	if (s[(*d)->i] == '\0')
 		redir = "";
 	else if (s[(*d)->i] == '>' && s[(*d)->i + 1] != '>')
 		redir = ">";
@@ -148,15 +147,15 @@ int	put_fd_in_for_nxt_cmd(t_data **d)
 	if ((*d)->there_are_redirs_out == NO)
 		(*d)->fd_in = open(tmp_file_name("read"), O_RDONLY); //-
 	else
-		{
+	{
 		(*d)->fd_in = dup(STDIN); // to try (*d)->fd_in = STDIN
 		if ((*d)->fd_in == -1)
 			return (err_cmd("dup pb", -1, d)); // code
-		}
-		return (OK);
+	}
+	return (OK);
 }
 
-int char_is_in_str(char c, char *s)
+int	char_is_in_str(char c, char *s)
 {
 	int	i;
 
